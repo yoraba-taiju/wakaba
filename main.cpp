@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <bits/unique_ptr.h>
+#include <memory>
 
 #include "util/logger/Logger.hpp"
 
