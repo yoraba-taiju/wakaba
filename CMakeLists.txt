@@ -17,5 +17,8 @@ add_subdirectory(external/glfw)
 include_directories(external/glfw/include)
 link_libraries(glfw ${GLFW_LIBRARIES})
 ###############################################################################
+# TinyFormat
+include_directories(external/tinyformat)
+###############################################################################
 
 add_executable(wakaba main.cpp util/logger/Logger.cpp util/logger/Logger.hpp)

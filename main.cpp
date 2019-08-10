@@ -11,13 +11,14 @@ std::unique_ptr<taiju::Logger> log;
 
 int main() {
   log = std::make_unique<taiju::Logger>();
+  log->setLevel(taiju::Logger::DEBUG);
 
   // Initialise GLFW
   if (!glfwInit()) {
-    fprintf(stderr, "Failed to initialize GLFW\n");
-    getchar();
+    log->fatal("Failed to initialize GLFW");
     return -1;
   }
+  log->debug("GLFW Initialized.");
 
   glfwWindowHint(GLFW_SAMPLES, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
