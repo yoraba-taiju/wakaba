@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdio>
+#include <ctime>
+#include <iomanip>
 #include <tinyformat.h>
 
 namespace util {
@@ -60,21 +62,26 @@ private:
       return;
     }
     std::string const msg = tfm::format(fmt.c_str(), std::forward<Args>(args)...);
+    std::time_t t = std::time(nullptr);
+    std::tm tm = *std::localtime(&t);
+    std::stringstream ss;
+    ss  << std::put_time(&tm, "%Y/%m/%d% %H:%M:%S");
+    std::string const time = ss.str();
     switch (level) {
       case Level::TRACE:
-        fprintf(this->output_, "%s\n", ("[TRACE] " + msg).c_str());
+        fprintf(this->output_, "[%s TRACE] %s\n", time.c_str(), msg.c_str());
         break;
       case Level::DEBUG:
-        fprintf(this->output_, "%s\n", ("[DEBUG] " + msg).c_str());
+        fprintf(this->output_, "[%s DEBUG] %s\n", time.c_str(), msg.c_str());
         break;
       case Level::INFO:
-        fprintf(this->output_, "%s\n", ("[INFO ] " + msg).c_str());
+        fprintf(this->output_, "[%s INFO ] %s\n", time.c_str(), msg.c_str());
         break;
       case Level::WARN:
-        fprintf(this->output_, "%s\n", ("[WARN ] " + msg).c_str());
+        fprintf(this->output_, "[%s WARN ] %s\n", time.c_str(), msg.c_str());
         break;
       case Level::ERROR:
-        fprintf(this->output_, "%s\n", ("[ERROR] " + msg).c_str());
+        fprintf(this->output_, "[%s ERROR] %s\n", time.c_str(), msg.c_str());
         break;
       case Level::FATAL:
         throw std::runtime_error("[FATAL] " + msg);
