@@ -4,21 +4,21 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 
-#include "util/logger/Logger.hpp"
+#include "util/Logger.hpp"
+#include "gl/texture/TextureUnit.hpp"
 
 GLFWwindow *window;
-std::unique_ptr<taiju::Logger> log;
+util::Logger log;
 
 int main() {
-  log = std::make_unique<taiju::Logger>();
-  log->setLevel(taiju::Logger::DEBUG);
+  log.setLevel(util::Logger::DEBUG);
 
   // Initialise GLFW
   if (!glfwInit()) {
-    log->fatal("Failed to initialize GLFW");
+    log.fatal("Failed to initialize GLFW");
     return -1;
   }
-  log->debug("GLFW Initialized.");
+  log.debug("GLFW Initialized.");
 
   glfwWindowHint(GLFW_SAMPLES, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -50,6 +50,7 @@ int main() {
 
   // Dark blue background
   glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+
 
   do {
     // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
