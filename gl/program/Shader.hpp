@@ -16,9 +16,9 @@ protected:
   explicit Shader(GLuint const id):id_(id) {
   }
   static GLuint compile(util::Logger& log, GLenum target, std::string const& src);
+  ~Shader();
 public:
   Shader() = delete;
-  virtual ~Shader();
 public:
   [[nodiscard]] GLuint id() const {
     return this->id_;

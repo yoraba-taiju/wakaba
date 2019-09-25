@@ -21,7 +21,7 @@ public:
     return this->id_;
   }
 public:
-  static std::shared_ptr<Program> link(util::Logger& log, std::shared_ptr<VertexShader> vert, std::shared_ptr<FragmentShader> frag);
+  static std::shared_ptr<Program> link(util::Logger& log, std::shared_ptr<VertexShader> const& vert, std::shared_ptr<FragmentShader> const& frag);
 private:
   ENABLE_SHARED_HELPER
 };

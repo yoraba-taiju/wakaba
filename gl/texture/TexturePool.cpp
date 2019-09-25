@@ -27,4 +27,9 @@ TexturePool::TexturePool(util::Logger& log)
 {
 }
 
+TexturePool::~TexturePool() {
+  glDeleteTextures(this->textures_.size(), this->textures_.data());
+  this->textures_.resize(0);
+}
+
 }

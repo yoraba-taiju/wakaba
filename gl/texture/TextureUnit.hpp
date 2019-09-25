@@ -22,8 +22,8 @@ private:
   explicit TextureUnit(util::Logger& log);
 public:
   TextureUnit() = delete;
-  int bind(std::shared_ptr<Texture> tex);
-  bool release(std::shared_ptr<Texture> tex);
+  int bind(std::shared_ptr<Texture> const& tex);
+  bool release(std::shared_ptr<Texture> const& tex);
   void activate();
   void deactivate();
   ~TextureUnit();

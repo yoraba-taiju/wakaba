@@ -6,7 +6,7 @@
 
 namespace gl {
 
-std::shared_ptr<Program> Program::link(util::Logger& log, std::shared_ptr<VertexShader> vert, std::shared_ptr<FragmentShader> frag) {
+std::shared_ptr<Program> Program::link(util::Logger& log, std::shared_ptr<VertexShader> const& vert, std::shared_ptr<FragmentShader> const& frag) {
   GLuint const id = glCreateProgram();
   glAttachShader(id, vert->id());
   glAttachShader(id, frag->id());

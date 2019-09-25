@@ -19,4 +19,9 @@ TextureUnit::~TextureUnit() {
   this->num_ = 0;
 }
 
+int TextureUnit::bind(std::shared_ptr<Texture> const& tex) {
+
+  return 0;
+}
+
 }

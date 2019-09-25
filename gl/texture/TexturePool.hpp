@@ -26,7 +26,7 @@ public:
   static std::shared_ptr<TexturePool> create(util::Logger& log) {
     return util::make_shared<TexturePool>(log);
   }
-  ~TexturePool() = default;
+  ~TexturePool();
 
 public:
   std::shared_ptr<Texture> alloc();
