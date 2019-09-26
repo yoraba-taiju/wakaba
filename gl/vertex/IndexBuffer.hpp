@@ -16,13 +16,15 @@ class IndexBuffer final : public std::enable_shared_from_this<IndexBuffer> {
 private:
   static GLenum const kTarget = GL_ELEMENT_ARRAY_BUFFER;
   GLuint const id_;
+  GLenum mode_;
   GLenum glType_;
   std::size_t elementSize_;
   std::size_t size_;
 
 private:
-  explicit IndexBuffer(GLuint const id)
+  IndexBuffer(GLuint const id)
   :id_(id)
+  ,mode_(GL_TRIANGLES)
   ,elementSize_(0)
   ,size_(0)
   ,glType_(GL_UNSIGNED_INT)
@@ -36,8 +38,9 @@ public:
 
 public:
   template<typename T>
-  void set(std::vector<T> const &value) {
+  void set(GLenum const mode, std::vector<T> const &value) {
     Binder _(this);
+    this->mode_ = mode;
     this->elementSize_ = sizeof(T);
     this->size_ = value.size();
     this->glType_ = enumOf<T>();

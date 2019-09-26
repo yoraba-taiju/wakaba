@@ -15,7 +15,7 @@ std::shared_ptr<IndexBuffer> IndexBuffer::create() {
 }
 
 void IndexBuffer::draw() {
-  glDrawElements(GL_TRIANGLES, this->size(), GL_UNSIGNED_SHORT, nullptr);
+  glDrawElements(this->mode_, this->size(), GL_UNSIGNED_SHORT, nullptr);
   checkError();
 }
 

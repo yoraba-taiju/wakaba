@@ -71,9 +71,16 @@ static int _main(util::Logger& log) {
     -0.5f, -0.5f, 0.0f,
     +0.0f, +0.5f, 0.0f
   }});
+
+  std::shared_ptr<gl::ArrayBuffer> color = gl::ArrayBuffer::create();
+  color->set(3, std::vector<GLfloat>{{
+    1,0,0,
+    0,1,0,
+    0,0,1,
+  }});
   
   std::shared_ptr<gl::IndexBuffer> indices = gl::IndexBuffer::create();
-  indices->set(std::vector<uint16_t >{{
+  indices->set(GL_TRIANGLES, std::vector<uint16_t >{{
     0, 1, 2
   }});
 
@@ -85,6 +92,7 @@ static int _main(util::Logger& log) {
 
   ctx->attach(indices);
   ctx->attach("position", triangle);
+  ctx->attach("color", color);
 
   do {
     // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
