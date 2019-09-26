@@ -6,10 +6,4 @@
 
 namespace gl {
 
-std::shared_ptr<ArrayBuffer> ArrayBuffer::create() {
-  GLuint id;
-  glGenBuffers(1, &id);
-  return util::make_shared<ArrayBuffer>(id);
-}
-
 }

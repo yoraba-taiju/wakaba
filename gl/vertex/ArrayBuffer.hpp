@@ -11,15 +11,19 @@
 
 namespace gl {
 
-class ArrayBuffer final : public Buffer<GL_ARRAY_BUFFER>, public std::enable_shared_from_this<ArrayBuffer> {
+template<typename T>
+class ArrayBuffer final : public Buffer<GL_ARRAY_BUFFER>, public std::enable_shared_from_this<ArrayBuffer<T>> {
 public:
   explicit ArrayBuffer(GLuint const id): Buffer<GL_ARRAY_BUFFER>(id){}
   ~ArrayBuffer() = default;
-  template <typename T>
   void set(std::vector<T> const& value) {
-    this->setImpl<T>(value);
+    this->setImpl(value);
   }
-  static std::shared_ptr<ArrayBuffer> create();
+  static std::shared_ptr<ArrayBuffer> create() {
+    GLuint id;
+    glGenBuffers(1, &id);
+    return util::make_shared<ArrayBuffer<T>>(id);
+  }
 public:
   ENABLE_SHARED_HELPER;
 };
