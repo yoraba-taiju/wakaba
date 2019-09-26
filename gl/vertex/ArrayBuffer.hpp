@@ -12,9 +12,9 @@
 namespace gl {
 
 template<typename T>
-class ArrayBuffer final : public Buffer<GL_ARRAY_BUFFER>, public std::enable_shared_from_this<ArrayBuffer<T>> {
+class ArrayBuffer final : public Buffer {
 public:
-  explicit ArrayBuffer(GLuint const id): Buffer<GL_ARRAY_BUFFER>(id){}
+  explicit ArrayBuffer(GLuint const id): Buffer(GL_ARRAY_BUFFER, id){}
   ~ArrayBuffer() = default;
   void set(std::vector<T> const& value) {
     this->setImpl(value);

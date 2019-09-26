@@ -15,9 +15,9 @@ class TexturePool;
 class Texture2D final : public std::enable_shared_from_this<Texture2D> {
 private:
   GLuint const id_;
-public:
-  explicit Texture2D(GLuint const id):id_(id) {
+  explicit Texture2D(GLuint const id) : id_(id) {
   }
+public:
   ~Texture2D();
 public:
   [[ nodiscard ]] GLuint id() const {

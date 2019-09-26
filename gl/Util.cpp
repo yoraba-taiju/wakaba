@@ -18,4 +18,19 @@ void checkError() noexcept(false) {
   throw Error("[OpenGL Error: \""+std::move(msg)+"\"]");
 }
 
+template<>
+GLenum enumOf<GLfloat>() {
+  return GL_FLOAT;
+}
+
+template<>
+GLenum enumOf<GLushort>() {
+  return GL_UNSIGNED_SHORT;
+}
+
+template<>
+GLenum enumOf<GLuint>() {
+  return GL_UNSIGNED_INT;
+}
+
 }

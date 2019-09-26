@@ -8,13 +8,11 @@
 
 namespace gl {
 
-TextureUnit::TextureUnit(util::Logger& log)
-:log_(log)
-,num_(0)
+TextureUnit::TextureUnit()
+:num_(0)
 {
   glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &this->num_);
   this->activeTextures_.reserve(this->num_);
-  this->log_.debug("%d Texture units.", this->num_);
 }
 
 TextureUnit::~TextureUnit() {
@@ -24,6 +22,10 @@ TextureUnit::~TextureUnit() {
 
 int TextureUnit::bind(std::shared_ptr<Texture2D> const& tex) {
   return 0;
+}
+
+std::shared_ptr<TextureUnit> TextureUnit::create() {
+  return util::make_shared<TextureUnit>();
 }
 
 }

@@ -28,4 +28,6 @@ public: // deleted methods
   Binder& operator=(Binder const&) = delete;
 };
 
+template <typename T> GLenum enumOf();
+
 }

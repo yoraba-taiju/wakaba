@@ -49,4 +49,4 @@ add_executable(wakaba
         gl/vertex/Buffer.cpp
         gl/vertex/Buffer.hpp
         gl/vertex/IndexBuffer.cpp
-        gl/vertex/IndexBuffer.hpp gl/Error.cpp gl/Error.hpp)
+        gl/vertex/IndexBuffer.hpp gl/Error.cpp gl/Error.hpp gl/RenderContext.cpp gl/RenderContext.hpp)

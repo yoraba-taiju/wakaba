@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <vector>
+#include "../../util/SharedUtil.hpp"
 
 namespace util {
 class Logger;
@@ -17,18 +18,25 @@ class Texture2D;
 
 class TextureUnit final {
 private:
-  util::Logger& log_;
   int num_;
   std::vector<std::shared_ptr<Texture2D>> activeTextures_;
+  TextureUnit();
 
-  explicit TextureUnit(util::Logger& log);
 public:
-  TextureUnit() = delete;
+  ~TextureUnit() noexcept;
+
+public:
   int bind(std::shared_ptr<Texture2D> const& tex);
   bool release(std::shared_ptr<Texture2D> const& tex);
+
+public:
   void activate();
   void deactivate();
-  ~TextureUnit();
+
+public:
+  static std::shared_ptr<TextureUnit> create();
+public:
+  ENABLE_SHARED_HELPER
 };
 
 }
