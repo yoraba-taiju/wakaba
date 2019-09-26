@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include "../util/SharedUtil.hpp"
 
 namespace gl {
 
@@ -20,10 +21,21 @@ private:
   std::shared_ptr<IndexBuffer> indicies_;
 public:
   DrawContext(std::shared_ptr<Program> program);
-  ~DrawContext() = default;
-  void draw();
-  void attach(std::string const& attrName, std::shared_ptr<ArrayBuffer> buffer);
-  void attach(std::shared_ptr<IndexBuffer> indicies);
-};
 
+  ~DrawContext() = default;
+
+  void draw();
+
+  void attach(std::string const &attrName, std::shared_ptr<ArrayBuffer> buffer);
+
+  void attach(std::shared_ptr<IndexBuffer> indicies);
+
+  template<typename... Args>
+  static std::shared_ptr<DrawContext> create(Args &&...arg) {
+    return util::make_shared<DrawContext>(std::forward<Args>(arg)...);
+  }
+
+public:
+  ENABLE_SHARED_HELPER
+};
 }

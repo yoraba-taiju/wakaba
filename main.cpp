@@ -8,6 +8,10 @@
 #include "gl/texture/TextureUnit.hpp"
 #include "gl/vertex/ArrayBuffer.hpp"
 #include "gl/vertex/IndexBuffer.hpp"
+#include "gl/program/VertexShader.hpp"
+#include "gl/program/FragmentShader.hpp"
+#include "gl/program/Program.hpp"
+#include "gl/DrawContext.hpp"
 
 static int _main(util::Logger& log);
 
@@ -72,14 +76,21 @@ static int _main(util::Logger& log) {
   indices->set(std::vector<uint16_t >{{
     0, 1, 2
   }});
-  
+
+  std::shared_ptr<gl::VertexShader> vs = gl::VertexShader::compile(log, "");
+  std::shared_ptr<gl::FragmentShader> fs = gl::FragmentShader::compile(log, "");
+  std::shared_ptr<gl::Program> program = gl::Program::link(log, vs, fs);
+
+  std::shared_ptr<gl::DrawContext> ctx = gl::DrawContext::create(program);
+  ctx->attach(indices);
+  ctx->attach("position", triangle);
 
   do {
     // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Draw nothing, see you in tutorial 2 !
-    indices->draw();
+    ctx->draw();
     
     // Swap buffers
     glfwSwapBuffers(window);
