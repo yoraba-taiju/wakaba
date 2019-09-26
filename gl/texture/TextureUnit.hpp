@@ -6,7 +6,7 @@
 
 #include <memory>
 #include <vector>
-#include "../../util/SharedUtil.hpp"
+#include "../../util/Shared.hpp"
 
 namespace util {
 class Logger;

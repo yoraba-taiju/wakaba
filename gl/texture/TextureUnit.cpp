@@ -15,7 +15,7 @@ TextureUnit::TextureUnit()
   this->activeTextures_.reserve(this->num_);
 }
 
-TextureUnit::~TextureUnit() {
+TextureUnit::~TextureUnit() noexcept {
   this->activeTextures_.resize(0);
   this->num_ = 0;
 }

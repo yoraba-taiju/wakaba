@@ -17,5 +17,9 @@ std::shared_ptr<FragmentShader> FragmentShader::compile(util::Logger &log, std::
   return util::make_shared<FragmentShader>(id);
 }
 
+std::shared_ptr<FragmentShader> FragmentShader::compileFromFile(util::Logger &log, std::string const& fileName) {
+  GLuint const id = Shader::compileFromFile(log, GL_FRAGMENT_SHADER, fileName);
+  return util::make_shared<FragmentShader>(id);
+}
 
 }

@@ -6,7 +6,8 @@
 
 #include <memory>
 #include <unordered_map>
-#include "../util/SharedUtil.hpp"
+#include "../util/Shared.hpp"
+#include "vertex/VertexArray.hpp"
 
 namespace gl {
 
@@ -16,11 +17,12 @@ class IndexBuffer;
 
 class DrawContext final : public std::enable_shared_from_this<DrawContext> {
 private:
+  std::shared_ptr<VertexArray> vertexArray_;
   std::shared_ptr<Program> program_;
   std::unordered_map<int, std::shared_ptr<ArrayBuffer>> buffers_;
   std::shared_ptr<IndexBuffer> indicies_;
 public:
-  DrawContext(std::shared_ptr<Program> program);
+  explicit DrawContext(std::shared_ptr<VertexArray> vertexArray, std::shared_ptr<Program> program);
 
   ~DrawContext() = default;
 
@@ -30,9 +32,8 @@ public:
 
   void attach(std::shared_ptr<IndexBuffer> indicies);
 
-  template<typename... Args>
-  static std::shared_ptr<DrawContext> create(Args &&...arg) {
-    return util::make_shared<DrawContext>(std::forward<Args>(arg)...);
+  static std::shared_ptr<DrawContext> create(std::shared_ptr<Program> const& program) {
+    return util::make_shared<DrawContext>(VertexArray::create(), program);
   }
 
 public:

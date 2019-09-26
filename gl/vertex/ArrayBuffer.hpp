@@ -8,7 +8,7 @@
 #include <GL/glew.h>
 
 #include "../Util.hpp"
-#include "../../util/SharedUtil.hpp"
+#include "../../util/Shared.hpp"
 
 namespace gl {
 

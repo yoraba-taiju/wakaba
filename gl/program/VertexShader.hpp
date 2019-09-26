@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "Shader.hpp"
-#include "../../util/SharedUtil.hpp"
+#include "../../util/Shared.hpp"
 
 namespace gl {
 
@@ -15,7 +15,8 @@ class VertexShader final : public Shader {
 private:
   explicit VertexShader(GLuint id);
 public:
-  static std::shared_ptr<VertexShader> compile(util::Logger& log, std::string const& src);
+  static std::shared_ptr<VertexShader> compile(util::Logger &log, std::string const& src);
+  static std::shared_ptr<VertexShader> compileFromFile(util::Logger &log, std::string const& fileName);
 private:
   ENABLE_SHARED_HELPER
 };

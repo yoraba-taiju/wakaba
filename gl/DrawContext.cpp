@@ -12,6 +12,7 @@
 namespace gl {
 
 void DrawContext::draw() {
+  Binder vao_(this->vertexArray_);
   Binder prg_(this->program_);
   for(auto const& it : this->buffers_) {
     Binder buf_(it.second);
@@ -25,8 +26,9 @@ void DrawContext::draw() {
   this->indicies_->draw();
 }
 
-DrawContext::DrawContext(std::shared_ptr<Program> program)
-:program_(std::move(program))
+DrawContext::DrawContext(std::shared_ptr<VertexArray> vertexArray, std::shared_ptr<Program> program)
+:vertexArray_(std::move(vertexArray))
+,program_(std::move(program))
 {
 }
 

@@ -77,11 +77,12 @@ static int _main(util::Logger& log) {
     0, 1, 2
   }});
 
-  std::shared_ptr<gl::VertexShader> vs = gl::VertexShader::compile(log, "");
-  std::shared_ptr<gl::FragmentShader> fs = gl::FragmentShader::compile(log, "");
+  std::shared_ptr<gl::VertexShader> vs = gl::VertexShader::compileFromFile(log, "_resources/shaders/triangle.vs");
+  std::shared_ptr<gl::FragmentShader> fs = gl::FragmentShader::compileFromFile(log, "_resources/shaders/triangle.fs");
   std::shared_ptr<gl::Program> program = gl::Program::link(log, vs, fs);
 
   std::shared_ptr<gl::DrawContext> ctx = gl::DrawContext::create(program);
+
   ctx->attach(indices);
   ctx->attach("position", triangle);
 

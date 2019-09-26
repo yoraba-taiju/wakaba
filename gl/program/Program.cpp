@@ -23,7 +23,9 @@ std::shared_ptr<Program> Program::link(util::Logger& log, std::shared_ptr<Vertex
   if(result == GL_FALSE) {
     log.fatal(err);
   }else{
-    log.debug(err);
+    if(!err.empty()) {
+      log.debug(err);
+    }
   }
   return util::make_shared<Program>(id);
 }

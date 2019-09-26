@@ -6,17 +6,13 @@
 
 #include <string>
 #include <exception>
+#include <stdexcept>
 
 namespace gl {
 
-class Error final : public std::exception {
-private:
-  std::string msg_;
+class Error final : public std::runtime_error {
 public:
-  explicit Error(std::string err);
-  virtual ~Error() noexcept override;
-  virtual const char* what() const noexcept override;
-
+  explicit Error(std::string const &err);
 };
 
 }

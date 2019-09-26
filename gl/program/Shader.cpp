@@ -6,11 +6,21 @@
 #include <vector>
 
 #include "Shader.hpp"
+#include "../../util/File.hpp"
 
 namespace gl {
 
+
+Shader::~Shader() {
+  glDeleteShader(this->id_);
+}
+
 GLuint Shader::compile(util::Logger& log, GLenum const target, std::string const& src) {
-  GLuint id = glCreateShader(target);
+  GLuint const id = glCreateShader(target);
+  auto cstr = src.c_str();
+  glShaderSource(id, 1, &cstr, nullptr);
+  glCompileShader(id);
+  
   GLint result = GL_FALSE;
   int infoLogLength = 0;
   glGetShaderiv(id, GL_COMPILE_STATUS, &result);
@@ -28,8 +38,9 @@ GLuint Shader::compile(util::Logger& log, GLenum const target, std::string const
   return id;
 }
 
-Shader::~Shader() {
-  glDeleteShader(this->id_);
+GLuint Shader::compileFromFile(util::Logger &log, GLenum target, std::string const& fileName) {
+  std::string src = util::readAllFromFile(fileName);
+  return Shader::compile(log, target, src);
 }
 
 }

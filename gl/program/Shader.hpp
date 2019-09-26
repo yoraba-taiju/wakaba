@@ -15,7 +15,10 @@ protected:
 protected:
   explicit Shader(GLuint const id):id_(id) {
   }
-  static GLuint compile(util::Logger& log, GLenum target, std::string const& src);
+
+  static GLuint compile(util::Logger &log, GLenum target, std::string const &src);
+  static GLuint compileFromFile(util::Logger &log, GLenum target, std::string const& fileName);
+
   ~Shader();
 public:
   Shader() = delete;

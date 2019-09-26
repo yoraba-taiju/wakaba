@@ -6,7 +6,7 @@
 
 #include <GL/glew.h>
 #include <memory>
-#include "../../util/SharedUtil.hpp"
+#include "../../util/Shared.hpp"
 
 namespace gl {
 

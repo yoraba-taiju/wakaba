@@ -23,7 +23,7 @@ include_directories(external/tinyformat)
 
 add_executable(wakaba
         main.cpp
-        util/SharedUtil.hpp
+        util/Shared.hpp
         util/Logger.cpp
         util/Logger.hpp
         donut/runtime/Value.hpp
@@ -47,4 +47,4 @@ add_executable(wakaba
         gl/vertex/ArrayBuffer.cpp
         gl/vertex/ArrayBuffer.hpp
         gl/vertex/IndexBuffer.cpp
-        gl/vertex/IndexBuffer.hpp gl/Error.cpp gl/Error.hpp gl/DrawContext.cpp gl/DrawContext.hpp)
+        gl/vertex/IndexBuffer.hpp gl/Error.cpp gl/Error.hpp gl/DrawContext.cpp gl/DrawContext.hpp util/File.hpp util/File.cpp gl/vertex/VertexArray.cpp gl/vertex/VertexArray.hpp)

@@ -5,7 +5,7 @@
 #pragma once
 
 #include <memory>
-#include "../../util/SharedUtil.hpp"
+#include "../../util/Shared.hpp"
 #include "VertexShader.hpp"
 #include "FragmentShader.hpp"
 
