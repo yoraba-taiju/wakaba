@@ -10,8 +10,8 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 link_libraries(${OPENGL_LIBRARIES})
 # GLEW
 find_package(GLEW REQUIRED)
-include_directories(${GLEW_INCLUDE_DIRS})
-link_libraries(${GLEW_LIBRARIES})
+include_directories(GLEW::GLEW ${GLEW_INCLUDE_DIRS})
+link_libraries(GLEW::GLEW ${GLEW_LIBRARIES})
 # GLFW
 add_subdirectory(external/glfw)
 include_directories(external/glfw/include)
@@ -26,12 +26,16 @@ add_executable(wakaba
         util/Shared.hpp
         util/Logger.cpp
         util/Logger.hpp
+        util/File.hpp
+        util/File.cpp
         donut/runtime/Value.hpp
         donut/runtime/Value.cpp
         taiju/Taiju.cpp
         taiju/Taiju.hpp
         gl/Util.hpp
         gl/Util.cpp
+        gl/Error.cpp
+        gl/Error.hpp
         gl/texture/Texture2D.cpp
         gl/texture/Texture2D.hpp
         gl/texture/TextureUnit.cpp
@@ -47,4 +51,8 @@ add_executable(wakaba
         gl/vertex/ArrayBuffer.cpp
         gl/vertex/ArrayBuffer.hpp
         gl/vertex/IndexBuffer.cpp
-        gl/vertex/IndexBuffer.hpp gl/Error.cpp gl/Error.hpp gl/DrawContext.cpp gl/DrawContext.hpp util/File.hpp util/File.cpp gl/vertex/VertexArray.cpp gl/vertex/VertexArray.hpp)
+        gl/vertex/IndexBuffer.hpp
+        gl/DrawContext.cpp
+        gl/DrawContext.hpp
+        gl/vertex/VertexArray.cpp
+        gl/vertex/VertexArray.hpp)
