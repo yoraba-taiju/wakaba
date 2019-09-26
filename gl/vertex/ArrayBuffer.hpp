@@ -11,17 +11,14 @@
 
 namespace gl {
 
-class ArrayBuffer final : public Buffer, public std::enable_shared_from_this<ArrayBuffer> {
+class ArrayBuffer final : public Buffer<GL_ARRAY_BUFFER>, public std::enable_shared_from_this<ArrayBuffer> {
 public:
-  explicit ArrayBuffer(GLuint const id): Buffer(id){}
+  explicit ArrayBuffer(GLuint const id): Buffer<GL_ARRAY_BUFFER>(id){}
   ~ArrayBuffer() = default;
   template <typename T>
   void set(std::vector<T> const& value) {
-    Binder _(this);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(T), value.data(), GL_STATIC_DRAW);
+    this->setImpl<T>(value);
   }
-  void bind();
-  void unbind();
   static std::shared_ptr<ArrayBuffer> create();
 public:
   ENABLE_SHARED_HELPER;

@@ -6,14 +6,6 @@
 
 namespace gl {
 
-void ArrayBuffer::bind() {
-  glBindBuffer(GL_ARRAY_BUFFER, this->id());
-}
-
-void ArrayBuffer::unbind() {
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
 std::shared_ptr<ArrayBuffer> ArrayBuffer::create() {
   GLuint id;
   glGenBuffers(1, &id);

@@ -9,12 +9,22 @@
 #include "gl/vertex/ArrayBuffer.hpp"
 #include "gl/vertex/IndexBuffer.hpp"
 
-GLFWwindow *window;
-util::Logger log;
+static int _main(util::Logger& log);
 
 int main() {
-  log.setLevel(util::Logger::DEBUG);
+  util::Logger log;
 
+  log.setLevel(util::Logger::DEBUG);
+  try {
+    return _main(log);
+  } catch (std::exception& e) {
+    fputs(e.what(), stderr);
+    return -255;
+  }
+}
+
+static int _main(util::Logger& log) {
+  GLFWwindow *window;
   // Initialise GLFW
   if (!glfwInit()) {
     log.fatal("Failed to initialize GLFW");
@@ -31,21 +41,19 @@ int main() {
   // Open a window and create its OpenGL context
   window = glfwCreateWindow(1920, 1080, "YorabaTaiju", nullptr, nullptr);
   if (window == nullptr) {
-    fprintf(stderr,
-            "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
-    getchar();
     glfwTerminate();
+    log.fatal("Failed to open GLFW window.");
     return -1;
   }
   glfwMakeContextCurrent(window);
 
   // Initialize GLEW
   if (glewInit() != GLEW_OK) {
-    fprintf(stderr, "Failed to initialize GLEW\n");
-    getchar();
     glfwTerminate();
+    log.fatal("Failed to initialize GLEW.");
     return -1;
   }
+  log.debug("GLEW Initialized.");
 
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
@@ -60,8 +68,8 @@ int main() {
     +0.0f, +0.5f, 0.0f
   }});
   
-  std::shared_ptr<gl::IndexBuffer> indecies = gl::IndexBuffer::create();
-  indecies->set(std::vector<GLfloat>{{
+  std::shared_ptr<gl::IndexBuffer> indices = gl::IndexBuffer::create();
+  indices->set(std::vector<uint16_t >{{
     0, 1, 2
   }});
   
@@ -71,9 +79,8 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Draw nothing, see you in tutorial 2 !
-    // glDrawElements(GL_TRIANGLES, );
-
-
+    indices->draw();
+    
     // Swap buffers
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -84,6 +91,6 @@ int main() {
 
   // Close OpenGL window and terminate GLFW
   glfwTerminate();
-
   return 0;
 }
+

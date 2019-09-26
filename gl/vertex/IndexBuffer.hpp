@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <vector>
 #include <GL/glew.h>
 #include "Buffer.hpp"
 #include "../Util.hpp"
@@ -11,20 +12,17 @@
 
 namespace gl {
 
-class IndexBuffer final : public Buffer, public std::enable_shared_from_this<IndexBuffer> {
+class IndexBuffer final : public Buffer<GL_ELEMENT_ARRAY_BUFFER>, public std::enable_shared_from_this<IndexBuffer> {
+private:
+  size_t length_;
 public:
-  explicit IndexBuffer(GLuint const id): Buffer(id){}
+  explicit IndexBuffer(GLuint const id): Buffer<GL_ELEMENT_ARRAY_BUFFER>(id){}
   ~IndexBuffer() = default;
 
 public:
-  template <typename T>
-  void set(std::vector<T> const& value) {
-    Binder _(this);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(T), value.data(), GL_STATIC_DRAW);
-  }
-  void bind();
-  void unbind();
+  void set(std::vector<uint16_t> const& value);
   static std::shared_ptr<IndexBuffer> create();
+  void draw();
 public:
   ENABLE_SHARED_HELPER;
 };

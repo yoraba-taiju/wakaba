@@ -14,8 +14,8 @@ void checkError() noexcept(false) {
   if (err == GL_NO_ERROR) {
     return;
   }
-  std::string msg = reinterpret_cast<const char *>(glewGetErrorString(err));
-  throw Error(std::move(msg));
+  std::string msg = reinterpret_cast<const char *>(gluErrorString(err));
+  throw Error("[OpenGL Error: \""+std::move(msg)+"\"]");
 }
 
 }

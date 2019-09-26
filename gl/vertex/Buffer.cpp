@@ -7,13 +7,4 @@
 
 namespace gl {
 
-Buffer::Buffer(GLuint const id)
-    : id_(id) {
-
-}
-
-Buffer::~Buffer() {
-  glDeleteBuffers(1, &this->id_);
-}
-
 }
