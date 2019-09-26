@@ -6,6 +6,8 @@
 
 #include "util/Logger.hpp"
 #include "gl/texture/TextureUnit.hpp"
+#include "gl/vertex/ArrayBuffer.hpp"
+#include "gl/vertex/IndexBuffer.hpp"
 
 GLFWwindow *window;
 util::Logger log;
@@ -21,8 +23,8 @@ int main() {
   log.debug("GLFW Initialized.");
 
   glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -51,12 +53,25 @@ int main() {
   // Dark blue background
   glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
+  std::shared_ptr<gl::ArrayBuffer> triangle = gl::ArrayBuffer::create();
+  triangle->set(std::vector<GLfloat>{{
+    +0.5f, -0.5f, 0.0f,
+    -0.5f, -0.5f, 0.0f,
+    +0.0f, +0.5f, 0.0f
+  }});
+  
+  std::shared_ptr<gl::IndexBuffer> indecies = gl::IndexBuffer::create();
+  indecies->set(std::vector<GLfloat>{{
+    0, 1, 2
+  }});
+  
 
   do {
     // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Draw nothing, see you in tutorial 2 !
+    // glDrawElements(GL_TRIANGLES, );
 
 
     // Swap buffers

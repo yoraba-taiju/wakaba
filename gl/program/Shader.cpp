@@ -21,7 +21,9 @@ GLuint Shader::compile(util::Logger& log, GLenum const target, std::string const
   if(result == GL_FALSE) {
     log.fatal(err);
   }else{
-    log.debug(err);
+    if(!err.empty()) {
+      log.debug(err);
+    }
   }
   return id;
 }

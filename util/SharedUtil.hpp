@@ -9,8 +9,9 @@
 namespace util {
 
 
-#define ENABLE_SHARED_HELPER template<typename X> friend struct util::shared_helper;
-template<typename X>
+#define ENABLE_SHARED_HELPER template <typename X> friend struct util::shared_helper;
+
+  template<typename X>
 struct shared_helper {
 private:
   friend X;

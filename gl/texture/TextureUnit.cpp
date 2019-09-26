@@ -3,6 +3,9 @@
 //
 
 #include "TextureUnit.hpp"
+#include "Texture2D.hpp"
+#include "../../util/Logger.hpp"
+
 namespace gl {
 
 TextureUnit::TextureUnit(util::Logger& log)
@@ -19,8 +22,7 @@ TextureUnit::~TextureUnit() {
   this->num_ = 0;
 }
 
-int TextureUnit::bind(std::shared_ptr<Texture> const& tex) {
-
+int TextureUnit::bind(std::shared_ptr<Texture2D> const& tex) {
   return 0;
 }
 

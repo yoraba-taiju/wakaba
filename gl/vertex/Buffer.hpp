@@ -4,12 +4,16 @@
 
 #pragma once
 
+#include <memory>
 #include <GL/glew.h>
 
 namespace gl {
 
+class BufferPool;
+
 class Buffer {
 private:
+  std::shared_ptr<BufferPool> const pool_;
   GLuint const id_;
 protected:
   explicit Buffer(GLuint id);

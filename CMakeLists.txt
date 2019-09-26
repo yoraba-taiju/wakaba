@@ -30,10 +30,10 @@ add_executable(wakaba
         donut/runtime/Value.cpp
         taiju/Taiju.cpp
         taiju/Taiju.hpp
-        gl/texture/Texture.cpp
-        gl/texture/Texture.hpp
-        gl/texture/TexturePool.cpp
-        gl/texture/TexturePool.hpp
+        gl/Util.hpp
+        gl/Util.cpp
+        gl/texture/Texture2D.cpp
+        gl/texture/Texture2D.hpp
         gl/texture/TextureUnit.cpp
         gl/texture/TextureUnit.hpp
         gl/program/Program.cpp
@@ -44,8 +44,9 @@ add_executable(wakaba
         gl/program/VertexShader.hpp
         gl/program/Shader.cpp
         gl/program/Shader.hpp
-        gl/vertex/VertexBuffer.cpp
-        gl/vertex/VertexBuffer.hpp
+        gl/vertex/ArrayBuffer.cpp
+        gl/vertex/ArrayBuffer.hpp
         gl/vertex/Buffer.cpp
         gl/vertex/Buffer.hpp
-        )
+        gl/vertex/IndexBuffer.cpp
+        gl/vertex/IndexBuffer.hpp gl/Error.cpp gl/Error.hpp)
