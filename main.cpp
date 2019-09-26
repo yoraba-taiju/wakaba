@@ -61,8 +61,8 @@ static int _main(util::Logger& log) {
   // Dark blue background
   glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-  std::shared_ptr<gl::ArrayBuffer<GLfloat>> triangle = gl::ArrayBuffer<GLfloat>::create();
-  triangle->set(std::vector<GLfloat>{{
+  std::shared_ptr<gl::ArrayBuffer> triangle = gl::ArrayBuffer::create();
+  triangle->set(3, std::vector<GLfloat>{{
     +0.5f, -0.5f, 0.0f,
     -0.5f, -0.5f, 0.0f,
     +0.0f, +0.5f, 0.0f

@@ -11,7 +11,7 @@ link_libraries(${OPENGL_LIBRARIES})
 # GLEW
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
-link_libraries(${GLEW_LIBRARY})
+link_libraries(${GLEW_LIBRARIES})
 # GLFW
 add_subdirectory(external/glfw)
 include_directories(external/glfw/include)
@@ -46,7 +46,5 @@ add_executable(wakaba
         gl/program/Shader.hpp
         gl/vertex/ArrayBuffer.cpp
         gl/vertex/ArrayBuffer.hpp
-        gl/vertex/Buffer.cpp
-        gl/vertex/Buffer.hpp
         gl/vertex/IndexBuffer.cpp
-        gl/vertex/IndexBuffer.hpp gl/Error.cpp gl/Error.hpp gl/RenderContext.cpp gl/RenderContext.hpp)
+        gl/vertex/IndexBuffer.hpp gl/Error.cpp gl/Error.hpp gl/DrawContext.cpp gl/DrawContext.hpp)

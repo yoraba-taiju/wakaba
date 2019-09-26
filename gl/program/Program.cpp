@@ -3,6 +3,7 @@
 //
 
 #include "Program.hpp"
+#include "../Util.hpp"
 
 namespace gl {
 
@@ -33,6 +34,20 @@ Program::Program(GLuint id):id_(id) {
 
 Program::~Program() {
   glDeleteProgram(this->id_);
+}
+
+void Program::bind() {
+  glUseProgram(this->id());
+}
+
+void Program::unbind() noexcept {
+  glUseProgram(0);
+}
+
+int Program::attribLoc(std::string const& name) {
+  int const pos = glGetAttribLocation(this->id(), name.c_str());
+  checkError();
+  return pos;
 }
 
 }

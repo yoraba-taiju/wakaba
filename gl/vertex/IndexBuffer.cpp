@@ -15,12 +15,8 @@ std::shared_ptr<IndexBuffer> IndexBuffer::create() {
 }
 
 void IndexBuffer::draw() {
-  glDrawElements(GL_TRIANGLES, this->length_, GL_UNSIGNED_SHORT, nullptr);
+  glDrawElements(GL_TRIANGLES, this->size(), GL_UNSIGNED_SHORT, nullptr);
   checkError();
-}
-
-void IndexBuffer::set(std::vector<uint16_t> const& value) {
-  this->setImpl(value);
 }
 
 }
