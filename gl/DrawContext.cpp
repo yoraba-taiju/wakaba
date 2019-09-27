@@ -21,9 +21,9 @@ void DrawContext::draw() {
     glVertexAttribPointer(it.first, it.second->stride(), it.second->glType(), false, 0, nullptr);
     checkError();
   }
-  Binder ind_(this->indicies_);
+  Binder ind_(this->indices_);
 
-  this->indicies_->draw();
+  this->indices_->draw();
 }
 
 DrawContext::DrawContext(std::shared_ptr<VertexArray> vertexArray, std::shared_ptr<Program> program)
@@ -37,8 +37,8 @@ void DrawContext::attach(std::string const& attrName, std::shared_ptr<ArrayBuffe
   this->buffers_.insert_or_assign(pos, std::move(buffer));
 }
 
-void DrawContext::attach(std::shared_ptr<IndexBuffer> indicies) {
-  this->indicies_ = std::move(indicies);
+void DrawContext::attach(std::shared_ptr<IndexBuffer> indices) {
+  this->indices_ = std::move(indices);
 }
 
 }

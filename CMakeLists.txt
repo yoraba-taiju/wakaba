@@ -16,6 +16,9 @@ link_libraries(GLEW::GLEW ${GLEW_LIBRARIES})
 add_subdirectory(external/glfw)
 include_directories(external/glfw/include)
 link_libraries(glfw ${GLFW_LIBRARIES})
+# GLM
+add_subdirectory(external/glm)
+include_directories(external/glm)
 ###############################################################################
 # TinyFormat
 include_directories(external/tinyformat)

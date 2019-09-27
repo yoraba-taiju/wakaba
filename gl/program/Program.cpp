@@ -52,4 +52,10 @@ int Program::attribLoc(std::string const& name) {
   return pos;
 }
 
+int Program::uniformLoc(std::string const& name) {
+  int const pos = glGetUniformLocation(this->id(), name.c_str());
+  checkError();
+  return pos;
+}
+
 }

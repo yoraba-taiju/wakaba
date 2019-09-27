@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <glm/glm.hpp>
 #include "../util/Shared.hpp"
 #include "vertex/VertexArray.hpp"
 
@@ -20,7 +21,7 @@ private:
   std::shared_ptr<VertexArray> vertexArray_;
   std::shared_ptr<Program> program_;
   std::unordered_map<int, std::shared_ptr<ArrayBuffer>> buffers_;
-  std::shared_ptr<IndexBuffer> indicies_;
+  std::shared_ptr<IndexBuffer> indices_;
 public:
   explicit DrawContext(std::shared_ptr<VertexArray> vertexArray, std::shared_ptr<Program> program);
 
@@ -29,8 +30,7 @@ public:
   void draw();
 
   void attach(std::string const &attrName, std::shared_ptr<ArrayBuffer> buffer);
-
-  void attach(std::shared_ptr<IndexBuffer> indicies);
+  void attach(std::shared_ptr<IndexBuffer> indices);
 
   static std::shared_ptr<DrawContext> create(std::shared_ptr<Program> const& program) {
     return util::make_shared<DrawContext>(VertexArray::create(), program);

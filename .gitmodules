@@ -4,3 +4,6 @@
 [submodule "external/tinyformat"]
 	path = external/tinyformat
 	url = git@github.com:c42f/tinyformat.git
+[submodule "external/glm"]
+	path = external/glm
+	url = git@github.com:g-truc/glm.git
