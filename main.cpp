@@ -22,7 +22,7 @@ int main() {
   try {
     return _main(log);
   } catch (std::exception& e) {
-    fputs(e.what(), stderr);
+    fprintf(stderr, "Unhandled exception: \"%s\"\n", e.what());
     return -255;
   }
 }
