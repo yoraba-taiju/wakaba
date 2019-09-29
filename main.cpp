@@ -41,6 +41,7 @@ static int _main(util::Logger& log) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_RESIZABLE, 0);
 
   // Open a window and create its OpenGL context
   window = glfwCreateWindow(1920, 1080, "YorabaTaiju", nullptr, nullptr);
