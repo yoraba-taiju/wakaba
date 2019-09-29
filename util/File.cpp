@@ -11,7 +11,7 @@
 namespace util {
 
 std::string readAllFromFile(std::string const& fileName) noexcept(false) {
-  std::uintmax_t fileSize = std::filesystem::file_size(fileName);
+  std::uintmax_t const fileSize = std::filesystem::file_size(fileName);
   FILE* const file = fopen(fileName.c_str(), "rb");
   if(!file) {
     std::error_code err = std::make_error_code(static_cast<std::errc>(errno));
