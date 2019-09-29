@@ -11,9 +11,9 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
 link_libraries(${OPENGL_LIBRARIES})
 # GLEW
-find_package(GLEW REQUIRED)
-include_directories(GLEW::GLEW ${GLEW_INCLUDE_DIRS})
-link_libraries(GLEW::GLEW ${GLEW_LIBRARIES})
+add_subdirectory(external/glew-2.1.0/build/cmake)
+include_directories(external/glew-2.1.0/include)
+link_libraries(glew_s)
 # GLFW
 add_subdirectory(external/glfw)
 include_directories(external/glfw/include)
