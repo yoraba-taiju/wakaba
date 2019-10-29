@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <GL/glew.h>
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <memory>
 
@@ -12,6 +13,7 @@
 #include "gl/program/FragmentShader.hpp"
 #include "gl/program/Program.hpp"
 #include "gl/DrawContext.hpp"
+#include "vk/Vulkan.hpp"
 
 static int _main(util::Logger& log);
 
@@ -35,6 +37,14 @@ static int _main(util::Logger& log) {
     return -1;
   }
   log.debug("GLFW Initialized.");
+
+  if (!glfwVulkanSupported()) {
+    log.fatal("Vulkan not supported");
+    return -1;
+  }
+  log.debug("Vulkan is supported.");
+
+  std::shared_ptr<vk::Vulkan> vulkan = vk::Vulkan::createInstance("YorabaTaiju");
 
   glfwWindowHint(GLFW_SAMPLES, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -63,8 +73,8 @@ static int _main(util::Logger& log) {
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-  // Dark blue background
-  glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+  // background color.
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
   std::shared_ptr<gl::ArrayBuffer> triangle = gl::ArrayBuffer::create();
   triangle->set(3, std::vector<GLfloat>{{
@@ -96,10 +106,9 @@ static int _main(util::Logger& log) {
   ctx->attach("color", color);
 
   do {
-    // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
+    // clear background.
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Draw nothing, see you in tutorial 2 !
     ctx->draw();
     
     // Swap buffers

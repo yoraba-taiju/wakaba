@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.13)
 project(wakaba)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -12,6 +12,10 @@ endif (UNIX)
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIRS})
 link_libraries(${OPENGL_LIBRARIES})
+# Vulkan
+find_package(Vulkan REQUIRED)
+include_directories(Vulkan::Vulkan)
+link_libraries(Vulkan::Vulkan)
 # GLEW
 add_subdirectory(external/glew-2.1.0/build/cmake)
 include_directories(external/glew-2.1.0/include)
@@ -62,4 +66,9 @@ add_executable(wakaba
     gl/DrawContext.cpp
     gl/DrawContext.hpp
     gl/vertex/VertexArray.cpp
-    gl/vertex/VertexArray.hpp)
+    gl/vertex/VertexArray.hpp
+    taiju/scene/Scene.cpp
+    taiju/scene/Scene.hpp
+    taiju/scenes/TriangleScene.cpp
+    taiju/scenes/TriangleScene.hpp
+    vk/Vulkan.cpp vk/Vulkan.hpp vk/Util.cpp vk/Util.hpp)
