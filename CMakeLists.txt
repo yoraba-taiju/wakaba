@@ -47,4 +47,10 @@ add_executable(wakaba
     taiju/scene/Scene.hpp
     taiju/scenes/TriangleScene.cpp
     taiju/scenes/TriangleScene.hpp
-    vk/Vulkan.cpp vk/Vulkan.hpp vk/Util.cpp vk/Util.hpp vk/VulkanBuilder.cpp vk/VulkanBuilder.hpp)
+    vk/Util.cpp
+    vk/Util.hpp
+    vk/Vulkan.cpp
+    vk/Vulkan.hpp
+    vk/VulkanBuilder.cpp
+    vk/VulkanBuilder.hpp
+    )
