@@ -43,30 +43,6 @@ add_executable(wakaba
     donut/runtime/Value.cpp
     taiju/Taiju.cpp
     taiju/Taiju.hpp
-    gl/Util.hpp
-    gl/Util.cpp
-    gl/Error.cpp
-    gl/Error.hpp
-    gl/texture/Texture2D.cpp
-    gl/texture/Texture2D.hpp
-    gl/texture/TextureUnit.cpp
-    gl/texture/TextureUnit.hpp
-    gl/program/Program.cpp
-    gl/program/Program.hpp
-    gl/program/FragmentShader.cpp
-    gl/program/FragmentShader.hpp
-    gl/program/VertexShader.cpp
-    gl/program/VertexShader.hpp
-    gl/program/Shader.cpp
-    gl/program/Shader.hpp
-    gl/vertex/ArrayBuffer.cpp
-    gl/vertex/ArrayBuffer.hpp
-    gl/vertex/IndexBuffer.cpp
-    gl/vertex/IndexBuffer.hpp
-    gl/DrawContext.cpp
-    gl/DrawContext.hpp
-    gl/vertex/VertexArray.cpp
-    gl/vertex/VertexArray.hpp
     taiju/scene/Scene.cpp
     taiju/scene/Scene.hpp
     taiju/scenes/TriangleScene.cpp
