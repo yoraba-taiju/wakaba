@@ -6,14 +6,8 @@
 #include <memory>
 
 #include "util/Logger.hpp"
-#include "gl/texture/TextureUnit.hpp"
-#include "gl/vertex/ArrayBuffer.hpp"
-#include "gl/vertex/IndexBuffer.hpp"
-#include "gl/program/VertexShader.hpp"
-#include "gl/program/FragmentShader.hpp"
-#include "gl/program/Program.hpp"
-#include "gl/DrawContext.hpp"
 #include "vk/Vulkan.hpp"
+#include "vk/Util.hpp"
 
 static int _main(util::Logger& log);
 
@@ -44,80 +38,34 @@ static int _main(util::Logger& log) {
   }
   log.debug("Vulkan is supported.");
 
-  std::shared_ptr<vk::Vulkan> vulkan = vk::Vulkan::createInstance("YorabaTaiju");
-
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_RESIZABLE, 0);
-
-  // Open a window and create its OpenGL context
-  window = glfwCreateWindow(1920, 1080, "YorabaTaiju", nullptr, nullptr);
-  if (window == nullptr) {
-    glfwTerminate();
-    log.fatal("Failed to open GLFW window.");
-    return -1;
+  for (std::string const& extention : vk::enumurateRequiredInstanceExtensions()) {
+    log.debug("Vulkan Required Extention: %s", extention);
   }
-  glfwMakeContextCurrent(window);
 
-  // Initialize GLEW
-  if (glewInit() != GLEW_OK) {
-    glfwTerminate();
-    log.fatal("Failed to initialize GLEW.");
-    return -1;
+  std::vector<VkLayerProperties> props = vk::enumerateInstanceLayerProperties();
+  for(VkLayerProperties const& prop : props) {
+    log.debug("Layer: %s (spec=%d, impl=%d) :: %s",
+        prop.layerName,
+        prop.specVersion,
+        prop.implementationVersion,
+        prop.description);
   }
-  log.debug("GLEW Initialized.");
+
+
+  std::shared_ptr<vk::Vulkan> vulkan = vk::Vulkan::createInstance(log, "YorabaTaiju");
 
   // Ensure we can capture the escape key being pressed below
-  glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-
-  // background color.
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-  std::shared_ptr<gl::ArrayBuffer> triangle = gl::ArrayBuffer::create();
-  triangle->set(3, std::vector<GLfloat>{{
-    +0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f,
-    +0.0f, +0.5f, 0.0f
-  }});
-
-  std::shared_ptr<gl::ArrayBuffer> color = gl::ArrayBuffer::create();
-  color->set(3, std::vector<GLfloat>{{
-    1,0,0,
-    0,1,0,
-    0,0,1,
-  }});
-  
-  std::shared_ptr<gl::IndexBuffer> indices = gl::IndexBuffer::create();
-  indices->set(GL_TRIANGLES, std::vector<uint16_t >{{
-    0, 1, 2
-  }});
-
-  std::shared_ptr<gl::VertexShader> vs = gl::VertexShader::compileFromFile(log, "_resources/shaders/triangle.vs");
-  std::shared_ptr<gl::FragmentShader> fs = gl::FragmentShader::compileFromFile(log, "_resources/shaders/triangle.fs");
-  std::shared_ptr<gl::Program> program = gl::Program::link(log, vs, fs);
-
-  std::shared_ptr<gl::DrawContext> ctx = gl::DrawContext::create(program);
-
-  ctx->attach(indices);
-  ctx->attach("position", triangle);
-  ctx->attach("color", color);
+  glfwSetInputMode(vulkan->window(), GLFW_STICKY_KEYS, GL_TRUE);
 
   do {
-    // clear background.
-    glClear(GL_COLOR_BUFFER_BIT);
 
-    ctx->draw();
-    
     // Swap buffers
-    glfwSwapBuffers(window);
+    glfwSwapBuffers(vulkan->window());
     glfwPollEvents();
 
   } // Check if the ESC key was pressed or the window was closed
-  while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-         glfwWindowShouldClose(window) == 0);
+  while (glfwGetKey(vulkan->window(), GLFW_KEY_ESCAPE) != GLFW_PRESS &&
+         glfwWindowShouldClose(vulkan->window()) == 0);
 
   // Close OpenGL window and terminate GLFW
   glfwTerminate();

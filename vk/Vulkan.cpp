@@ -3,36 +3,70 @@
 //
 
 #include <memory>
+#include <vector>
 
 #include "Vulkan.hpp"
+#include "Util.hpp"
 
 namespace vk {
 
-std::shared_ptr<Vulkan> Vulkan::createInstance(std::string const& appName) {
-  VkInstanceCreateInfo instanceInfo{};
-  VkApplicationInfo appInfo{};
-  static const char* extensions[] =
-      {
-          VK_KHR_SURFACE_EXTENSION_NAME,
-          VK_EXT_DEBUG_REPORT_EXTENSION_NAME
-      };
-  static const char* layers[] = { "VK_LAYER_LUNARG_standard_validation" };
+//Builderみたいなのほしい
 
-  appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  appInfo.applicationVersion = VK_MAKE_VERSION(0, 0, 1);
-  appInfo.pApplicationName = appName.c_str();
-  appInfo.apiVersion = VK_API_VERSION_1_1;
-
-  instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-  instanceInfo.pApplicationInfo = &appInfo;
-  instanceInfo.enabledExtensionCount = std::size(extensions);
-  instanceInfo.ppEnabledExtensionNames = extensions;
-  instanceInfo.enabledLayerCount = std::size(layers);
-  instanceInfo.ppEnabledLayerNames = layers;
-
-  VkInstance instance;
+std::shared_ptr<Vulkan> Vulkan::createInstance(util::Logger& log, std::string const& appName) {
   auto v = util::make_shared<Vulkan>();
-  VkResult const res = vkCreateInstance(&instanceInfo, nullptr, &v->instance_);
+  {
+    // Open window
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    v->window_ = glfwCreateWindow(1920, 1080, "YorabaTaiju", nullptr, nullptr);
+
+    if (v->window_ == nullptr) {
+      glfwTerminate();
+      log.fatal("Failed to open GLFW window.");
+    }
+  }
+
+  {
+    // Initialize Vulkan;
+    VkInstanceCreateInfo instanceInfo{};
+    VkApplicationInfo appInfo{};
+
+    std::vector<std::string> const extensions =  enumurateRequiredInstanceExtensions();
+    const char* extensionNames[extensions.size()];
+    for(size_t i = 0; i < extensions.size(); ++i) {
+      extensionNames[i] = extensions[i].c_str();
+    }
+
+    std::vector<VkLayerProperties> layers = enumerateInstanceLayerProperties();
+    const char* layerNames[layers.size()];
+    for(size_t i = 0; i < layers.size(); ++i) {
+      layerNames[i] = layers[i].layerName;
+    }
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 1, 126);
+    appInfo.pApplicationName = appName.c_str();
+    appInfo.apiVersion = VK_API_VERSION_1_1;
+
+    instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    instanceInfo.pApplicationInfo = &appInfo;
+    instanceInfo.enabledExtensionCount = extensions.size();
+    instanceInfo.ppEnabledExtensionNames = extensionNames;
+    instanceInfo.enabledLayerCount = layers.size();
+    instanceInfo.ppEnabledLayerNames = layerNames;
+
+    VkResult const res = vkCreateInstance(&instanceInfo, nullptr, &v->instance_);
+    if(res != VK_SUCCESS) {
+      log.fatal("Failed to create Vulkan Instance");
+    }
+  }
+
+  {
+    // createWindowSurface
+    VkResult const res = glfwCreateWindowSurface 	(v->instance_, v->window_, nullptr, &v->surface_);
+    if(res != VK_SUCCESS) {
+      log.fatal("Failed to create Vulkan Surface");
+    }
+  }
+
   return std::move(v);
 }
 

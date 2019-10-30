@@ -4,10 +4,22 @@
 
 #pragma once
 
-class Taiju final{
-  Taiju();
-  void move();
+#include <memory>
+#include "scene/Scene.hpp"
+#include "../util/Logger.hpp"
+
+namespace taiju {
+
+class Taiju final {
+private:
+  util::Logger log_;
+  std::shared_ptr<Scene> currentScene_;
+public:
+  explicit Taiju(util::Logger& log);
+
+  bool update();
+
   void draw();
 };
 
-
+}
