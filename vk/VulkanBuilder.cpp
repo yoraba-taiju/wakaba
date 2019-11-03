@@ -36,7 +36,7 @@ std::shared_ptr<Vulkan> VulkanBuilder::create() {
     VkInstanceCreateInfo instanceInfo{};
     VkApplicationInfo appInfo{};
 
-    std::vector<std::string> const extensions = enumurateRequiredInstanceExtensions();
+    std::vector<std::string> const extensions = enumerateRequiredInstanceExtensions();
     const char* extensionNames[extensions.size()];
     for(size_t i = 0; i < extensions.size(); ++i) {
       extensionNames[i] = extensions[i].c_str();

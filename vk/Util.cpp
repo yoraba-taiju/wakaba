@@ -6,7 +6,7 @@
 
 namespace vk {
 
-std::vector<std::string> enumurateRequiredInstanceExtensions() {
+std::vector<std::string> enumerateRequiredInstanceExtensions() {
   uint32_t numExtensions;
   const char **const extensions = glfwGetRequiredInstanceExtensions(&numExtensions);
   std::vector<std::string> res;

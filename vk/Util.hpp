@@ -11,7 +11,7 @@
 
 namespace vk {
 
-std::vector<std::string> enumurateRequiredInstanceExtensions();
+std::vector<std::string> enumerateRequiredInstanceExtensions();
 std::vector<VkLayerProperties> enumerateInstanceLayerProperties();
 
 }
