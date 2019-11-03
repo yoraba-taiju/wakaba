@@ -17,14 +17,25 @@ class VulkanBuilder;
 class Vulkan final {
 private:
   friend class VulkanBuilder;
+  util::Logger& log_;
   VkInstance instance_;
   VkSurfaceKHR surface_;
   GLFWwindow* window_;
+  VkDevice device_;
+  VkCommandPool commandPool_;
+  VkFence fence_;
 private:
-  explicit Vulkan();
+  VkDebugReportCallbackEXT vkDebugReportCallback_{};
+  PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback_{};
+private:
+  explicit Vulkan(util::Logger& log);
+  ~Vulkan();
 public:
   inline GLFWwindow* window() {
     return this->window_;
+  }
+  inline util::Logger log() {
+    return this->log_;
   }
 public:
   ENABLE_SHARED_HELPER

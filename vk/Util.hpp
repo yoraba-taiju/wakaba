@@ -13,6 +13,8 @@ namespace vk {
 
 std::vector<std::string> enumerateRequiredInstanceExtensions();
 std::vector<VkLayerProperties> enumerateInstanceLayerProperties();
+std::vector<VkPhysicalDevice> enumeratePhysicalDevices(VkInstance instance);
+std::vector<VkQueueFamilyProperties> getPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice);
 
 }
 

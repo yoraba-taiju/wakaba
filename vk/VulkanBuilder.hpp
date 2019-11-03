@@ -18,6 +18,13 @@ private:
   util::Logger& log_;
   std::shared_ptr<Vulkan> vulkan_;
   std::string appName_;
+private:
+  void createWindow();
+  void createInstance();
+  void createSurface();
+  void createDebugReportCallback();
+  void createDeviceAndCommandPool();
+  void createFence();
 public:
   VulkanBuilder(util::Logger& log, std::string appName);
   std::shared_ptr<Vulkan> create();

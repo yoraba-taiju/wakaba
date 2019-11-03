@@ -34,4 +34,28 @@ std::vector<VkLayerProperties> enumerateInstanceLayerProperties() {
   return std::move(props);
 }
 
+std::vector<VkPhysicalDevice> enumeratePhysicalDevices(VkInstance instance) {
+  uint32_t numDevices;
+  VkResult result = vkEnumeratePhysicalDevices(instance, &numDevices, nullptr);
+  if(result != VK_SUCCESS) {
+    return std::vector<VkPhysicalDevice>();
+  }
+  std::vector<VkPhysicalDevice> devices;
+  devices.resize(numDevices);
+  result = vkEnumeratePhysicalDevices(instance, &numDevices, devices.data());
+  if(result != VK_SUCCESS) {
+    return std::vector<VkPhysicalDevice>();
+  }
+  return std::move(devices);
+}
+
+std::vector<VkQueueFamilyProperties> getPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice) {
+  uint32_t numProps;
+  vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &numProps, nullptr);
+  std::vector<VkQueueFamilyProperties> props;
+  props.resize(numProps);
+  vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &numProps, props.data());
+  return std::move(props);
+}
+
 }
