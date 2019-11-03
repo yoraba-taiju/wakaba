@@ -12,8 +12,11 @@
 
 namespace vk {
 
-class Vulkan {
+class VulkanBuilder;
+
+class Vulkan final {
 private:
+  friend class VulkanBuilder;
   VkInstance instance_;
   VkSurfaceKHR surface_;
   GLFWwindow* window_;
@@ -24,7 +27,6 @@ public:
     return this->window_;
   }
 public:
-  static std::shared_ptr<Vulkan> createInstance(util::Logger& log, std::string const& appName);
   ENABLE_SHARED_HELPER
 };
 

@@ -7,6 +7,7 @@
 
 #include "util/Logger.hpp"
 #include "vk/Vulkan.hpp"
+#include "vk/VulkanBuilder.hpp"
 #include "vk/Util.hpp"
 
 static int _main(util::Logger& log);
@@ -38,21 +39,7 @@ static int _main(util::Logger& log) {
   }
   log.debug("Vulkan is supported.");
 
-  for (std::string const& extention : vk::enumurateRequiredInstanceExtensions()) {
-    log.debug("Vulkan Required Extention: %s", extention);
-  }
-
-  std::vector<VkLayerProperties> props = vk::enumerateInstanceLayerProperties();
-  for(VkLayerProperties const& prop : props) {
-    log.debug("Layer: %s (spec=%d, impl=%d) :: %s",
-        prop.layerName,
-        prop.specVersion,
-        prop.implementationVersion,
-        prop.description);
-  }
-
-
-  std::shared_ptr<vk::Vulkan> vulkan = vk::Vulkan::createInstance(log, "YorabaTaiju");
+  std::shared_ptr<vk::Vulkan> vulkan = vk::VulkanBuilder(log, "YorabaTaiju").create();
 
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(vulkan->window(), GLFW_STICKY_KEYS, GL_TRUE);
