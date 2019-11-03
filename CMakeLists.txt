@@ -16,10 +16,6 @@ link_libraries(${OPENGL_LIBRARIES})
 find_package(Vulkan REQUIRED)
 include_directories(Vulkan::Vulkan)
 link_libraries(Vulkan::Vulkan)
-# GLEW
-add_subdirectory(external/glew-2.1.0/build/cmake)
-include_directories(external/glew-2.1.0/include)
-link_libraries(glew_s)
 # GLFW
 add_subdirectory(external/glfw)
 include_directories(external/glfw/include)
