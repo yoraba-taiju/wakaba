@@ -27,9 +27,9 @@ private:
   void createDebugReportCallback();
   void createDeviceAndCommandPool();
   void createFence();
-  void createSwapChain();
-  void createImages();
-  void createImageViews();
+  void createSwapchain();
+  void createSwapchainImages();
+  void createSwapchainImageViews();
 public:
   VulkanBuilder(util::Logger& log, std::string appName, int width, int height);
   std::shared_ptr<Vulkan> create();

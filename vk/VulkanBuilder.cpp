@@ -41,9 +41,9 @@ std::shared_ptr<Vulkan> VulkanBuilder::create() {
   this->createDebugReportCallback();
   this->createDeviceAndCommandPool();
   this->createFence();
-  this->createSwapChain();
-  this->createImages();
-  this->createImageViews();
+  this->createSwapchain();
+  this->createSwapchainImages();
+  this->createSwapchainImageViews();
 
   return this->vulkan_;
 }
@@ -214,7 +214,7 @@ void VulkanBuilder::createFence() {
   }
 }
 
-void VulkanBuilder::createSwapChain() {
+void VulkanBuilder::createSwapchain() {
   VkSwapchainCreateInfoKHR scinfo{};
 
   VkBool32 surfaceSupported;
@@ -274,14 +274,14 @@ void VulkanBuilder::createSwapChain() {
   }
 }
 
-void VulkanBuilder::createImages() {
+void VulkanBuilder::createSwapchainImages() {
   vulkan_->swapchainImages = getSwapchainImages(vulkan_->device_, vulkan_->swapchain_);
   if(vulkan_->swapchainImages.empty()) {
     log_.fatal("No swapchain images available.");
   }
 }
 
-void VulkanBuilder::createImageViews() {
+void VulkanBuilder::createSwapchainImageViews() {
   vulkan_->swapchainImageViews_.resize(vulkan_->swapchainImages.size());
   for(size_t i = 0; i < vulkan_->swapchainImages.size(); i++){
     VkImageViewCreateInfo vinfo{};
