@@ -16,9 +16,14 @@ Vulkan::Vulkan(util::Logger& log)
 ,instance_()
 ,surface_()
 ,window_()
+,physicalDevice_()
+,queueFamilyIndex_()
 ,device_()
 ,commandPool_()
 ,fence_()
+,vkDebugReportCallback_()
+,vkDestroyDebugReportCallback_()
+,swapChain_()
 {
 }
 

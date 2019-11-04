@@ -58,4 +58,23 @@ std::vector<VkQueueFamilyProperties> getPhysicalDeviceQueueFamilyProperties(VkPh
   return std::move(props);
 }
 
+std::vector<VkSurfaceFormatKHR> getPhysicalDeviceSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) {
+  std::vector<VkSurfaceFormatKHR> surfaceFormats;
+  uint32_t numSurfaceFormats;
+  vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &numSurfaceFormats, nullptr);
+  surfaceFormats.resize(numSurfaceFormats);
+  vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &numSurfaceFormats, surfaceFormats.data());
+  return std::move(surfaceFormats);
+}
+
+std::vector<VkPresentModeKHR>
+getPhysicalDeviceSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) {
+  std::vector<VkPresentModeKHR> presentModes;
+  uint32_t numPresentModes;
+  vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface,  &numPresentModes, nullptr);
+  presentModes.resize(numPresentModes);
+  vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &numPresentModes, presentModes.data());
+  return std::move(presentModes);
+}
+
 }

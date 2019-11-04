@@ -38,7 +38,7 @@ static int _main(util::Logger& log) {
   }
   log.debug("Vulkan is supported.");
 
-  std::shared_ptr<vk::Vulkan> vulkan = vk::VulkanBuilder(log, "YorabaTaiju").create();
+  std::shared_ptr<vk::Vulkan> vulkan = vk::VulkanBuilder(log, "YorabaTaiju", 1920, 1080).create();
 
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(vulkan->window(), GLFW_STICKY_KEYS, GL_TRUE);

@@ -21,12 +21,15 @@ private:
   VkInstance instance_;
   VkSurfaceKHR surface_;
   GLFWwindow* window_;
+  VkPhysicalDevice physicalDevice_;
+  uint32_t queueFamilyIndex_;
   VkDevice device_;
   VkCommandPool commandPool_;
   VkFence fence_;
+  VkSwapchainKHR  swapChain_;
 private:
-  VkDebugReportCallbackEXT vkDebugReportCallback_{};
-  PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback_{};
+  VkDebugReportCallbackEXT vkDebugReportCallback_;
+  PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback_;
 private:
   explicit Vulkan(util::Logger& log);
   ~Vulkan();
