@@ -77,4 +77,13 @@ getPhysicalDeviceSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceK
   return std::move(presentModes);
 }
 
+std::vector<VkImage> getSwapchainImages(VkDevice device, VkSwapchainKHR swapchain) {
+  uint32_t numImages;
+  std::vector<VkImage> images;
+  vkGetSwapchainImagesKHR(device, swapchain, &numImages, nullptr);
+  images.resize(numImages);
+  vkGetSwapchainImagesKHR(device, swapchain, &numImages, images.data());
+  return std::move(images);
+}
+
 }

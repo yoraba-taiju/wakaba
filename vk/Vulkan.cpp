@@ -12,18 +12,20 @@ namespace vk {
 //Builderみたいなのほしい
 
 Vulkan::Vulkan(util::Logger& log)
-:log_(log)
-,instance_()
-,surface_()
-,window_()
-,physicalDevice_()
-,queueFamilyIndex_()
-,device_()
-,commandPool_()
-,fence_()
-,vkDebugReportCallback_()
-,vkDestroyDebugReportCallback_()
-,swapChain_()
+: log_(log)
+, instance_()
+, surface_()
+, window_()
+, physicalDevice_()
+, queueFamilyIndex_()
+, device_()
+, commandPool_()
+, fence_()
+, vkDebugReportCallback_()
+, vkDestroyDebugReportCallback_()
+, swapchain_()
+,swapchainImages()
+,swapchainImageViews_()
 {
 }
 

@@ -17,6 +17,7 @@ std::vector<VkPhysicalDevice> enumeratePhysicalDevices(VkInstance instance);
 std::vector<VkQueueFamilyProperties> getPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice);
 std::vector<VkSurfaceFormatKHR> getPhysicalDeviceSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 std::vector<VkPresentModeKHR> getPhysicalDeviceSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
+std::vector<VkImage> getSwapchainImages(VkDevice device, VkSwapchainKHR swapchain);
 
 
 }

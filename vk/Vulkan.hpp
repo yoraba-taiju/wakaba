@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <vector>
 #include "../util/Logger.hpp"
 
 #define GLFW_INCLUDE_VULKAN
@@ -26,7 +27,9 @@ private:
   VkDevice device_;
   VkCommandPool commandPool_;
   VkFence fence_;
-  VkSwapchainKHR  swapChain_;
+  VkSwapchainKHR  swapchain_;
+  std::vector<VkImage> swapchainImages;
+  std::vector<VkImageView> swapchainImageViews_;
 private:
   VkDebugReportCallbackEXT vkDebugReportCallback_;
   PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback_;

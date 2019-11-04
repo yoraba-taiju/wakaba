@@ -42,6 +42,8 @@ std::shared_ptr<Vulkan> VulkanBuilder::create() {
   this->createDeviceAndCommandPool();
   this->createFence();
   this->createSwapChain();
+  this->createImages();
+  this->createImageViews();
 
   return this->vulkan_;
 }
@@ -267,8 +269,36 @@ void VulkanBuilder::createSwapChain() {
   scinfo.presentMode = VK_PRESENT_MODE_FIFO_KHR;
   scinfo.clipped = VK_TRUE;
 
-  if(vkCreateSwapchainKHR(vulkan_->device_, &scinfo, nullptr, &vulkan_->swapChain_)){
+  if(vkCreateSwapchainKHR(vulkan_->device_, &scinfo, nullptr, &vulkan_->swapchain_)){
     log_.fatal("Failed to create swap chain.");
+  }
+}
+
+void VulkanBuilder::createImages() {
+  vulkan_->swapchainImages = getSwapchainImages(vulkan_->device_, vulkan_->swapchain_);
+  if(vulkan_->swapchainImages.empty()) {
+    log_.fatal("No swapchain images available.");
+  }
+}
+
+void VulkanBuilder::createImageViews() {
+  vulkan_->swapchainImageViews_.resize(vulkan_->swapchainImages.size());
+  for(size_t i = 0; i < vulkan_->swapchainImages.size(); i++){
+    VkImageViewCreateInfo vinfo{};
+    vinfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    vinfo.image = vulkan_->swapchainImages[i];
+    vinfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    vinfo.format = VK_FORMAT_B8G8R8A8_UNORM;
+    vinfo.components = {
+        VK_COMPONENT_SWIZZLE_R,
+        VK_COMPONENT_SWIZZLE_G,
+        VK_COMPONENT_SWIZZLE_B,
+        VK_COMPONENT_SWIZZLE_A,
+    };
+    vinfo.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+    if(vkCreateImageView(vulkan_->device_, &vinfo, nullptr, &vulkan_->swapchainImageViews_[i]) != VK_SUCCESS) {
+      log_.fatal("[Vulkan] Failed to create an image view");
+    }
   }
 }
 

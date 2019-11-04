@@ -28,6 +28,8 @@ private:
   void createDeviceAndCommandPool();
   void createFence();
   void createSwapChain();
+  void createImages();
+  void createImageViews();
 public:
   VulkanBuilder(util::Logger& log, std::string appName, int width, int height);
   std::shared_ptr<Vulkan> create();
