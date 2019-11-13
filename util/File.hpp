@@ -9,6 +9,6 @@
 
 namespace util {
 
-std::string readAllFromFile(std::string const& fname) noexcept(false);
+std::string readAllFromFile(std::string const &fname) noexcept(false);
 
 }

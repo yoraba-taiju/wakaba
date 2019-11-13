@@ -15,7 +15,7 @@ private:
   util::Logger log_;
   std::shared_ptr<Scene> currentScene_;
 public:
-  explicit Taiju(util::Logger& log);
+  explicit Taiju(util::Logger &log);
 
   bool update();
 

@@ -11,6 +11,7 @@ namespace taiju {
 class TriangleScene : public Scene {
 public:
   explicit TriangleScene();
+
   ~TriangleScene() override = default;
 
 public:

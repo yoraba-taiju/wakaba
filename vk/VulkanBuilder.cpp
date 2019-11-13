@@ -18,20 +18,15 @@ namespace {
 VKAPI_ATTR VkBool32 VKAPI_CALL
 onError(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT, uint64_t object, size_t location, int32_t messageCode,
         const char *pLayerPrefix, const char *pMessage, void *pUserData) {
-  auto vk = reinterpret_cast<Vulkan*>(pUserData);
+  auto vk = reinterpret_cast<Vulkan *>(pUserData);
   vk->log().debug("[Vk/%s] %s", pLayerPrefix, pMessage);
   return VK_FALSE;
 }
 
 }
 
-VulkanBuilder::VulkanBuilder(util::Logger& log, std::string appName, int width, int height)
-:log_(log)
-,appName_(std::move(appName))
-,width_(width)
-,height_(height)
-,vulkan_()
-{
+VulkanBuilder::VulkanBuilder(util::Logger &log, std::string appName, int width, int height)
+    : log_(log), appName_(std::move(appName)), width_(width), height_(height), vulkan_() {
 }
 
 std::shared_ptr<Vulkan> VulkanBuilder::create() {
@@ -47,6 +42,7 @@ std::shared_ptr<Vulkan> VulkanBuilder::create() {
   this->createSwapchainImages();
   this->createSwapchainImageViews();
   this->createFrameBuffers();
+  this->createCommandBuffers();
 
   return this->vulkan_;
 }
@@ -69,18 +65,18 @@ void VulkanBuilder::createInstance() {
 
   std::vector<std::string> const requiredExtensions = enumerateRequiredInstanceExtensions();
   uint32_t numExtensions = requiredExtensions.size() + 1;
-  const char* extensionNames[numExtensions];
+  const char *extensionNames[numExtensions];
   log_.debug("[[Required Vulkan Extensions]]");
-  for(size_t i = 0; i < requiredExtensions.size(); ++i) {
+  for (size_t i = 0; i < requiredExtensions.size(); ++i) {
     extensionNames[i] = requiredExtensions[i].c_str();
     log_.debug(" - %s", extensionNames[i]);
   }
   extensionNames[numExtensions - 1] = VK_EXT_DEBUG_REPORT_EXTENSION_NAME;
 
   std::vector<VkLayerProperties> layers = vk::enumerateInstanceLayerProperties();
-  const char* layerNames[layers.size()];
+  const char *layerNames[layers.size()];
   log_.debug("[[Available Vulkan Layers]]");
-  for(size_t i = 0; i < layers.size(); ++i) {
+  for (size_t i = 0; i < layers.size(); ++i) {
     layerNames[i] = layers[i].layerName;
     log_.debug(" - %s (%s :: spec=%d, impl=%d)",
                layers[i].layerName,
@@ -101,7 +97,7 @@ void VulkanBuilder::createInstance() {
   instanceInfo.enabledLayerCount = layers.size();
   instanceInfo.ppEnabledLayerNames = layerNames;
 
-  if(vkCreateInstance(&instanceInfo, nullptr, &this->vulkan_->instance_) != VK_SUCCESS) {
+  if (vkCreateInstance(&instanceInfo, nullptr, &this->vulkan_->instance_) != VK_SUCCESS) {
     log_.fatal("Failed to create Vulkan Instance");
   }
 }
@@ -113,7 +109,7 @@ void VulkanBuilder::createSurface() {
       this->vulkan_->window_,
       nullptr,
       &this->vulkan_->surface_);
-  if(res != VK_SUCCESS) {
+  if (res != VK_SUCCESS) {
     log_.fatal("Failed to create Vulkan Surface");
   }
 }
@@ -122,19 +118,23 @@ void VulkanBuilder::createSurface() {
 void VulkanBuilder::createDebugReportCallback() {
   VkDebugReportCallbackCreateInfoEXT callbackInfo{};
   callbackInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-  callbackInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;// | VK_DEBUG_REPORT_INFORMATION_BIT_EXT;
+  callbackInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT |
+                       VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;// | VK_DEBUG_REPORT_INFORMATION_BIT_EXT;
   callbackInfo.pfnCallback = &onError;
   callbackInfo.pUserData = vulkan_.get();
 
-  auto _vkCreateDebugReportCallback = (PFN_vkCreateDebugReportCallbackEXT)(glfwGetInstanceProcAddress(this->vulkan_->instance_, "vkCreateDebugReportCallbackEXT"));
+  auto _vkCreateDebugReportCallback = (PFN_vkCreateDebugReportCallbackEXT) (glfwGetInstanceProcAddress(
+      this->vulkan_->instance_, "vkCreateDebugReportCallbackEXT"));
   if (_vkCreateDebugReportCallback == nullptr) {
     log_.fatal("[Vulkan] vkCreateDebugReportCallbackEXT not available.");
   }
-  auto _vkDestroyDebugReportCallback = (PFN_vkDestroyDebugReportCallbackEXT)(glfwGetInstanceProcAddress(this->vulkan_->instance_, "vkDestroyDebugReportCallbackEXT"));
+  auto _vkDestroyDebugReportCallback = (PFN_vkDestroyDebugReportCallbackEXT) (glfwGetInstanceProcAddress(
+      this->vulkan_->instance_, "vkDestroyDebugReportCallbackEXT"));
   if (_vkDestroyDebugReportCallback == nullptr) {
     log_.fatal("[Vulkan] vkDestroyDebugReportCallbackEXT not available.");
   }
-  if(_vkCreateDebugReportCallback(vulkan_->instance_, &callbackInfo, nullptr, &vulkan_->vkDebugReportCallback_) != VK_SUCCESS) {
+  if (_vkCreateDebugReportCallback(vulkan_->instance_, &callbackInfo, nullptr, &vulkan_->vkDebugReportCallback_) !=
+      VK_SUCCESS) {
     log_.fatal("Failed initialize a debug reporter.");
   }
   vulkan_->vkDestroyDebugReportCallback_ = _vkDestroyDebugReportCallback;
@@ -142,11 +142,11 @@ void VulkanBuilder::createDebugReportCallback() {
 
 void VulkanBuilder::createDeviceAndCommandPool() {
   std::vector<VkPhysicalDevice> physicalDevices = enumeratePhysicalDevices(vulkan_->instance_);
-  if(physicalDevices.empty()) {
+  if (physicalDevices.empty()) {
     log_.fatal("[Vulkan] No vulkan physical devices available.");
   }
   log_.debug("[[Available Vulkan Physical Devices]]");
-  for(VkPhysicalDevice device : physicalDevices) {
+  for (VkPhysicalDevice device : physicalDevices) {
     VkPhysicalDeviceProperties props;
     VkPhysicalDeviceMemoryProperties memProps;
     vkGetPhysicalDeviceProperties(device, &props);
@@ -164,9 +164,9 @@ void VulkanBuilder::createDeviceAndCommandPool() {
 
     { // Search queue family index for Graphics Queue
       uint32_t queueFamilyIndex = 0xffffffff;
-      std::vector<VkQueueFamilyProperties> properties = getPhysicalDeviceQueueFamilyProperties(vulkan_->physicalDevice_);
-      for (size_t i = 0; i < properties.size(); ++i)
-      {
+      std::vector<VkQueueFamilyProperties> properties = getPhysicalDeviceQueueFamilyProperties(
+          vulkan_->physicalDevice_);
+      for (size_t i = 0; i < properties.size(); ++i) {
         if ((properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0) {
           queueFamilyIndex = i;
           break;
@@ -178,9 +178,9 @@ void VulkanBuilder::createDeviceAndCommandPool() {
       vulkan_->queueFamilyIndex_ = queueFamilyIndex;
     }
 
-    const char* layers[] = { "VK_LAYER_LUNARG_standard_validation" };
-    const char* extensions[] = { "VK_KHR_swapchain" };
-    static float qPriorities[] = { 0.0f };
+    const char *layers[] = {"VK_LAYER_LUNARG_standard_validation"};
+    const char *extensions[] = {"VK_KHR_swapchain"};
+    static float qPriorities[] = {0.0f};
     queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queueInfo.queueCount = 1;
     queueInfo.queueFamilyIndex = vulkan_->queueFamilyIndex_;
@@ -193,7 +193,7 @@ void VulkanBuilder::createDeviceAndCommandPool() {
     devInfo.enabledExtensionCount = std::size(extensions);
     devInfo.ppEnabledExtensionNames = extensions;
 
-    if(vkCreateDevice(vulkan_->physicalDevice_, &devInfo, nullptr, &vulkan_->device_) != VK_SUCCESS) {
+    if (vkCreateDevice(vulkan_->physicalDevice_, &devInfo, nullptr, &vulkan_->device_) != VK_SUCCESS) {
       log_.fatal("[Vulkan] Failed to create a device.");
     }
 
@@ -203,7 +203,7 @@ void VulkanBuilder::createDeviceAndCommandPool() {
     info.queueFamilyIndex = vulkan_->queueFamilyIndex_;
     info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    if(vkCreateCommandPool(vulkan_->device_, &info, nullptr, &vulkan_->commandPool_) != VK_SUCCESS) {
+    if (vkCreateCommandPool(vulkan_->device_, &info, nullptr, &vulkan_->commandPool_) != VK_SUCCESS) {
       log_.fatal("[Vulkan] Failed to create a command pool.");
     }
   }
@@ -212,7 +212,7 @@ void VulkanBuilder::createDeviceAndCommandPool() {
 void VulkanBuilder::createFence() {
   VkFenceCreateInfo finfo{};
   finfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-  if(vkCreateFence(vulkan_->device_, &finfo, nullptr, &vulkan_->fence_) != VK_SUCCESS) {
+  if (vkCreateFence(vulkan_->device_, &finfo, nullptr, &vulkan_->fence_) != VK_SUCCESS) {
     log_.fatal("[Vulkan] Failed to create a fence.");
   }
 }
@@ -221,8 +221,9 @@ void VulkanBuilder::createSwapchain() {
   VkSwapchainCreateInfoKHR scinfo{};
 
   VkBool32 surfaceSupported;
-  vkGetPhysicalDeviceSurfaceSupportKHR(vulkan_->physicalDevice_, vulkan_->queueFamilyIndex_, vulkan_->surface_, &surfaceSupported);
-  if(surfaceSupported != VK_TRUE){
+  vkGetPhysicalDeviceSurfaceSupportKHR(vulkan_->physicalDevice_, vulkan_->queueFamilyIndex_, vulkan_->surface_,
+                                       &surfaceSupported);
+  if (surfaceSupported != VK_TRUE) {
     log_.fatal("[Vulkan] Physical device does not support surface.");
   }
 
@@ -234,26 +235,24 @@ void VulkanBuilder::createSwapchain() {
   auto presentModes = getPhysicalDeviceSurfacePresentModes(vulkan_->physicalDevice_, vulkan_->surface_);
 
   size_t formatIdx = 0xffffffff;
-  for (size_t i = 0; i < surfaceFormats.size(); ++i)
-  {
+  for (size_t i = 0; i < surfaceFormats.size(); ++i) {
     auto format = surfaceFormats[i];
-    if(format.format == VK_FORMAT_B8G8R8A8_UNORM && format.colorSpace == VK_COLORSPACE_SRGB_NONLINEAR_KHR) {
+    if (format.format == VK_FORMAT_B8G8R8A8_UNORM && format.colorSpace == VK_COLORSPACE_SRGB_NONLINEAR_KHR) {
       formatIdx = i;
     }
   }
-  if(formatIdx == 0xffffffff){
+  if (formatIdx == 0xffffffff) {
     log_.fatal("[Vulkan] VK_FORMAT_B8G8R8A8_UNORM & VK_COLORSPACE_SRGB_NONLINEAR_KHR is not supported.");
   }
 
   size_t presentModeIdx = 0xffffffff;
-  for (size_t i = 0; i < presentModes.size(); ++i)
-  {
+  for (size_t i = 0; i < presentModes.size(); ++i) {
     auto mode = presentModes[i];
-    if(mode == VK_PRESENT_MODE_FIFO_KHR) {
+    if (mode == VK_PRESENT_MODE_FIFO_KHR) {
       presentModeIdx = i;
     }
   }
-  if(presentModeIdx == 0xffffffff){
+  if (presentModeIdx == 0xffffffff) {
     log_.fatal("[Vulkan] VK_PRESENT_MODE_FIFO_KHR is not supported.");
   }
 
@@ -272,24 +271,24 @@ void VulkanBuilder::createSwapchain() {
   scinfo.presentMode = VK_PRESENT_MODE_FIFO_KHR;
   scinfo.clipped = VK_TRUE;
 
-  if(vkCreateSwapchainKHR(vulkan_->device_, &scinfo, nullptr, &vulkan_->swapchain_)){
+  if (vkCreateSwapchainKHR(vulkan_->device_, &scinfo, nullptr, &vulkan_->swapchain_)) {
     log_.fatal("Failed to create swap chain.");
   }
 }
 
 void VulkanBuilder::createSwapchainImages() {
-  vulkan_->swapchainImages = getSwapchainImages(vulkan_->device_, vulkan_->swapchain_);
-  if(vulkan_->swapchainImages.empty()) {
+  vulkan_->swapchainImages_ = getSwapchainImages(vulkan_->device_, vulkan_->swapchain_);
+  if (vulkan_->swapchainImages_.empty()) {
     log_.fatal("No swapchain images available.");
   }
 }
 
 void VulkanBuilder::createSwapchainImageViews() {
-  vulkan_->swapchainImageViews_.resize(vulkan_->swapchainImages.size());
-  for(size_t i = 0; i < vulkan_->swapchainImages.size(); ++i){
+  vulkan_->swapchainImageViews_.resize(vulkan_->swapchainImages_.size());
+  for (size_t i = 0; i < vulkan_->swapchainImages_.size(); ++i) {
     VkImageViewCreateInfo vinfo{};
     vinfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    vinfo.image = vulkan_->swapchainImages[i];
+    vinfo.image = vulkan_->swapchainImages_[i];
     vinfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
     vinfo.format = VK_FORMAT_B8G8R8A8_UNORM;
     vinfo.components = {
@@ -298,15 +297,15 @@ void VulkanBuilder::createSwapchainImageViews() {
         VK_COMPONENT_SWIZZLE_B,
         VK_COMPONENT_SWIZZLE_A,
     };
-    vinfo.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-    if(vkCreateImageView(vulkan_->device_, &vinfo, nullptr, &vulkan_->swapchainImageViews_[i]) != VK_SUCCESS) {
+    vinfo.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+    if (vkCreateImageView(vulkan_->device_, &vinfo, nullptr, &vulkan_->swapchainImageViews_[i]) != VK_SUCCESS) {
       log_.fatal("[Vulkan] Failed to create an image view");
     }
   }
 }
 
 void VulkanBuilder::createFrameBuffers() {
-  for(size_t i = 0; i < this->vulkan_->swapchainImageViews_.size(); ++i) {
+  for (size_t i = 0; i < this->vulkan_->swapchainImageViews_.size(); ++i) {
     std::shared_ptr<RenderPass> renderPass = util::make_shared<RenderPass>();
     {
       VkAttachmentDescription attachmentDesc{};
@@ -334,14 +333,14 @@ void VulkanBuilder::createFrameBuffers() {
       renderPassInfo.subpassCount = 1;
       renderPassInfo.pSubpasses = &subpass;
 
-      if(vkCreateRenderPass(vulkan_->device_, &renderPassInfo, nullptr, &renderPass->obj_) != VK_SUCCESS) {
+      if (vkCreateRenderPass(vulkan_->device_, &renderPassInfo, nullptr, &renderPass->obj_) != VK_SUCCESS) {
         log_.fatal("[Vulkan] Failed to create a RenderPass.");
       }
     }
     std::shared_ptr<FrameBuffer> frameBuffer = util::make_shared<FrameBuffer>(renderPass);
     {
       VkFramebufferCreateInfo fbinfo{};
-      VkImageView attachmentViews[1] = { vulkan_->swapchainImageViews_[i] };
+      VkImageView attachmentViews[1] = {vulkan_->swapchainImageViews_[i]};
 
       fbinfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
       fbinfo.attachmentCount = 1;
@@ -350,11 +349,25 @@ void VulkanBuilder::createFrameBuffers() {
       fbinfo.width = this->width_;
       fbinfo.height = this->height_;
       fbinfo.layers = 1;
-      if(vkCreateFramebuffer(vulkan_->device_, &fbinfo, nullptr, &frameBuffer->obj_) != VK_SUCCESS) {
+      if (vkCreateFramebuffer(vulkan_->device_, &fbinfo, nullptr, &frameBuffer->obj_) != VK_SUCCESS) {
         log_.fatal("[Vulkan] Failed to create a FrameBuffer.");
       }
     }
     this->vulkan_->frameBuffers_.emplace_back(std::move(frameBuffer));
+  }
+}
+
+void VulkanBuilder::createCommandBuffers() {
+  VkCommandBufferAllocateInfo cbAllocInfo{};
+
+  this->vulkan_->commandBuffers_.resize(this->vulkan_->swapchainImages_.size());
+  cbAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+  cbAllocInfo.commandPool = this->vulkan_->commandPool_;
+  cbAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+  cbAllocInfo.commandBufferCount = this->vulkan_->commandBuffers_.size();
+
+  if (vkAllocateCommandBuffers(vulkan_->device_, &cbAllocInfo, vulkan_->commandBuffers_.data()) != VK_SUCCESS) {
+    log_.fatal("[Vulkan] Failed to create Command Buffers (len=%d).", vulkan_->commandBuffers_.size());
   }
 }
 

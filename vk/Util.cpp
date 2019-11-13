@@ -37,13 +37,13 @@ std::vector<VkLayerProperties> enumerateInstanceLayerProperties() {
 std::vector<VkPhysicalDevice> enumeratePhysicalDevices(VkInstance instance) {
   uint32_t numDevices;
   VkResult result = vkEnumeratePhysicalDevices(instance, &numDevices, nullptr);
-  if(result != VK_SUCCESS) {
+  if (result != VK_SUCCESS) {
     return std::vector<VkPhysicalDevice>();
   }
   std::vector<VkPhysicalDevice> devices;
   devices.resize(numDevices);
   result = vkEnumeratePhysicalDevices(instance, &numDevices, devices.data());
-  if(result != VK_SUCCESS) {
+  if (result != VK_SUCCESS) {
     return std::vector<VkPhysicalDevice>();
   }
   return std::move(devices);
@@ -71,7 +71,7 @@ std::vector<VkPresentModeKHR>
 getPhysicalDeviceSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) {
   std::vector<VkPresentModeKHR> presentModes;
   uint32_t numPresentModes;
-  vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface,  &numPresentModes, nullptr);
+  vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &numPresentModes, nullptr);
   presentModes.resize(numPresentModes);
   vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &numPresentModes, presentModes.data());
   return std::move(presentModes);
