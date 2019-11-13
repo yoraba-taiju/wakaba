@@ -8,6 +8,8 @@
 #include "Util.hpp"
 #include "VulkanBuilder.hpp"
 #include "Vulkan.hpp"
+#include "RenderPass.hpp"
+#include "FrameBuffer.hpp"
 
 namespace vk {
 
@@ -44,6 +46,7 @@ std::shared_ptr<Vulkan> VulkanBuilder::create() {
   this->createSwapchain();
   this->createSwapchainImages();
   this->createSwapchainImageViews();
+  this->createFrameBuffers();
 
   return this->vulkan_;
 }
@@ -162,7 +165,7 @@ void VulkanBuilder::createDeviceAndCommandPool() {
     { // Search queue family index for Graphics Queue
       uint32_t queueFamilyIndex = 0xffffffff;
       std::vector<VkQueueFamilyProperties> properties = getPhysicalDeviceQueueFamilyProperties(vulkan_->physicalDevice_);
-      for (size_t i = 0; i < properties.size(); i++)
+      for (size_t i = 0; i < properties.size(); ++i)
       {
         if ((properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0) {
           queueFamilyIndex = i;
@@ -231,7 +234,7 @@ void VulkanBuilder::createSwapchain() {
   auto presentModes = getPhysicalDeviceSurfacePresentModes(vulkan_->physicalDevice_, vulkan_->surface_);
 
   size_t formatIdx = 0xffffffff;
-  for (size_t i = 0; i < surfaceFormats.size(); i++)
+  for (size_t i = 0; i < surfaceFormats.size(); ++i)
   {
     auto format = surfaceFormats[i];
     if(format.format == VK_FORMAT_B8G8R8A8_UNORM && format.colorSpace == VK_COLORSPACE_SRGB_NONLINEAR_KHR) {
@@ -243,7 +246,7 @@ void VulkanBuilder::createSwapchain() {
   }
 
   size_t presentModeIdx = 0xffffffff;
-  for (size_t i = 0; i < presentModes.size(); i++)
+  for (size_t i = 0; i < presentModes.size(); ++i)
   {
     auto mode = presentModes[i];
     if(mode == VK_PRESENT_MODE_FIFO_KHR) {
@@ -283,7 +286,7 @@ void VulkanBuilder::createSwapchainImages() {
 
 void VulkanBuilder::createSwapchainImageViews() {
   vulkan_->swapchainImageViews_.resize(vulkan_->swapchainImages.size());
-  for(size_t i = 0; i < vulkan_->swapchainImages.size(); i++){
+  for(size_t i = 0; i < vulkan_->swapchainImages.size(); ++i){
     VkImageViewCreateInfo vinfo{};
     vinfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     vinfo.image = vulkan_->swapchainImages[i];
@@ -299,6 +302,59 @@ void VulkanBuilder::createSwapchainImageViews() {
     if(vkCreateImageView(vulkan_->device_, &vinfo, nullptr, &vulkan_->swapchainImageViews_[i]) != VK_SUCCESS) {
       log_.fatal("[Vulkan] Failed to create an image view");
     }
+  }
+}
+
+void VulkanBuilder::createFrameBuffers() {
+  for(size_t i = 0; i < this->vulkan_->swapchainImageViews_.size(); ++i) {
+    std::shared_ptr<RenderPass> renderPass = util::make_shared<RenderPass>();
+    {
+      VkAttachmentDescription attachmentDesc{};
+      VkAttachmentReference attachmentRef{};
+
+      attachmentDesc.format = VK_FORMAT_B8G8R8A8_UNORM;
+      attachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+      attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      attachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+      attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+      attachmentDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+      attachmentRef.attachment = 0;
+      attachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+      VkSubpassDescription subpass{};
+      VkRenderPassCreateInfo renderPassInfo{};
+
+      subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+      subpass.colorAttachmentCount = 1;
+      subpass.pColorAttachments = &attachmentRef;
+      renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+      renderPassInfo.attachmentCount = 1;
+      renderPassInfo.pAttachments = &attachmentDesc;
+      renderPassInfo.subpassCount = 1;
+      renderPassInfo.pSubpasses = &subpass;
+
+      if(vkCreateRenderPass(vulkan_->device_, &renderPassInfo, nullptr, &renderPass->obj_) != VK_SUCCESS) {
+        log_.fatal("[Vulkan] Failed to create a RenderPass.");
+      }
+    }
+    std::shared_ptr<FrameBuffer> frameBuffer = util::make_shared<FrameBuffer>(renderPass);
+    {
+      VkFramebufferCreateInfo fbinfo{};
+      VkImageView attachmentViews[1] = { vulkan_->swapchainImageViews_[i] };
+
+      fbinfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+      fbinfo.attachmentCount = 1;
+      fbinfo.renderPass = renderPass->obj_;
+      fbinfo.pAttachments = attachmentViews;
+      fbinfo.width = this->width_;
+      fbinfo.height = this->height_;
+      fbinfo.layers = 1;
+      if(vkCreateFramebuffer(vulkan_->device_, &fbinfo, nullptr, &frameBuffer->obj_) != VK_SUCCESS) {
+        log_.fatal("[Vulkan] Failed to create a FrameBuffer.");
+      }
+    }
+    this->vulkan_->frameBuffers_.emplace_back(std::move(frameBuffer));
   }
 }
 

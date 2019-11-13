@@ -30,6 +30,7 @@ private:
   void createSwapchain();
   void createSwapchainImages();
   void createSwapchainImageViews();
+  void createFrameBuffers();
 public:
   VulkanBuilder(util::Logger& log, std::string appName, int width, int height);
   std::shared_ptr<Vulkan> create();

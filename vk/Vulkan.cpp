@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "Vulkan.hpp"
+#include "RenderPass.hpp"
+#include "FrameBuffer.hpp"
 
 namespace vk {
 

@@ -49,4 +49,7 @@ add_executable(wakaba
     vk/Vulkan.hpp
     vk/VulkanBuilder.cpp
     vk/VulkanBuilder.hpp
-    )
+    vk/FrameBuffer.cpp
+    vk/FrameBuffer.hpp
+    vk/RenderPass.cpp
+    vk/RenderPass.hpp)
