@@ -24,25 +24,15 @@ private:
   int const height_;
 private:
   void createWindow();
-
   void createInstance();
-
   void createSurface();
-
   void createDebugReportCallback();
-
   void createDeviceAndCommandPool();
-
   void createFence();
-
   void createSwapchain();
-
   void createSwapchainImages();
-
   void createSwapchainImageViews();
-
   void createFrameBuffers();
-
   void createCommandBuffers();
 
 public:

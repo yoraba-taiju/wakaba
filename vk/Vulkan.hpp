@@ -15,7 +15,6 @@
 namespace vk {
 
 class VulkanBuilder;
-
 class FrameBuffer;
 
 class Vulkan final {
@@ -35,7 +34,6 @@ private:
   std::vector<VkImage> swapchainImages_;
   std::vector<VkImageView> swapchainImageViews_;
   std::vector<std::shared_ptr<FrameBuffer>> frameBuffers_;
-  std::vector<VkCommandBuffer> commandBuffers_;
 private:
   VkDebugReportCallbackEXT vkDebugReportCallback_;
   PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback_;

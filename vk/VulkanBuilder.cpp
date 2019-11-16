@@ -4,22 +4,31 @@
 
 #include <utility>
 #include <vector>
+#include <unordered_set>
 #include "../util/Shared.hpp"
 #include "Util.hpp"
 #include "VulkanBuilder.hpp"
 #include "Vulkan.hpp"
 #include "RenderPass.hpp"
 #include "FrameBuffer.hpp"
+#include "CommandBuffer.hpp"
 
 namespace vk {
 
 namespace {
 
-VKAPI_ATTR VkBool32 VKAPI_CALL
-onError(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT, uint64_t object, size_t location, int32_t messageCode,
-        const char *pLayerPrefix, const char *pMessage, void *pUserData) {
+VKAPI_ATTR VkBool32 VKAPI_CALL onError(
+  VkDebugReportFlagsEXT flags,
+  VkDebugReportObjectTypeEXT,
+  uint64_t object,
+  size_t location,
+  int32_t messageCode,
+  const char *pLayerPrefix,
+  const char *pMessage,
+  void *pUserData)
+{
   auto vk = reinterpret_cast<Vulkan *>(pUserData);
-  vk->log().debug("[Vk/%s] %s", pLayerPrefix, pMessage);
+  vk->log().debug("[From Vulkan :: %s] \n%s", pLayerPrefix, pMessage);
   return VK_FALSE;
 }
 
@@ -74,15 +83,25 @@ void VulkanBuilder::createInstance() {
   extensionNames[numExtensions - 1] = VK_EXT_DEBUG_REPORT_EXTENSION_NAME;
 
   std::vector<VkLayerProperties> layers = vk::enumerateInstanceLayerProperties();
-  const char *layerNames[layers.size()];
+  std::vector<const char*> enabledLayers{};
+  // FIXME: どこにおく？ここでいいか？
+  std::unordered_set<std::string> desiredLayers{
+    "VK_LAYER_LUNARG_monitor",
+     "VK_LAYER_LUNARG_standard_validation",
+     "VK_LAYER_KHRONOS_validation",
+     "VK_LAYER_LUNARG_screenshot",
+  };
   log_.debug("[[Available Vulkan Layers]]");
-  for (size_t i = 0; i < layers.size(); ++i) {
-    layerNames[i] = layers[i].layerName;
+  for (auto & layer : layers) {
     log_.debug(" - %s (%s :: spec=%d, impl=%d)",
-               layers[i].layerName,
-               layers[i].description,
-               layers[i].specVersion,
-               layers[i].implementationVersion);
+               layer.layerName,
+               layer.description,
+               layer.specVersion,
+               layer.implementationVersion);
+    if(desiredLayers.find(layer.layerName) != desiredLayers.end()) {
+      enabledLayers.emplace_back(layer.layerName);
+      log_.debug("   - enabled!");
+    }
   }
 
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -94,8 +113,8 @@ void VulkanBuilder::createInstance() {
   instanceInfo.pApplicationInfo = &appInfo;
   instanceInfo.enabledExtensionCount = requiredExtensions.size() + 1;
   instanceInfo.ppEnabledExtensionNames = extensionNames;
-  instanceInfo.enabledLayerCount = layers.size();
-  instanceInfo.ppEnabledLayerNames = layerNames;
+  instanceInfo.enabledLayerCount = enabledLayers.size();
+  instanceInfo.ppEnabledLayerNames = enabledLayers.data();
 
   if (vkCreateInstance(&instanceInfo, nullptr, &this->vulkan_->instance_) != VK_SUCCESS) {
     log_.fatal("Failed to create Vulkan Instance");
@@ -337,7 +356,20 @@ void VulkanBuilder::createFrameBuffers() {
         log_.fatal("[Vulkan] Failed to create a RenderPass.");
       }
     }
-    std::shared_ptr<FrameBuffer> frameBuffer = util::make_shared<FrameBuffer>(renderPass);
+    std::shared_ptr<CommandBuffer> commandBuffer = util::make_shared<CommandBuffer>();
+    {
+      VkCommandBufferAllocateInfo cbAllocInfo{};
+
+      cbAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+      cbAllocInfo.commandPool = this->vulkan_->commandPool_;
+      cbAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+      cbAllocInfo.commandBufferCount = 1;
+
+      if (vkAllocateCommandBuffers(vulkan_->device_, &cbAllocInfo, &commandBuffer->obj_) != VK_SUCCESS) {
+        log_.fatal("[Vulkan] Failed to create a Command Buffer.");
+      }
+    }
+    std::shared_ptr<FrameBuffer> frameBuffer = util::make_shared<FrameBuffer>(renderPass, std::move(commandBuffer));
     {
       VkFramebufferCreateInfo fbinfo{};
       VkImageView attachmentViews[1] = {vulkan_->swapchainImageViews_[i]};
@@ -358,17 +390,7 @@ void VulkanBuilder::createFrameBuffers() {
 }
 
 void VulkanBuilder::createCommandBuffers() {
-  VkCommandBufferAllocateInfo cbAllocInfo{};
 
-  this->vulkan_->commandBuffers_.resize(this->vulkan_->swapchainImages_.size());
-  cbAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  cbAllocInfo.commandPool = this->vulkan_->commandPool_;
-  cbAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  cbAllocInfo.commandBufferCount = this->vulkan_->commandBuffers_.size();
-
-  if (vkAllocateCommandBuffers(vulkan_->device_, &cbAllocInfo, vulkan_->commandBuffers_.data()) != VK_SUCCESS) {
-    log_.fatal("[Vulkan] Failed to create Command Buffers (len=%d).", vulkan_->commandBuffers_.size());
-  }
 }
 
 }
