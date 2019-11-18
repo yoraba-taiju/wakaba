@@ -400,8 +400,4 @@ void VulkanBuilder::createFrameBuffers() {
   }
 }
 
-void VulkanBuilder::createCommandBuffers() {
-
-}
-
 }

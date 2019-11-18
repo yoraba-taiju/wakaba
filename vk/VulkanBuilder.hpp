@@ -36,7 +36,6 @@ private:
   void createSwapchainImages();
   void createSwapchainImageViews();
   void createFrameBuffers();
-  void createCommandBuffers();
 
 public:
   VulkanBuilder(util::Logger &log, std::string appName, int width, int height);
