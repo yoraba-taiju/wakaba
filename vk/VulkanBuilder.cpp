@@ -11,6 +11,7 @@
 #include "Vulkan.hpp"
 #include "RenderPass.hpp"
 #include "FrameBuffer.hpp"
+#include "CommandPool.hpp"
 #include "CommandBuffer.hpp"
 
 namespace vk {
@@ -215,16 +216,6 @@ void VulkanBuilder::createDeviceAndCommandPool() {
     if (vkCreateDevice(vulkan_->physicalDevice_, &devInfo, nullptr, &vulkan_->device_) != VK_SUCCESS) {
       log_.fatal("[Vulkan] Failed to create a device.");
     }
-
-    VkCommandPoolCreateInfo info{};
-
-    info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    info.queueFamilyIndex = vulkan_->queueFamilyIndex_;
-    info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-    if (vkCreateCommandPool(vulkan_->device_, &info, nullptr, &vulkan_->commandPool_) != VK_SUCCESS) {
-      log_.fatal("[Vulkan] Failed to create a command pool.");
-    }
   }
 }
 
@@ -358,12 +349,26 @@ void VulkanBuilder::createFrameBuffers() {
     }
     std::shared_ptr<RenderPass> renderPass = util::make_shared<RenderPass>(vulkan_, pass);
 
+    VkCommandPool vkCommandPool;
+    {
+      VkCommandPoolCreateInfo info{};
+
+      info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+      info.queueFamilyIndex = vulkan_->queueFamilyIndex_;
+      info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+      if (vkCreateCommandPool(vulkan_->device_, &info, nullptr, &vkCommandPool) != VK_SUCCESS) {
+        log_.fatal("[Vulkan] Failed to create a command pool.");
+      }
+    }
+    std::shared_ptr<CommandPool> commandPool = util::make_shared<CommandPool>(vulkan_, vkCommandPool);
+
     VkCommandBuffer vkCommandBuffer;
     {
       VkCommandBufferAllocateInfo cbAllocInfo{};
 
       cbAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-      cbAllocInfo.commandPool = this->vulkan_->commandPool_;
+      cbAllocInfo.commandPool = commandPool->vkObj();
       cbAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
       cbAllocInfo.commandBufferCount = 1;
 
@@ -390,7 +395,7 @@ void VulkanBuilder::createFrameBuffers() {
       }
     }
     this->vulkan_->frameBuffers_.emplace_back(
-      util::make_shared<FrameBuffer>(vulkan_, vkFramebuffer, std::move(renderPass), std::move(commandBuffer))
+      util::make_shared<FrameBuffer>(vulkan_, vkFramebuffer, std::move(renderPass), std::move(commandPool), std::move(commandBuffer))
     );
   }
 }

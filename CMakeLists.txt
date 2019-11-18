@@ -54,4 +54,4 @@ add_executable(wakaba
     vk/RenderPass.cpp
     vk/RenderPass.hpp
     vk/CommandBuffer.cpp
-    vk/CommandBuffer.hpp)
+    vk/CommandBuffer.hpp vk/CommandPool.cpp vk/CommandPool.hpp)

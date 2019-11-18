@@ -21,7 +21,6 @@ Vulkan::Vulkan(util::Logger &log)
 , physicalDevice_()
 , queueFamilyIndex_()
 , device_()
-, commandPool_()
 , fence_()
 , vkDebugReportCallback_()
 , vkDestroyDebugReportCallback_()
@@ -42,7 +41,6 @@ void Vulkan::destroy() {
   }
   vkDestroySwapchainKHR(device_, swapchain_, nullptr);
 
-  vkDestroyCommandPool(device_, commandPool_, nullptr);
   vkDestroyFence(device_, fence_, nullptr);
 
   vkDestroyDevice(device_, nullptr);

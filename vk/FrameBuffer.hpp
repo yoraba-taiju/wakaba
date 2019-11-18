@@ -16,6 +16,7 @@ namespace vk {
 class Vulkan;
 class VulkanBuilder;
 class RenderPass;
+class CommandPool;
 class CommandBuffer;
 
 class FrameBuffer final{
@@ -23,15 +24,17 @@ private:
   std::weak_ptr<Vulkan> vulkan_;
   VkFramebuffer vkObj_;
   std::shared_ptr<RenderPass> rendrPass_;
+  std::shared_ptr<CommandPool> commandPool_;
   std::shared_ptr<CommandBuffer> commandBuffer_;
 public:
   FrameBuffer() = delete;
-  ~FrameBuffer();
+  ~FrameBuffer() noexcept;
 
-  explicit FrameBuffer(std::weak_ptr<Vulkan> vulkan, VkFramebuffer vkObj, std::shared_ptr<RenderPass> rendrPass, std::shared_ptr<CommandBuffer> commandBuffer)
+  explicit FrameBuffer(std::weak_ptr<Vulkan> vulkan, VkFramebuffer vkObj, std::shared_ptr<RenderPass> rendrPass, std::shared_ptr<CommandPool> commandPool, std::shared_ptr<CommandBuffer> commandBuffer)
   : vulkan_(std::move(vulkan))
   , vkObj_(vkObj)
   , rendrPass_(std::move(rendrPass))
+  , commandPool_(std::move(commandPool))
   , commandBuffer_(std::move(commandBuffer)) {
   }
 

@@ -24,7 +24,7 @@ public:
   : vulkan_(std::move(vulkan))
   , vkObj_(std::move(renderPass)) {
   }
-  ~RenderPass();
+  ~RenderPass() noexcept;
   inline VkRenderPass vkObj() {
     return this->vkObj_;
   }

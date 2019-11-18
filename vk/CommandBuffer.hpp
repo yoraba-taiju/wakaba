@@ -27,7 +27,7 @@ public:
   , vkObj_(vkObj)
   {
   }
-  ~CommandBuffer();
+  ~CommandBuffer() noexcept;
 public:
   ENABLE_SHARED_HELPER
 };

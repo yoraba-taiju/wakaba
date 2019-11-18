@@ -8,9 +8,9 @@
 #include "../util/Logger.hpp"
 
 #define GLFW_INCLUDE_VULKAN
-
 #include <GLFW/glfw3.h>
 #include "../util/Shared.hpp"
+#include "CommandBuffer.hpp"
 
 namespace vk {
 
@@ -24,11 +24,10 @@ private:
   util::Logger &log_;
   VkInstance instance_;
   VkSurfaceKHR surface_;
-  GLFWwindow *window_;
+  GLFWwindow* window_;
   VkPhysicalDevice physicalDevice_;
   uint32_t queueFamilyIndex_;
   VkDevice device_;
-  VkCommandPool commandPool_;
   VkFence fence_;
   VkSwapchainKHR swapchain_;
   std::vector<VkImage> swapchainImages_;
