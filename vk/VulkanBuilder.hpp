@@ -11,6 +11,9 @@
 
 #include <GLFW/glfw3.h>
 #include "../util/Logger.hpp"
+#include "FrameBuffer.hpp"
+#include "Vulkan.hpp"
+
 
 namespace vk {
 class Vulkan;
@@ -41,5 +44,6 @@ public:
   std::shared_ptr<Vulkan> create();
 
 };
+
 
 }

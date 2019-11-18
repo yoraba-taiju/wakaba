@@ -10,6 +10,7 @@
 #include "vk/Util.hpp"
 
 static int _main(util::Logger& log);
+static int _mainLoop(util::Logger& log, const std::shared_ptr<vk::Vulkan>& vulkan);
 
 int main() {
   util::Logger log;
@@ -38,8 +39,23 @@ static int _main(util::Logger& log) {
   }
   log.debug("Vulkan is supported.");
 
-  std::shared_ptr<vk::Vulkan> vulkan = vk::VulkanBuilder(log, "YorabaTaiju", 1920, 1080).create();
+  {
+    std::shared_ptr<vk::Vulkan> vulkan = vk::VulkanBuilder(log, "YorabaTaiju", 1920, 1080).create();
+    try {
+      _mainLoop(log, vulkan);
+    } catch (std::exception& e) {
+      log.error(e.what());
+    } catch(...) {
+      log.error("Got unknown error!");
+    }
+    vulkan->destroy();
+  }
 
+  glfwTerminate();
+  return 0;
+}
+
+static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulkan) {
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(vulkan->window(), GLFW_STICKY_KEYS, GL_TRUE);
 
@@ -54,7 +70,5 @@ static int _main(util::Logger& log) {
          glfwWindowShouldClose(vulkan->window()) == 0);
 
   // Close OpenGL window and terminate GLFW
-  glfwTerminate();
-  return 0;
 }
 

@@ -246,7 +246,7 @@ void VulkanBuilder::createSwapchain() {
     log_.fatal("[Vulkan] Physical device does not support surface.");
   }
 
-  VkSurfaceCapabilitiesKHR surfaceCaps;
+  VkSurfaceCapabilitiesKHR surfaceCaps{};
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vulkan_->physicalDevice_, vulkan_->surface_, &surfaceCaps);
   // TODO: キャパシティのチェック
 
@@ -277,7 +277,7 @@ void VulkanBuilder::createSwapchain() {
 
   scinfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
   scinfo.surface = vulkan_->surface_;
-  scinfo.minImageCount = 2;
+  scinfo.minImageCount = surfaceCaps.minImageCount;
   scinfo.imageFormat = surfaceFormats[formatIdx].format;
   scinfo.imageColorSpace = surfaceFormats[formatIdx].colorSpace;
   scinfo.imageExtent.width = width_;
@@ -325,7 +325,7 @@ void VulkanBuilder::createSwapchainImageViews() {
 
 void VulkanBuilder::createFrameBuffers() {
   for (size_t i = 0; i < this->vulkan_->swapchainImageViews_.size(); ++i) {
-    std::shared_ptr<RenderPass> renderPass = util::make_shared<RenderPass>();
+    VkRenderPass pass;
     {
       VkAttachmentDescription attachmentDesc{};
       VkAttachmentReference attachmentRef{};
@@ -352,11 +352,13 @@ void VulkanBuilder::createFrameBuffers() {
       renderPassInfo.subpassCount = 1;
       renderPassInfo.pSubpasses = &subpass;
 
-      if (vkCreateRenderPass(vulkan_->device_, &renderPassInfo, nullptr, &renderPass->obj_) != VK_SUCCESS) {
+      if (vkCreateRenderPass(vulkan_->device_, &renderPassInfo, nullptr, &pass) != VK_SUCCESS) {
         log_.fatal("[Vulkan] Failed to create a RenderPass.");
       }
     }
-    std::shared_ptr<CommandBuffer> commandBuffer = util::make_shared<CommandBuffer>();
+    std::shared_ptr<RenderPass> renderPass = util::make_shared<RenderPass>(vulkan_, pass);
+
+    VkCommandBuffer vkCommandBuffer;
     {
       VkCommandBufferAllocateInfo cbAllocInfo{};
 
@@ -365,26 +367,29 @@ void VulkanBuilder::createFrameBuffers() {
       cbAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
       cbAllocInfo.commandBufferCount = 1;
 
-      if (vkAllocateCommandBuffers(vulkan_->device_, &cbAllocInfo, &commandBuffer->obj_) != VK_SUCCESS) {
+      if (vkAllocateCommandBuffers(vulkan_->device_, &cbAllocInfo, &vkCommandBuffer) != VK_SUCCESS) {
         log_.fatal("[Vulkan] Failed to create a Command Buffer.");
       }
     }
-    std::shared_ptr<FrameBuffer> frameBuffer = util::make_shared<FrameBuffer>(renderPass, std::move(commandBuffer));
+    std::shared_ptr<CommandBuffer> commandBuffer = util::make_shared<CommandBuffer>(vulkan_, vkCommandBuffer);
+
+    VkFramebuffer vkFramebuffer;
     {
       VkFramebufferCreateInfo fbinfo{};
       VkImageView attachmentViews[1] = {vulkan_->swapchainImageViews_[i]};
 
       fbinfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
       fbinfo.attachmentCount = 1;
-      fbinfo.renderPass = renderPass->obj_;
+      fbinfo.renderPass = renderPass->vkObj();
       fbinfo.pAttachments = attachmentViews;
       fbinfo.width = this->width_;
       fbinfo.height = this->height_;
       fbinfo.layers = 1;
-      if (vkCreateFramebuffer(vulkan_->device_, &fbinfo, nullptr, &frameBuffer->obj_) != VK_SUCCESS) {
+      if (vkCreateFramebuffer(vulkan_->device_, &fbinfo, nullptr, &vkFramebuffer) != VK_SUCCESS) {
         log_.fatal("[Vulkan] Failed to create a FrameBuffer.");
       }
     }
+    std::shared_ptr<FrameBuffer> frameBuffer = util::make_shared<FrameBuffer>(vulkan_, vkFramebuffer, std::move(renderPass), std::move(commandBuffer));
     this->vulkan_->frameBuffers_.emplace_back(std::move(frameBuffer));
   }
 }

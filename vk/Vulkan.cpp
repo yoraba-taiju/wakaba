@@ -28,14 +28,27 @@ Vulkan::Vulkan(util::Logger &log)
 , swapchain_()
 , swapchainImages_()
 , swapchainImageViews_()
-, frameBuffers_() {
+, frameBuffers_()
+{
 }
 
 Vulkan::~Vulkan() {
-  vkDestroyCommandPool(this->device_, this->commandPool_, nullptr);
-  vkDestroyDevice(this->device_, nullptr);
+}
+
+void Vulkan::destroy() {
+  frameBuffers_.clear();
+  for(auto & view : swapchainImageViews_) {
+    vkDestroyImageView(device_, view, nullptr);
+  }
+  vkDestroySwapchainKHR(device_, swapchain_, nullptr);
+
+  vkDestroyCommandPool(device_, commandPool_, nullptr);
+  vkDestroyFence(device_, fence_, nullptr);
+
+  vkDestroyDevice(device_, nullptr);
   vkDestroySurfaceKHR(this->instance_, this->surface_, nullptr);
   this->vkDestroyDebugReportCallback_(this->instance_, this->vkDebugReportCallback_, nullptr);
+
   vkDestroyInstance(this->instance_, nullptr);
   glfwDestroyWindow(this->window_);
 }

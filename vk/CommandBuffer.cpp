@@ -3,6 +3,14 @@
 //
 
 #include "CommandBuffer.hpp"
+#include "Vulkan.hpp"
 
 namespace vk {
+
+CommandBuffer::~CommandBuffer() {
+  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
+  if(vulkan) {
+  }
+}
+
 }

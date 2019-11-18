@@ -3,7 +3,15 @@
 //
 
 #include "RenderPass.hpp"
+#include "Vulkan.hpp"
 
 namespace vk {
+
+RenderPass::~RenderPass() {
+  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
+  if(vulkan) {
+    vkDestroyRenderPass(vulkan->device(), this->vkObj_, nullptr);
+  }
+}
 
 }

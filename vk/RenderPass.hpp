@@ -16,10 +16,19 @@ class VulkanBuilder;
 
 class RenderPass {
 private:
-  friend class Vulkan;
-  friend class VulkanBuilder;
+  std::weak_ptr<Vulkan> vulkan_;
+  VkRenderPass vkObj_;
+public:
+  RenderPass() = delete;
+  RenderPass(std::weak_ptr<Vulkan> vulkan, VkRenderPass renderPass)
+  : vulkan_(std::move(vulkan))
+  , vkObj_(std::move(renderPass)) {
+  }
+  ~RenderPass();
+  inline VkRenderPass vkObj() {
+    return this->vkObj_;
+  }
 
-  VkRenderPass obj_;
 public:
   ENABLE_SHARED_HELPER
 };

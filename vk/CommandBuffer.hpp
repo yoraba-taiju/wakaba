@@ -7,6 +7,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <utility>
+
 #include "../util/Shared.hpp"
 
 namespace vk {
@@ -14,11 +16,18 @@ namespace vk {
 class Vulkan;
 class VulkanBuilder;
 
-class CommandBuffer {
+class CommandBuffer final {
 private:
-  friend class Vulkan;
-  friend class VulkanBuilder;
-  VkCommandBuffer obj_;
+  std::weak_ptr<Vulkan> vulkan_;
+  VkCommandBuffer vkObj_;
+public:
+  CommandBuffer() = delete;
+  CommandBuffer(std::weak_ptr<Vulkan> vulkan, VkCommandBuffer vkObj)
+  : vulkan_(std::move(vulkan))
+  , vkObj_(vkObj)
+  {
+  }
+  ~CommandBuffer();
 public:
   ENABLE_SHARED_HELPER
 };

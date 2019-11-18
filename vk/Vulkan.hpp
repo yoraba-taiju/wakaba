@@ -39,17 +39,27 @@ private:
   PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback_;
 private:
   explicit Vulkan(util::Logger &log);
-
   ~Vulkan();
 
 public:
-  inline GLFWwindow *window() {
+  inline GLFWwindow* window() {
     return this->window_;
+  }
+
+  inline VkInstance instance() {
+    return this->instance_;
+  }
+
+  inline VkDevice device() {
+    return this->device_;
   }
 
   inline util::Logger log() {
     return this->log_;
   }
+
+public:
+  void destroy();
 
 public:
   ENABLE_SHARED_HELPER
