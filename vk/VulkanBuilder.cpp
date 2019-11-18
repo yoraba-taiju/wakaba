@@ -389,8 +389,9 @@ void VulkanBuilder::createFrameBuffers() {
         log_.fatal("[Vulkan] Failed to create a FrameBuffer.");
       }
     }
-    std::shared_ptr<FrameBuffer> frameBuffer = util::make_shared<FrameBuffer>(vulkan_, vkFramebuffer, std::move(renderPass), std::move(commandBuffer));
-    this->vulkan_->frameBuffers_.emplace_back(std::move(frameBuffer));
+    this->vulkan_->frameBuffers_.emplace_back(
+      util::make_shared<FrameBuffer>(vulkan_, vkFramebuffer, std::move(renderPass), std::move(commandBuffer))
+    );
   }
 }
 
