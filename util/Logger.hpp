@@ -42,6 +42,11 @@ public:
   }
 
   template<typename ...Args>
+  void warn(std::string const &fmt, Args &&...args) {
+    this->log_(Level::WARN, fmt, std::forward<Args>(args)...);
+  }
+
+  template<typename ...Args>
   void error(std::string const &fmt, Args &&...args) {
     this->log_(Level::ERROR, fmt, std::forward<Args>(args)...);
   }
