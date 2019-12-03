@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if (UNIX)
   link_libraries(stdc++fs)
 endif (UNIX)
+if (WIN32)
+  # https://stackoverflow.com/questions/47690822/possible-to-force-cmake-msvc-to-use-utf-8-encoding-for-source-files-without-a-bo
+  add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+  add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+endif(WIN32)
 ###############################################################################
 # Vulkan
 find_package(Vulkan REQUIRED)

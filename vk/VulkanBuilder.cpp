@@ -74,13 +74,13 @@ void VulkanBuilder::createInstance() {
 
   std::vector<std::string> const requiredExtensions = enumerateRequiredInstanceExtensions();
   uint32_t numExtensions = requiredExtensions.size() + 1;
-  const char *extensionNames[numExtensions];
+  std::vector<const char*> extensionNames;
   log_.debug("[[Required Vulkan Extensions]]");
   for (size_t i = 0; i < requiredExtensions.size(); ++i) {
-    extensionNames[i] = requiredExtensions[i].c_str();
+    extensionNames.emplace_back(requiredExtensions[i].c_str());
     log_.debug(" - %s", extensionNames[i]);
   }
-  extensionNames[numExtensions - 1] = VK_EXT_DEBUG_REPORT_EXTENSION_NAME;
+  extensionNames.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 
   std::vector<VkLayerProperties> layers = vk::enumerateInstanceLayerProperties();
   std::vector<const char*> enabledLayers{};
@@ -111,8 +111,8 @@ void VulkanBuilder::createInstance() {
 
   instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   instanceInfo.pApplicationInfo = &appInfo;
-  instanceInfo.enabledExtensionCount = requiredExtensions.size() + 1;
-  instanceInfo.ppEnabledExtensionNames = extensionNames;
+  instanceInfo.enabledExtensionCount = extensionNames.size();
+  instanceInfo.ppEnabledExtensionNames = extensionNames.data();
   instanceInfo.enabledLayerCount = enabledLayers.size();
   instanceInfo.ppEnabledLayerNames = enabledLayers.data();
 
