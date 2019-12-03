@@ -9,6 +9,7 @@
 
 namespace util {
 
-std::string readAllFromFile(std::string const &fname) noexcept(false);
+std::string readAllFromFileAsString(std::string const &fileName) noexcept(false);
+std::vector<uint8_t> readAllFromFile(std::string const &fileName) noexcept(false);
 
 }

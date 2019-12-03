@@ -15,15 +15,18 @@ namespace vk {
 
 class Vulkan;
 class VulkanBuilder;
+class CommandPool;
 
 class CommandBuffer final {
 private:
   std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<CommandPool> commandPool_;
   VkCommandBuffer vkObj_;
 public:
   CommandBuffer() = delete;
-  CommandBuffer(std::weak_ptr<Vulkan> vulkan, VkCommandBuffer vkObj)
+  CommandBuffer(std::weak_ptr<Vulkan> vulkan, std::shared_ptr<CommandPool> commandPool, VkCommandBuffer vkObj)
   : vulkan_(std::move(vulkan))
+  , commandPool_(std::move(commandPool))
   , vkObj_(vkObj)
   {
   }

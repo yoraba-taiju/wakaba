@@ -10,23 +10,28 @@
 
 namespace util {
 
-std::string readAllFromFile(std::string const &fileName) noexcept(false) {
+std::string readAllFromFileAsString(std::string const &fileName) noexcept(false) {
+  std::vector<uint8_t> dat = readAllFromFile(fileName);
+  return std::string(dat.begin(), dat.end());
+}
+
+std::vector<uint8_t> readAllFromFile(std::string const &fileName) noexcept(false) {
   std::uintmax_t const fileSize = std::filesystem::file_size(fileName);
   FILE *const file = fopen(fileName.c_str(), "rb");
   if (!file) {
     std::error_code err = std::make_error_code(static_cast<std::errc>(errno));
     throw std::filesystem::filesystem_error("Error to open file", fileName, err);
   }
-  std::string str;
-  str.resize(fileSize);
-  size_t readed = fread(str.data(), 1, fileSize, file);
+  std::vector<uint8_t> dat;
+  dat.resize(fileSize);
+  size_t readed = fread(dat.data(), 1, fileSize, file);
   if (readed < fileSize) {
     std::error_code err = std::make_error_code(static_cast<std::errc>(errno));
     fclose(file);
     throw std::filesystem::filesystem_error("Error to read all contents from the file", fileName, err);
   }
   fclose(file);
-  return str;
+  return std::move(dat);
 }
 
 }

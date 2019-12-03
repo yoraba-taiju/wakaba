@@ -28,8 +28,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL onError(
   const char *pMessage,
   void *pUserData)
 {
-  auto vk = reinterpret_cast<Vulkan *>(pUserData);
-  vk->log().debug("[From Vulkan :: %s] \n%s", pLayerPrefix, pMessage);
+  auto v = reinterpret_cast<Vulkan*>(pUserData);
+  v->log().debug("[From Vulkan :: %s(%d)] \n%s", pLayerPrefix, messageCode, pMessage);
   return VK_FALSE;
 }
 
@@ -52,7 +52,6 @@ std::shared_ptr<Vulkan> VulkanBuilder::create() {
   this->createSwapchainImages();
   this->createSwapchainImageViews();
   this->createFrameBuffers();
-  this->createCommandBuffers();
 
   return this->vulkan_;
 }
@@ -239,7 +238,6 @@ void VulkanBuilder::createSwapchain() {
 
   VkSurfaceCapabilitiesKHR surfaceCaps{};
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vulkan_->physicalDevice_, vulkan_->surface_, &surfaceCaps);
-  // TODO: キャパシティのチェック
 
   auto surfaceFormats = getPhysicalDeviceSurfaceFormats(vulkan_->physicalDevice_, vulkan_->surface_);
   auto presentModes = getPhysicalDeviceSurfacePresentModes(vulkan_->physicalDevice_, vulkan_->surface_);
@@ -376,7 +374,7 @@ void VulkanBuilder::createFrameBuffers() {
         log_.fatal("[Vulkan] Failed to create a Command Buffer.");
       }
     }
-    std::shared_ptr<CommandBuffer> commandBuffer = util::make_shared<CommandBuffer>(vulkan_, vkCommandBuffer);
+    std::shared_ptr<CommandBuffer> commandBuffer = util::make_shared<CommandBuffer>(vulkan_, commandPool, vkCommandBuffer);
 
     VkFramebuffer vkFramebuffer;
     {

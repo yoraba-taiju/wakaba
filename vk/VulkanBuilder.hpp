@@ -14,7 +14,6 @@
 #include "FrameBuffer.hpp"
 #include "Vulkan.hpp"
 
-
 namespace vk {
 class Vulkan;
 

@@ -8,6 +8,8 @@
 #include "Vulkan.hpp"
 #include "RenderPass.hpp"
 #include "FrameBuffer.hpp"
+#include "ShaderModule.hpp"
+#include "../util/File.hpp"
 
 namespace vk {
 
@@ -49,6 +51,22 @@ void Vulkan::destroy() {
 
   vkDestroyInstance(this->instance_, nullptr);
   glfwDestroyWindow(this->window_);
+}
+
+std::shared_ptr<ShaderModule> Vulkan::loadShaderFromFile(std::string const& filename) {
+  std::vector<uint8_t> data = util::readAllFromFile(filename);
+  VkShaderModuleCreateInfo shaderInfo{};
+
+  shaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+  shaderInfo.codeSize = data.size();
+  shaderInfo.pCode = reinterpret_cast<uint32_t*>(data.data());
+
+  VkShaderModule mod;
+  std::shared_ptr<ShaderModule> shader = util::make_shared<ShaderModule>();
+  if (vkCreateShaderModule(device_, &shaderInfo, nullptr, &shader->obj_) != VK_SUCCESS) {
+    log_.fatal("Failed to create shader module: %s", filename);
+  }
+  return std::move(shader);
 }
 
 }

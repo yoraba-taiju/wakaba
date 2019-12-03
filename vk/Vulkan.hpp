@@ -16,6 +16,7 @@ namespace vk {
 
 class VulkanBuilder;
 class FrameBuffer;
+class ShaderModule;
 
 class Vulkan final {
 private:
@@ -59,6 +60,8 @@ public:
 
 public:
   void destroy();
+  std::shared_ptr<ShaderModule> loadShaderFromFile(std::string const& filename);
+
 
 public:
   ENABLE_SHARED_HELPER

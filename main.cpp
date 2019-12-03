@@ -69,6 +69,6 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   while (glfwGetKey(vulkan->window(), GLFW_KEY_ESCAPE) != GLFW_PRESS &&
          glfwWindowShouldClose(vulkan->window()) == 0);
 
-  // Close OpenGL window and terminate GLFW
+  return 0;
 }
 
