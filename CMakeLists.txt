@@ -6,12 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if (UNIX)
   link_libraries(stdc++fs)
 endif (UNIX)
-
 ###############################################################################
-# OpenGL
-find_package(OpenGL REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIRS})
-link_libraries(${OPENGL_LIBRARIES})
 # Vulkan
 find_package(Vulkan REQUIRED)
 include_directories(Vulkan::Vulkan)
