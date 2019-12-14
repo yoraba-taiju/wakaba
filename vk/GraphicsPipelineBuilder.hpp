@@ -23,6 +23,12 @@ public:
   std::shared_ptr<GraphicsPipeline> build();
 
 public:
+  explicit GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan)
+  :vulkan_(std::move(vulkan))
+  {
+  }
+
+public:
   ENABLE_SHARED_HELPER
 };
 

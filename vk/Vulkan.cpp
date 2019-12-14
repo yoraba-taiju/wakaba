@@ -5,11 +5,13 @@
 #include <memory>
 #include <vector>
 
+#include "../util/File.hpp"
+
 #include "Vulkan.hpp"
 #include "RenderPass.hpp"
 #include "FrameBuffer.hpp"
 #include "ShaderModule.hpp"
-#include "../util/File.hpp"
+#include "GraphicsPipelineBuilder.hpp"
 
 namespace vk {
 
@@ -67,6 +69,10 @@ std::shared_ptr<ShaderModule> Vulkan::loadShaderFromFile(std::string const& file
   }
   std::shared_ptr<ShaderModule> shader = util::make_shared<ShaderModule>(self(), mod);
   return std::move(shader);
+}
+
+std::shared_ptr<GraphicsPipelineBuilder> Vulkan::createGraphicsPipelineBuilder() {
+  return util::make_shared<GraphicsPipelineBuilder>(self());
 }
 
 }

@@ -21,8 +21,8 @@ namespace vk {
 class VulkanBuilder;
 class FrameBuffer;
 class ShaderModule;
-class GraphicsPipeline;
 class PipelineLayout;
+class GraphicsPipelineBuilder;
 
 class Vulkan final : std::enable_shared_from_this<Vulkan> {
 private:
@@ -71,7 +71,7 @@ public:
 public:
   void destroy();
   std::shared_ptr<ShaderModule> loadShaderFromFile(std::string const& filename);
-  std::shared_ptr<GraphicsPipeline> createGraphicsPipeline();
+  std::shared_ptr<GraphicsPipelineBuilder> createGraphicsPipelineBuilder();
 
 public:
   ENABLE_SHARED_HELPER
