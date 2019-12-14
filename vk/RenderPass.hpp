@@ -5,8 +5,8 @@
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
-
 #include <GLFW/glfw3.h>
+
 #include "../util/Shared.hpp"
 
 namespace vk {
@@ -17,16 +17,16 @@ class VulkanBuilder;
 class RenderPass {
 private:
   std::weak_ptr<Vulkan> vulkan_;
-  VkRenderPass vkObj_;
+  VkRenderPass obj_;
 public:
   RenderPass() = delete;
   RenderPass(std::weak_ptr<Vulkan> vulkan, VkRenderPass renderPass)
   : vulkan_(std::move(vulkan))
-  , vkObj_(std::move(renderPass)) {
+  , obj_(renderPass) {
   }
   ~RenderPass() noexcept;
   inline VkRenderPass vkObj() {
-    return this->vkObj_;
+    return this->obj_;
   }
 
 public:

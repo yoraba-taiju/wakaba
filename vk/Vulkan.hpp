@@ -5,20 +5,26 @@
 #pragma once
 
 #include <vector>
-#include "../util/Logger.hpp"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+
+#include "../util/Logger.hpp"
 #include "../util/Shared.hpp"
+
 #include "CommandBuffer.hpp"
+#include "ShaderModule.hpp"
+
 
 namespace vk {
 
 class VulkanBuilder;
 class FrameBuffer;
 class ShaderModule;
+class GraphicsPipeline;
+class PipelineLayout;
 
-class Vulkan final {
+class Vulkan final : std::enable_shared_from_this<Vulkan> {
 private:
   friend class VulkanBuilder;
 
@@ -58,10 +64,14 @@ public:
     return this->log_;
   }
 
+  inline std::shared_ptr<Vulkan> self() {
+    return this->shared_from_this();
+  }
+
 public:
   void destroy();
   std::shared_ptr<ShaderModule> loadShaderFromFile(std::string const& filename);
-
+  std::shared_ptr<GraphicsPipeline> createGraphicsPipeline();
 
 public:
   ENABLE_SHARED_HELPER

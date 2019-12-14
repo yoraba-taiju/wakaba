@@ -22,7 +22,7 @@ class CommandBuffer;
 class FrameBuffer final{
 private:
   std::weak_ptr<Vulkan> vulkan_;
-  VkFramebuffer vkObj_;
+  VkFramebuffer obj_;
   std::shared_ptr<RenderPass> rendrPass_;
   std::shared_ptr<CommandPool> commandPool_;
   std::shared_ptr<CommandBuffer> commandBuffer_;
@@ -32,14 +32,14 @@ public:
 
   explicit FrameBuffer(std::weak_ptr<Vulkan> vulkan, VkFramebuffer vkObj, std::shared_ptr<RenderPass> rendrPass, std::shared_ptr<CommandPool> commandPool, std::shared_ptr<CommandBuffer> commandBuffer)
   : vulkan_(std::move(vulkan))
-  , vkObj_(vkObj)
+  , obj_(vkObj)
   , rendrPass_(std::move(rendrPass))
   , commandPool_(std::move(commandPool))
   , commandBuffer_(std::move(commandBuffer)) {
   }
 
   inline VkFramebuffer vkObj() {
-    return this->vkObj_;
+    return this->obj_;
   }
 
   inline std::shared_ptr<RenderPass> renderPass() {

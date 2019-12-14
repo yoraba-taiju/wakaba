@@ -61,4 +61,4 @@ add_executable(wakaba
     vk/ShaderModule.hpp
     vk/PipelineLayout.cpp
     vk/PipelineLayout.hpp
-    )
+    vk/GraphicsPipeline.cpp vk/GraphicsPipeline.hpp vk/Pipeline.cpp vk/Pipeline.hpp vk/GraphicsPipelineBuilder.cpp vk/GraphicsPipelineBuilder.hpp)
