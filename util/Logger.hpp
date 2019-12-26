@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <ctime>
 #include <iomanip>
-#include <tinyformat.h>
+#include <fmt/printf.h>
 
 namespace util {
 
@@ -66,7 +66,7 @@ private:
     if (level_ > level) {
       return;
     }
-    std::string const msg = tfm::format(fmt.c_str(), std::forward<Args>(args)...);
+    std::string const msg = fmt::sprintf(fmt, std::forward<Args>(args)...);
     std::time_t t = std::time(nullptr);
     std::tm tm = *std::localtime(&t);
     std::stringstream ss;

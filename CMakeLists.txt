@@ -17,15 +17,19 @@ find_package(Vulkan REQUIRED)
 include_directories(Vulkan::Vulkan)
 link_libraries(Vulkan::Vulkan)
 # GLFW
+set(GLFW_VULKAN_STATIC ON CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/glfw)
-include_directories(external/glfw/include)
-link_libraries(glfw ${GLFW_LIBRARIES})
 # GLM
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(GLM_TEST_ENABLE OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/glm)
-include_directories(external/glm)
 ###############################################################################
-# TinyFormat
-include_directories(external/tinyformat)
+# fmt
+set(FMT_TEST OFF CACHE BOOL "" FORCE)
+set(FMT_FUZZ OFF CACHE BOOL "" FORCE)
+add_subdirectory(external/fmt)
 ###############################################################################
 
 add_executable(wakaba
@@ -61,4 +65,13 @@ add_executable(wakaba
     vk/ShaderModule.hpp
     vk/PipelineLayout.cpp
     vk/PipelineLayout.hpp
-    vk/GraphicsPipeline.cpp vk/GraphicsPipeline.hpp vk/Pipeline.cpp vk/Pipeline.hpp vk/GraphicsPipelineBuilder.cpp vk/GraphicsPipelineBuilder.hpp)
+    vk/GraphicsPipeline.cpp
+    vk/GraphicsPipeline.hpp
+    vk/Pipeline.cpp
+    vk/Pipeline.hpp
+    vk/GraphicsPipelineBuilder.cpp
+    vk/GraphicsPipelineBuilder.hpp)
+
+target_link_libraries(wakaba fmt::fmt)
+target_link_libraries(wakaba glm_static)
+target_link_libraries(wakaba glfw)
