@@ -15,6 +15,10 @@ std::string readAllFromFileAsString(std::string const &fileName) noexcept(false)
 }
 
 std::vector<uint8_t> readAllFromFile(std::string const &fileName) noexcept(false) {
+  if (!std::filesystem::exists(fileName)) {
+    std::error_code err = std::make_error_code(static_cast<std::errc>(errno));
+    throw std::filesystem::filesystem_error("File not found", fileName, err);
+  }
   std::uintmax_t const fileSize = std::filesystem::file_size(fileName);
   FILE *const file = fopen(fileName.c_str(), "rb");
   if (!file) {
