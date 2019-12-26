@@ -65,7 +65,7 @@ std::shared_ptr<ShaderModule> Vulkan::loadShaderFromFile(std::string const& file
 
   VkShaderModule mod{};
   if (vkCreateShaderModule(device_, &shaderInfo, nullptr, &mod) != VK_SUCCESS) {
-    log_.fatal("Failed to create shader module: %s", filename);
+    log_.fatal("Failed to create shader module: {}", filename);
   }
   std::shared_ptr<ShaderModule> shader = util::make_shared<ShaderModule>(self(), mod);
   return std::move(shader);

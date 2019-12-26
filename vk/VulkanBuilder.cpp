@@ -29,7 +29,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL onError(
   void *pUserData)
 {
   auto v = reinterpret_cast<Vulkan*>(pUserData);
-  v->log().debug("[From Vulkan :: %s(%d)] \n%s", pLayerPrefix, messageCode, pMessage);
+  v->log().debug("[From Vulkan :: {}({})] \n{}", pLayerPrefix, messageCode, pMessage);
   return VK_FALSE;
 }
 
@@ -78,7 +78,7 @@ void VulkanBuilder::createInstance() {
   log_.debug("[[Required Vulkan Extensions]]");
   for (size_t i = 0; i < requiredExtensions.size(); ++i) {
     extensionNames.emplace_back(requiredExtensions[i].c_str());
-    log_.debug(" - %s", extensionNames[i]);
+    log_.debug(" - {}", extensionNames[i]);
   }
   extensionNames.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 
@@ -93,7 +93,7 @@ void VulkanBuilder::createInstance() {
   };
   log_.debug("[[Available Vulkan Layers]]");
   for (auto & layer : layers) {
-    log_.debug(" - %s (%s :: spec=%d, impl=%d)",
+    log_.debug(" - {} ({} :: spec={}, impl={})",
                layer.layerName,
                layer.description,
                layer.specVersion,
@@ -170,11 +170,11 @@ void VulkanBuilder::createDeviceAndCommandPool() {
     VkPhysicalDeviceMemoryProperties memProps;
     vkGetPhysicalDeviceProperties(device, &props);
     vkGetPhysicalDeviceMemoryProperties(device, &memProps);
-    log_.info(" - %s", props.deviceName);
-    log_.info("   - API version: %08x", props.apiVersion);
-    log_.info("   - driver version: %08x", props.driverVersion);
-    log_.info("   - Vendor ID: %08x", props.vendorID);
-    log_.info("   - Device ID: %08x", props.deviceID);
+    log_.info(" - {}", props.deviceName);
+    log_.info("   - API version: {:08x}", props.apiVersion);
+    log_.info("   - driver version: {:08x}", props.driverVersion);
+    log_.info("   - Vendor ID: {:08x}", props.vendorID);
+    log_.info("   - Device ID: {:08x}", props.deviceID);
   }
   {
     VkDeviceCreateInfo devInfo{};

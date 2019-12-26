@@ -19,7 +19,7 @@ int main() {
   try {
     return _main(log);
   } catch (std::exception& e) {
-    fprintf(stderr, "Unhandled exception: \"%s\"\n", e.what());
+    fprintf(stderr, "Unhandled exception: \"{}\"\n", e.what());
     return -255;
   }
 }
