@@ -15,7 +15,6 @@ endif(WIN32)
 # Vulkan
 find_package(Vulkan REQUIRED)
 include_directories(Vulkan::Vulkan)
-link_libraries(Vulkan::Vulkan)
 # GLFW
 set(GLFW_VULKAN_STATIC ON CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -75,3 +74,4 @@ add_executable(wakaba
 target_link_libraries(wakaba fmt::fmt)
 target_link_libraries(wakaba glm_static)
 target_link_libraries(wakaba glfw)
+target_link_libraries(wakaba Vulkan::Vulkan)
