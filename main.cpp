@@ -47,10 +47,6 @@ static int _main(util::Logger& log) {
   {
     std::shared_ptr<vk::Vulkan> vulkan = vk::VulkanBuilder(log, "YorabaTaiju", 1920, 1080).create();
     try {
-      // FIXME: コンパイルが通るのを調べるだけ。
-      auto builder = vulkan->createGraphicsPipelineBuilder();
-      auto shader = vulkan->createShader<taiju::shaders::vert::Triangle>();
-      builder->addVertexStage(shader);
       _mainLoop(log, vulkan);
     } catch (std::exception& e) {
       log.error(e.what());
@@ -68,12 +64,15 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(vulkan->window(), GLFW_STICKY_KEYS, GL_TRUE);
 
-  do {
+  // FIXME: コンパイルが通るのを調べるだけ。
+  auto builder = vulkan->createGraphicsPipelineBuilder();
+  auto shader = vulkan->createShader<taiju::shaders::vert::Triangle>();
+  builder->addVertexStage(shader);
 
+  do {
     // Swap buffers
     glfwSwapBuffers(vulkan->window());
     glfwPollEvents();
-
   } // Check if the ESC key was pressed or the window was closed
   while (glfwGetKey(vulkan->window(), GLFW_KEY_ESCAPE) != GLFW_PRESS &&
          glfwWindowShouldClose(vulkan->window()) == 0);

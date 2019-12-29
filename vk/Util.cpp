@@ -86,4 +86,19 @@ std::vector<VkImage> getSwapchainImages(VkDevice device, VkSwapchainKHR swapchai
   return std::move(images);
 }
 
+std::string physicalDeviceTypeToString(VkPhysicalDeviceType const type) {
+  switch (type) {
+    case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+      return "Integrated GPU";
+    case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
+      return "Discrete GPU";
+    case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
+      return "Virtual GPU";
+    case VK_PHYSICAL_DEVICE_TYPE_CPU:
+      return "CPU";
+    default:
+      return "???";
+  }
+}
+
 }

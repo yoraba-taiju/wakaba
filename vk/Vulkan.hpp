@@ -29,43 +29,51 @@ class Vulkan final : public std::enable_shared_from_this<Vulkan> {
 private:
   friend class VulkanBuilder;
 
+private: /* Util */
   util::Logger &log_;
+
+private: /* Vulkan */
   VkInstance instance_;
   VkSurfaceKHR surface_;
   GLFWwindow* window_;
   VkPhysicalDevice physicalDevice_;
-  uint32_t queueFamilyIndex_;
+  uint32_t graphicsQueueFamiliIndex_;
+  uint32_t presentQueueFamiliIndex_;
   VkDevice device_;
+  VkQueue graphicsQueue_;
+  VkQueue presentQueue_;
   VkFence fence_;
   VkSwapchainKHR swapchain_;
   std::vector<VkImage> swapchainImages_;
   std::vector<VkImageView> swapchainImageViews_;
   std::vector<std::shared_ptr<FrameBuffer>> frameBuffers_;
+
 private:
   VkDebugReportCallbackEXT vkDebugReportCallback_;
   PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback_;
+
 public:
   explicit Vulkan(util::Logger &log);
   ~Vulkan();
 
 public:
-  inline GLFWwindow* window() {
+  [[ nodiscard ]] GLFWwindow* window() {
     return this->window_;
   }
 
-  inline VkInstance instance() {
+  [[ nodiscard ]] VkInstance instance() {
     return this->instance_;
   }
 
-  inline VkDevice device() {
+  [[ nodiscard ]] VkDevice device() {
     return this->device_;
   }
 
-  inline util::Logger log() {
+  [[ nodiscard ]] util::Logger log() {
     return this->log_;
   }
 
-  inline std::shared_ptr<Vulkan> self() {
+  [[ nodiscard ]] std::shared_ptr<Vulkan> self() {
     return this->shared_from_this();
   }
 

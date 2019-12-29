@@ -108,6 +108,8 @@ void VulkanBuilder::createInstance() {
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   appInfo.applicationVersion = VK_MAKE_VERSION(1, 1, 126);
   appInfo.pApplicationName = this->appName_.c_str();
+  appInfo.pEngineName = "Wakaba Engine";
+  appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
   appInfo.apiVersion = VK_API_VERSION_1_1;
 
   instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -171,51 +173,96 @@ void VulkanBuilder::createDeviceAndCommandPool() {
     VkPhysicalDeviceMemoryProperties memProps;
     vkGetPhysicalDeviceProperties(device, &props);
     vkGetPhysicalDeviceMemoryProperties(device, &memProps);
+    VkPhysicalDeviceFeatures features;
+    vkGetPhysicalDeviceFeatures(device, &features);
     log_.info(" - {}", props.deviceName);
-    log_.info("   - API version: {:08x}", props.apiVersion);
-    log_.info("   - driver version: {:08x}", props.driverVersion);
-    log_.info("   - Vendor ID: {:08x}", props.vendorID);
-    log_.info("   - Device ID: {:08x}", props.deviceID);
+    log_.info("   - properties: ");
+    log_.info("     - API version: {:08x}", props.apiVersion);
+    log_.info("     - driver version: {:08x}", props.driverVersion);
+    log_.info("     - Vendor ID: {:08x}", props.vendorID);
+    log_.info("     - Device ID: {:08x}", props.deviceID);
+    log_.info("     - Device Type: {}", physicalDeviceTypeToString(props.deviceType));
+    log_.info("   - features: ");
+    log_.info("     - shaderFloat64: {}", features.shaderFloat64 ? "yes" : "no");
+    log_.info("     - shaderInt16: {}", features.shaderInt16 ? "yes" : "no");
+    log_.info("     - shaderInt64: {}", features.shaderInt64 ? "yes" : "no");
+    log_.info("     - geometry shader: {}", features.geometryShader ? "yes" : "no");
+    log_.info("     - tessellation shader: {}", features.tessellationShader ? "yes" : "no");
+    log_.info("     - inherited queries: {}", features.inheritedQueries ? "yes" : "no");
   }
+  vulkan_->physicalDevice_ = physicalDevices[0];
   {
     VkDeviceCreateInfo devInfo{};
-    VkDeviceQueueCreateInfo queueInfo{};
-    vulkan_->physicalDevice_ = physicalDevices[0];
-
-    { // Search queue family index for Graphics Queue
-      uint32_t queueFamilyIndex = 0xffffffff;
-      std::vector<VkQueueFamilyProperties> properties = getPhysicalDeviceQueueFamilyProperties(
-          vulkan_->physicalDevice_);
+    { // Search queue family index for Graphics Queue and Present Queue
+      std::optional<uint32_t> graphicsQueueFamilyIndex;
+      std::optional<uint32_t> presentQueueFamilyIndex;
+      std::vector<VkQueueFamilyProperties> properties = getPhysicalDeviceQueueFamilyProperties(vulkan_->physicalDevice_);
       for (size_t i = 0; i < properties.size(); ++i) {
         if ((properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0) {
-          queueFamilyIndex = i;
+          if(!graphicsQueueFamilyIndex.has_value()){
+            graphicsQueueFamilyIndex = i;
+          }
+        }
+        VkBool32 surfaceSupported;
+        vkGetPhysicalDeviceSurfaceSupportKHR(vulkan_->physicalDevice_, i, vulkan_->surface_, &surfaceSupported);
+        if(VK_TRUE == surfaceSupported) {
+          if(!presentQueueFamilyIndex.has_value()) {
+            presentQueueFamilyIndex = i;
+          }
+        }
+        if(graphicsQueueFamilyIndex.has_value() && presentQueueFamilyIndex.has_value()) {
           break;
         }
       }
-      if (queueFamilyIndex == 0xffffffff) {
-        log_.fatal("No Graphics queues available.");
+      if (!graphicsQueueFamilyIndex.has_value()) {
+        log_.fatal("[Vulkan] No Graphics queues available.");
       }
-      vulkan_->queueFamilyIndex_ = queueFamilyIndex;
+      if (!presentQueueFamilyIndex) {
+        log_.fatal("[Vulkan] Physical device does not support swapchain.");
+      }
+      vulkan_->graphicsQueueFamiliIndex_ = graphicsQueueFamilyIndex.value();
+      vulkan_->presentQueueFamiliIndex_ = presentQueueFamilyIndex.value();
     }
 
-    const char *layers[] = {"VK_LAYER_LUNARG_standard_validation"};
-    const char *extensions[] = {"VK_KHR_swapchain"};
-    static float qPriorities[] = {0.0f};
-    queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queueInfo.queueCount = 1;
-    queueInfo.queueFamilyIndex = vulkan_->queueFamilyIndex_;
-    queueInfo.pQueuePriorities = qPriorities;
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    {
+      static float qPriorities[] = {1.0f};
+      // Graphics queue
+      queueCreateInfos.emplace_back(VkDeviceQueueCreateInfo{
+          .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+          .pNext = nullptr,
+          .queueFamilyIndex = vulkan_->graphicsQueueFamiliIndex_,
+          .queueCount = 1,
+          .pQueuePriorities = qPriorities,
+      });
+      if(vulkan_->graphicsQueueFamiliIndex_ != vulkan_->presentQueueFamiliIndex_) {
+        // Present queue
+        queueCreateInfos.emplace_back(VkDeviceQueueCreateInfo{
+            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            .pNext = nullptr,
+            .queueFamilyIndex = vulkan_->presentQueueFamiliIndex_,
+            .queueCount = 1,
+            .pQueuePriorities = qPriorities,
+        });
+      }
+    }
     devInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    devInfo.queueCreateInfoCount = 1;
-    devInfo.pQueueCreateInfos = &queueInfo;
-    devInfo.enabledLayerCount = std::size(layers);
-    devInfo.ppEnabledLayerNames = layers;
+    devInfo.queueCreateInfoCount = queueCreateInfos.size();
+    devInfo.pQueueCreateInfos = queueCreateInfos.data();
+    // enabledLayerCount is deprecated and ignored.
+    // ppEnabledLayerNames is deprecated and ignored.
+    // See https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#extendingvulkan-layers-devicelayerdeprecation.
+    devInfo.enabledLayerCount = 0;
+    devInfo.ppEnabledLayerNames = nullptr;
+    const char *extensions[] = {"VK_KHR_swapchain"};
     devInfo.enabledExtensionCount = std::size(extensions);
     devInfo.ppEnabledExtensionNames = extensions;
 
     if (vkCreateDevice(vulkan_->physicalDevice_, &devInfo, nullptr, &vulkan_->device_) != VK_SUCCESS) {
       log_.fatal("[Vulkan] Failed to create a device.");
     }
+    vkGetDeviceQueue(vulkan_->device_, vulkan_->graphicsQueueFamiliIndex_, 0, &vulkan_->graphicsQueue_);
+    vkGetDeviceQueue(vulkan_->device_, vulkan_->presentQueueFamiliIndex_, 0, &vulkan_->presentQueue_);
   }
 }
 
@@ -228,59 +275,65 @@ void VulkanBuilder::createFence() {
 }
 
 void VulkanBuilder::createSwapchain() {
-  VkSwapchainCreateInfoKHR scinfo{};
-
-  VkBool32 surfaceSupported;
-  vkGetPhysicalDeviceSurfaceSupportKHR(vulkan_->physicalDevice_, vulkan_->queueFamilyIndex_, vulkan_->surface_,
-                                       &surfaceSupported);
-  if (surfaceSupported != VK_TRUE) {
-    log_.fatal("[Vulkan] Physical device does not support surface.");
-  }
-
+  VkSwapchainCreateInfoKHR swapchainCreateInfo{};
   VkSurfaceCapabilitiesKHR surfaceCaps{};
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vulkan_->physicalDevice_, vulkan_->surface_, &surfaceCaps);
 
   auto surfaceFormats = getPhysicalDeviceSurfaceFormats(vulkan_->physicalDevice_, vulkan_->surface_);
   auto presentModes = getPhysicalDeviceSurfacePresentModes(vulkan_->physicalDevice_, vulkan_->surface_);
 
-  size_t formatIdx = 0xffffffff;
+  std::optional<size_t> formatIdx;
   for (size_t i = 0; i < surfaceFormats.size(); ++i) {
     auto format = surfaceFormats[i];
     if (format.format == VK_FORMAT_B8G8R8A8_UNORM && format.colorSpace == VK_COLORSPACE_SRGB_NONLINEAR_KHR) {
       formatIdx = i;
+      break;
     }
   }
-  if (formatIdx == 0xffffffff) {
+  if (!formatIdx.has_value()) {
     log_.fatal("[Vulkan] VK_FORMAT_B8G8R8A8_UNORM & VK_COLORSPACE_SRGB_NONLINEAR_KHR is not supported.");
   }
 
-  size_t presentModeIdx = 0xffffffff;
+  std::optional<size_t> presentModeIdx;
   for (size_t i = 0; i < presentModes.size(); ++i) {
     auto mode = presentModes[i];
     if (mode == VK_PRESENT_MODE_FIFO_KHR) {
       presentModeIdx = i;
     }
   }
-  if (presentModeIdx == 0xffffffff) {
+
+  if (!presentModeIdx.has_value()) {
     log_.fatal("[Vulkan] VK_PRESENT_MODE_FIFO_KHR is not supported.");
   }
 
-  scinfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-  scinfo.surface = vulkan_->surface_;
-  scinfo.minImageCount = surfaceCaps.minImageCount;
-  scinfo.imageFormat = surfaceFormats[formatIdx].format;
-  scinfo.imageColorSpace = surfaceFormats[formatIdx].colorSpace;
-  scinfo.imageExtent.width = width_;
-  scinfo.imageExtent.height = height_;
-  scinfo.imageArrayLayers = 1;
-  scinfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-  scinfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-  scinfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-  scinfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-  scinfo.presentMode = VK_PRESENT_MODE_FIFO_KHR;
-  scinfo.clipped = VK_TRUE;
+  swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+  swapchainCreateInfo.surface = vulkan_->surface_;
+  swapchainCreateInfo.minImageCount = surfaceCaps.minImageCount + 1;
+  swapchainCreateInfo.imageFormat = surfaceFormats[formatIdx.value()].format; // VK_FORMAT_B8G8R8A8_UNORM
+  swapchainCreateInfo.imageColorSpace = surfaceFormats[formatIdx.value()].colorSpace; // VK_COLORSPACE_SRGB_NONLINEAR_KHR
+  swapchainCreateInfo.imageExtent.width = width_;
+  swapchainCreateInfo.imageExtent.height = height_;
+  swapchainCreateInfo.imageArrayLayers = 1;
+  swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+  std::vector<uint32_t> queueFamilyIndex;
+  if (vulkan_->graphicsQueueFamiliIndex_ != vulkan_->presentQueueFamiliIndex_) {
+    swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+    queueFamilyIndex.emplace_back(vulkan_->graphicsQueueFamiliIndex_);
+    queueFamilyIndex.emplace_back(vulkan_->presentQueueFamiliIndex_);
+    swapchainCreateInfo.queueFamilyIndexCount = queueFamilyIndex.size();
+    swapchainCreateInfo.pQueueFamilyIndices = queueFamilyIndex.data();
+  } else {
+    swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    swapchainCreateInfo.queueFamilyIndexCount = 0; // Optional
+    swapchainCreateInfo.pQueueFamilyIndices = nullptr; // Optional
+  }
+  swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+  swapchainCreateInfo.preTransform = surfaceCaps.currentTransform;
+  swapchainCreateInfo.presentMode = presentModes[presentModeIdx.value()]; //VK_PRESENT_MODE_FIFO_KHR
+  swapchainCreateInfo.clipped = VK_TRUE;
+  swapchainCreateInfo.oldSwapchain = nullptr;
 
-  if (vkCreateSwapchainKHR(vulkan_->device_, &scinfo, nullptr, &vulkan_->swapchain_)) {
+  if (vkCreateSwapchainKHR(vulkan_->device_, &swapchainCreateInfo, nullptr, &vulkan_->swapchain_)) {
     log_.fatal("Failed to create swap chain.");
   }
 }
@@ -295,19 +348,26 @@ void VulkanBuilder::createSwapchainImages() {
 void VulkanBuilder::createSwapchainImageViews() {
   vulkan_->swapchainImageViews_.resize(vulkan_->swapchainImages_.size());
   for (size_t i = 0; i < vulkan_->swapchainImages_.size(); ++i) {
-    VkImageViewCreateInfo vinfo{};
-    vinfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    vinfo.image = vulkan_->swapchainImages_[i];
-    vinfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-    vinfo.format = VK_FORMAT_B8G8R8A8_UNORM;
-    vinfo.components = {
-        VK_COMPONENT_SWIZZLE_R,
-        VK_COMPONENT_SWIZZLE_G,
-        VK_COMPONENT_SWIZZLE_B,
-        VK_COMPONENT_SWIZZLE_A,
+    VkImageViewCreateInfo imageViewCreateInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .image = vulkan_->swapchainImages_[i],
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = VK_FORMAT_B8G8R8A8_UNORM,
+        .components = {
+            VK_COMPONENT_SWIZZLE_IDENTITY,
+            VK_COMPONENT_SWIZZLE_IDENTITY,
+            VK_COMPONENT_SWIZZLE_IDENTITY,
+            VK_COMPONENT_SWIZZLE_IDENTITY,
+        },
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1,
+        }
     };
-    vinfo.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
-    if (vkCreateImageView(vulkan_->device_, &vinfo, nullptr, &vulkan_->swapchainImageViews_[i]) != VK_SUCCESS) {
+    if (vkCreateImageView(vulkan_->device_, &imageViewCreateInfo, nullptr, &vulkan_->swapchainImageViews_[i]) != VK_SUCCESS) {
       log_.fatal("[Vulkan] Failed to create an image view");
     }
   }
@@ -353,7 +413,7 @@ void VulkanBuilder::createFrameBuffers() {
       VkCommandPoolCreateInfo info{};
 
       info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-      info.queueFamilyIndex = vulkan_->queueFamilyIndex_;
+      info.queueFamilyIndex = vulkan_->graphicsQueueFamiliIndex_;
       info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
       if (vkCreateCommandPool(vulkan_->device_, &info, nullptr, &vkCommandPool) != VK_SUCCESS) {
