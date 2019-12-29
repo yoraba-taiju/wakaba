@@ -40,7 +40,7 @@ VulkanBuilder::VulkanBuilder(util::Logger &log, std::string appName, int width, 
 }
 
 std::shared_ptr<Vulkan> VulkanBuilder::create() {
-  this->vulkan_ = std::move(util::make_shared<Vulkan>(this->log_));
+  this->vulkan_ = std::make_shared<Vulkan>(this->log_);
 
   this->createWindow();
   this->createInstance();

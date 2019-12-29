@@ -31,21 +31,45 @@ set(FMT_FUZZ OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/fmt)
 ###############################################################################
 
+# [CMake] Build rule for specific file extension
+# https://cmake.org/pipermail/cmake/2010-June/037733.html
+
+function(compileShaders outVariable)
+  set(result)
+  foreach(input ${ARGN})
+    # prepare/set up path for input/output.
+    set(input "${CMAKE_CURRENT_SOURCE_DIR}/${input}")
+    file(RELATIVE_PATH output ${CMAKE_CURRENT_SOURCE_DIR} ${input})
+    set(output "${CMAKE_CURRENT_BINARY_DIR}/${output}.h")
+    # create directory for output.
+    get_filename_component(outputDir ${output} DIRECTORY)
+    file(MAKE_DIRECTORY ${outputDir})
+    # compile it.
+    add_custom_command(OUTPUT ${output}
+        COMMAND glslangValidator -V ${input} --variable-name shaderBinary -o ${output}
+        DEPENDS ${input}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Compiling shaders from ${input} -> ${output}"
+        VERBATIM
+    )
+    list(APPEND result ${output})
+  endforeach()
+  set(${outVariable} "${result}" PARENT_SCOPE)
+endfunction()
+
+compileShaders(SHADER_HEADERS
+    taiju/shaders/vert/Triangle.vert)
+
 add_executable(wakaba
+    ${SHADER_HEADERS}
     main.cpp
+    # util
     util/Shared.hpp
     util/Logger.cpp
     util/Logger.hpp
     util/File.hpp
     util/File.cpp
-    donut/runtime/Value.hpp
-    donut/runtime/Value.cpp
-    taiju/Taiju.cpp
-    taiju/Taiju.hpp
-    taiju/scene/Scene.cpp
-    taiju/scene/Scene.hpp
-    taiju/scenes/TriangleScene.cpp
-    taiju/scenes/TriangleScene.hpp
+    # vk
     vk/Util.cpp
     vk/Util.hpp
     vk/Vulkan.cpp
@@ -69,9 +93,27 @@ add_executable(wakaba
     vk/Pipeline.cpp
     vk/Pipeline.hpp
     vk/GraphicsPipelineBuilder.cpp
-    vk/GraphicsPipelineBuilder.hpp)
+    vk/GraphicsPipelineBuilder.hpp
+    vk/shader/Shader.cpp
+    vk/shader/Shader.hpp
+    vk/shader/VertexShader.cpp
+    vk/shader/VertexShader.hpp
+    # donut
+    donut/runtime/Value.hpp
+    donut/runtime/Value.cpp
+    # taiju
+    taiju/Taiju.cpp
+    taiju/Taiju.hpp
+    taiju/scene/Scene.cpp
+    taiju/scene/Scene.hpp
+    taiju/scenes/TriangleScene.cpp
+    taiju/scenes/TriangleScene.hpp
+    taiju/shaders/vert/Triangle.cpp
+    taiju/shaders/vert/Triangle.hpp
+    )
 
 target_link_libraries(wakaba fmt::fmt)
 target_link_libraries(wakaba glm_static)
 target_link_libraries(wakaba glfw)
 target_link_libraries(wakaba Vulkan::Vulkan)
+target_include_directories(wakaba PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

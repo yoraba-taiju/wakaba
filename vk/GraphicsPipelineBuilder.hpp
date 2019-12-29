@@ -13,12 +13,15 @@
 namespace vk {
 
 class Vulkan;
+class Shader;
+class VertexShader;
 
 class GraphicsPipelineBuilder final {
 private:
   std::shared_ptr<Vulkan> vulkan_;
 private:
-  std::vector<VkPipelineShaderStageCreateInfo> stages_;
+  std::shared_ptr<Shader> vertexShader_;
+  std::shared_ptr<Shader> fragmentShader_;
 public:
   std::shared_ptr<GraphicsPipeline> build();
 
@@ -27,6 +30,11 @@ public:
   :vulkan_(std::move(vulkan))
   {
   }
+
+private:
+  std::vector<VkPipelineShaderStageCreateInfo> buildStages();
+public:
+  GraphicsPipelineBuilder& addVertexStage(std::shared_ptr<VertexShader> const& shader);
 
 public:
   ENABLE_SHARED_HELPER

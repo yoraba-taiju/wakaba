@@ -55,21 +55,6 @@ void Vulkan::destroy() {
   glfwDestroyWindow(this->window_);
 }
 
-std::shared_ptr<ShaderModule> Vulkan::loadShaderFromFile(std::string const& filename) {
-  std::vector<uint8_t> data = util::readAllFromFile(filename);
-  VkShaderModuleCreateInfo shaderInfo{};
-
-  shaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-  shaderInfo.codeSize = data.size();
-  shaderInfo.pCode = reinterpret_cast<uint32_t*>(data.data());
-
-  VkShaderModule mod{};
-  if (vkCreateShaderModule(device_, &shaderInfo, nullptr, &mod) != VK_SUCCESS) {
-    log_.fatal("Failed to create shader module: {}", filename);
-  }
-  std::shared_ptr<ShaderModule> shader = util::make_shared<ShaderModule>(self(), mod);
-  return std::move(shader);
-}
 
 std::shared_ptr<GraphicsPipelineBuilder> Vulkan::createGraphicsPipelineBuilder() {
   return util::make_shared<GraphicsPipelineBuilder>(self());

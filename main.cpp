@@ -8,6 +8,8 @@
 #include "vk/Vulkan.hpp"
 #include "vk/VulkanBuilder.hpp"
 #include "vk/Util.hpp"
+#include "taiju/shaders/vert/Triangle.hpp"
+#include "vk/GraphicsPipelineBuilder.hpp"
 
 static int _main(util::Logger& log);
 static int _mainLoop(util::Logger& log, const std::shared_ptr<vk::Vulkan>& vulkan);
@@ -19,7 +21,10 @@ int main() {
   try {
     return _main(log);
   } catch (std::exception& e) {
-    fprintf(stderr, "Unhandled exception: \"{}\"\n", e.what());
+    fprintf(stderr, "Unhandled exception: \"%s\"\n", e.what());
+    return -255;
+  } catch(...) {
+    fprintf(stderr, "Unknown exception!\n");
     return -255;
   }
 }
@@ -42,6 +47,10 @@ static int _main(util::Logger& log) {
   {
     std::shared_ptr<vk::Vulkan> vulkan = vk::VulkanBuilder(log, "YorabaTaiju", 1920, 1080).create();
     try {
+      // FIXME: コンパイルが通るのを調べるだけ。
+      auto builder = vulkan->createGraphicsPipelineBuilder();
+      auto shader = vulkan->createShader<taiju::shaders::vert::Triangle>();
+      builder->addVertexStage(shader);
       _mainLoop(log, vulkan);
     } catch (std::exception& e) {
       log.error(e.what());

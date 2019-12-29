@@ -14,6 +14,7 @@
 
 #include "CommandBuffer.hpp"
 #include "ShaderModule.hpp"
+#include "shader/Shader.hpp"
 
 
 namespace vk {
@@ -24,7 +25,7 @@ class ShaderModule;
 class PipelineLayout;
 class GraphicsPipelineBuilder;
 
-class Vulkan final : std::enable_shared_from_this<Vulkan> {
+class Vulkan final : public std::enable_shared_from_this<Vulkan> {
 private:
   friend class VulkanBuilder;
 
@@ -43,7 +44,7 @@ private:
 private:
   VkDebugReportCallbackEXT vkDebugReportCallback_;
   PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback_;
-private:
+public:
   explicit Vulkan(util::Logger &log);
   ~Vulkan();
 
@@ -70,11 +71,20 @@ public:
 
 public:
   void destroy();
-  std::shared_ptr<ShaderModule> loadShaderFromFile(std::string const& filename);
-  std::shared_ptr<GraphicsPipelineBuilder> createGraphicsPipelineBuilder();
 
 public:
-  ENABLE_SHARED_HELPER
+  std::shared_ptr<GraphicsPipelineBuilder> createGraphicsPipelineBuilder();
+
+  template<typename T, typename... Args>
+  std::shared_ptr<T> createShader(Args &&... args) {
+    static_assert(std::is_base_of<Shader, T>::value);
+    std::tuple<size_t, const uint32_t*> const binary = Shader::shaderBianry<T>;
+    std::shared_ptr<Vulkan> vulkan = self();
+    std::shared_ptr<ShaderModule> shaderModule =
+        ShaderModule::create(vulkan, std::get<1>(binary), std::get<0>(binary), typeid(T).name());
+    return std::make_shared<T>(vulkan, shaderModule, std::forward<Args>(args)...);
+  }
+
 };
 
 }
