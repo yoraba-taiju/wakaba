@@ -58,7 +58,9 @@ function(compileShaders outVariable)
 endfunction()
 
 compileShaders(SHADER_HEADERS
-    taiju/shaders/vert/Triangle.vert)
+    taiju/shaders/vert/Triangle.vert
+    taiju/shaders/frag/Triangle.frag
+    )
 
 add_executable(wakaba
     ${SHADER_HEADERS}
@@ -98,6 +100,8 @@ add_executable(wakaba
     vk/shader/Shader.hpp
     vk/shader/VertexShader.cpp
     vk/shader/VertexShader.hpp
+    vk/shader/FragmentShader.cpp
+    vk/shader/FragmentShader.hpp
     # donut
     donut/runtime/Value.hpp
     donut/runtime/Value.cpp
@@ -110,6 +114,8 @@ add_executable(wakaba
     taiju/scenes/TriangleScene.hpp
     taiju/shaders/vert/Triangle.cpp
     taiju/shaders/vert/Triangle.hpp
+    taiju/shaders/frag/Triangle.cpp
+    taiju/shaders/frag/Triangle.hpp
     )
 
 target_link_libraries(wakaba fmt::fmt)

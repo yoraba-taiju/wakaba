@@ -66,6 +66,9 @@ void VulkanBuilder::createWindow() {
     glfwTerminate();
     log_.fatal("Failed to open GLFW window.");
   }
+
+  vulkan_->width_ = width_;
+  vulkan_->height_ = height_;
 }
 
 // Initialize Vulkan and create Instance.
@@ -293,6 +296,7 @@ void VulkanBuilder::createSwapchain() {
   if (!formatIdx.has_value()) {
     log_.fatal("[Vulkan] VK_FORMAT_B8G8R8A8_UNORM & VK_COLORSPACE_SRGB_NONLINEAR_KHR is not supported.");
   }
+  vulkan_->swapchainFormat_ = surfaceFormats[formatIdx.value()];
 
   std::optional<size_t> presentModeIdx;
   for (size_t i = 0; i < presentModes.size(); ++i) {
@@ -311,8 +315,8 @@ void VulkanBuilder::createSwapchain() {
   swapchainCreateInfo.minImageCount = surfaceCaps.minImageCount + 1;
   swapchainCreateInfo.imageFormat = surfaceFormats[formatIdx.value()].format; // VK_FORMAT_B8G8R8A8_UNORM
   swapchainCreateInfo.imageColorSpace = surfaceFormats[formatIdx.value()].colorSpace; // VK_COLORSPACE_SRGB_NONLINEAR_KHR
-  swapchainCreateInfo.imageExtent.width = width_;
-  swapchainCreateInfo.imageExtent.height = height_;
+  swapchainCreateInfo.imageExtent.width = vulkan_->width();
+  swapchainCreateInfo.imageExtent.height = vulkan_->height();
   swapchainCreateInfo.imageArrayLayers = 1;
   swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
   std::vector<uint32_t> queueFamilyIndex;
@@ -380,7 +384,7 @@ void VulkanBuilder::createFrameBuffers() {
       VkAttachmentDescription attachmentDesc{};
       VkAttachmentReference attachmentRef{};
 
-      attachmentDesc.format = VK_FORMAT_B8G8R8A8_UNORM;
+      attachmentDesc.format = vulkan_->swapchainFormat_.format;
       attachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
       attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
       attachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -446,8 +450,8 @@ void VulkanBuilder::createFrameBuffers() {
       fbinfo.attachmentCount = 1;
       fbinfo.renderPass = renderPass->vkObj();
       fbinfo.pAttachments = attachmentViews;
-      fbinfo.width = this->width_;
-      fbinfo.height = this->height_;
+      fbinfo.width = vulkan_->width();
+      fbinfo.height = vulkan_->height();
       fbinfo.layers = 1;
       if (vkCreateFramebuffer(vulkan_->device_, &fbinfo, nullptr, &vkFramebuffer) != VK_SUCCESS) {
         log_.fatal("[Vulkan] Failed to create a FrameBuffer.");

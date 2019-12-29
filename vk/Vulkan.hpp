@@ -14,8 +14,8 @@
 
 #include "CommandBuffer.hpp"
 #include "ShaderModule.hpp"
-#include "shader/Shader.hpp"
 
+#include "shader/Shader.hpp"
 
 namespace vk {
 
@@ -36,6 +36,8 @@ private: /* Vulkan */
   VkInstance instance_;
   VkSurfaceKHR surface_;
   GLFWwindow* window_;
+  uint32_t width_;
+  uint32_t height_;
   VkPhysicalDevice physicalDevice_;
   uint32_t graphicsQueueFamiliIndex_;
   uint32_t presentQueueFamiliIndex_;
@@ -44,6 +46,7 @@ private: /* Vulkan */
   VkQueue presentQueue_;
   VkFence fence_;
   VkSwapchainKHR swapchain_;
+  VkSurfaceFormatKHR swapchainFormat_;
   std::vector<VkImage> swapchainImages_;
   std::vector<VkImageView> swapchainImageViews_;
   std::vector<std::shared_ptr<FrameBuffer>> frameBuffers_;
@@ -75,6 +78,14 @@ public:
 
   [[ nodiscard ]] std::shared_ptr<Vulkan> self() {
     return this->shared_from_this();
+  }
+
+  [[ nodiscard ]] uint32_t width() const {
+    return this->width_;
+  }
+
+  [[ nodiscard ]] uint32_t height() const {
+    return this->height_;
   }
 
 public:

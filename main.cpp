@@ -8,8 +8,9 @@
 #include "vk/Vulkan.hpp"
 #include "vk/VulkanBuilder.hpp"
 #include "vk/Util.hpp"
-#include "taiju/shaders/vert/Triangle.hpp"
 #include "vk/GraphicsPipelineBuilder.hpp"
+#include "taiju/shaders/vert/Triangle.hpp"
+#include "taiju/shaders/frag/Triangle.hpp"
 
 static int _main(util::Logger& log);
 static int _mainLoop(util::Logger& log, const std::shared_ptr<vk::Vulkan>& vulkan);
@@ -66,8 +67,11 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
 
   // FIXME: コンパイルが通るのを調べるだけ。
   auto builder = vulkan->createGraphicsPipelineBuilder();
-  auto shader = vulkan->createShader<taiju::shaders::vert::Triangle>();
-  builder->addVertexStage(shader);
+  auto vert = vulkan->createShader<taiju::shaders::vert::Triangle>();
+  auto frag = vulkan->createShader<taiju::shaders::frag::Triangle>();
+  builder->addVertexStage(vert);
+  builder->addFragmentStage(frag);
+  auto pipeline = builder->build();
 
   do {
     // Swap buffers
