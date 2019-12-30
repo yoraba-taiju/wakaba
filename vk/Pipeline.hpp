@@ -15,13 +15,19 @@ class Vulkan;
 class Pipeline {
 private:
   std::weak_ptr<Vulkan> vulkan_;
-  VkPipeline obj_;
+  VkPipeline vkPipeline_;
 protected:
   Pipeline(std::weak_ptr<Vulkan> vulkan, VkPipeline pipeline)
   : vulkan_(std::move(vulkan))
-  , obj_(pipeline) {
+  , vkPipeline_(pipeline) {
   }
   ~Pipeline() noexcept;
+
+public:
+  [[ nodiscard ]] VkPipeline vkPipeline() {
+    return this->vkPipeline_;
+  }
+
 };
 
 }

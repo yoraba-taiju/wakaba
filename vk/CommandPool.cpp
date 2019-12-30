@@ -10,7 +10,7 @@ namespace vk {
 CommandPool::~CommandPool() noexcept {
   std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
   if(vulkan) {
-    vkDestroyCommandPool(vulkan->device(), obj_, nullptr);
+    vkDestroyCommandPool(vulkan->device(), vkCommandPool_, nullptr);
   }
 }
 

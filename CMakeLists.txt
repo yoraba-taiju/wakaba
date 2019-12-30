@@ -116,7 +116,7 @@ add_executable(wakaba
     taiju/shaders/vert/Triangle.hpp
     taiju/shaders/frag/Triangle.cpp
     taiju/shaders/frag/Triangle.hpp
-    )
+    vk/Image/Image.cpp vk/Image/Image.hpp)
 
 target_link_libraries(wakaba fmt::fmt)
 target_link_libraries(wakaba glm_static)

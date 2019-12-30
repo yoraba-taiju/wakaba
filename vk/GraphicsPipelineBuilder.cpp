@@ -135,7 +135,7 @@ std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
       .pDepthStencilState = nullptr, // FIXME
       .pColorBlendState = &this->colorBlendingInfo_,
       .pDynamicState = &this->dynamicStateInfo_,
-      .layout = pipelineLayout->obj(),
+      .layout = pipelineLayout->vkPipelineLayout(),
       .renderPass = nullptr, // FIXME
       .subpass = 0,
       // unused fields
@@ -185,7 +185,7 @@ std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineBuilder::buildStage
         .pNext = nullptr,
         .flags = 0,
         .stage = VK_SHADER_STAGE_VERTEX_BIT,
-        .module = vertexShader_->module()->obj(),
+        .module = vertexShader_->module()->vkShaderModule(),
         .pName = vertexShader_->module()->name().c_str(),
         .pSpecializationInfo = nullptr,
     });
@@ -196,7 +196,7 @@ std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineBuilder::buildStage
         .pNext = nullptr,
         .flags = 0,
         .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-        .module = fragmentShader_->module()->obj(),
+        .module = fragmentShader_->module()->vkShaderModule(),
         .pName = fragmentShader_->module()->name().c_str(),
         .pSpecializationInfo = nullptr,
     });
@@ -219,6 +219,7 @@ std::shared_ptr<PipelineLayout> GraphicsPipelineBuilder::buildPipelineLayout() {
   if (vkCreatePipelineLayout(vulkan_->device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
     vulkan_->log().fatal("failed to create pipeline layout!");
   }
+
   return util::make_shared<PipelineLayout>(vulkan_, pipelineLayout);
 }
 

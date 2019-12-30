@@ -12,7 +12,7 @@ namespace vk {
 ShaderModule::~ShaderModule() noexcept {
   std::shared_ptr<Vulkan> vulkan = this->vulkan_.lock();
   if(vulkan) {
-    vkDestroyShaderModule(vulkan->device(), this->obj_, nullptr);
+    vkDestroyShaderModule(vulkan->device(), vkShaderModule_, nullptr);
   }
 }
 

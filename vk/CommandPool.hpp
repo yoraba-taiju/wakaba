@@ -17,19 +17,19 @@ class Vulkan;
 class CommandPool {
 private:
   std::weak_ptr<Vulkan> vulkan_;
-  VkCommandPool obj_;
+  VkCommandPool vkCommandPool_;
 public:
   CommandPool(std::weak_ptr<Vulkan> vulkan, VkCommandPool vkObj)
   : vulkan_(std::move(vulkan))
-  , obj_(vkObj)
+  , vkCommandPool_(vkObj)
   {
 
   }
   ~CommandPool() noexcept;
 
 public:
-  inline VkCommandPool vkObj() {
-    return this->obj_;
+  [[ nodiscard ]] VkCommandPool vkCommandPool() {
+    return this->vkCommandPool_;
   }
 public:
   ENABLE_SHARED_HELPER

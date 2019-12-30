@@ -33,20 +33,20 @@ private: /* Util */
   util::Logger &log_;
 
 private: /* Vulkan */
-  VkInstance instance_;
-  VkSurfaceKHR surface_;
+  VkInstance vkInstance_;
+  VkSurfaceKHR vkSurface_;
   GLFWwindow* window_;
   uint32_t width_;
   uint32_t height_;
-  VkPhysicalDevice physicalDevice_;
+  VkPhysicalDevice vkPhysicalDevice_;
   uint32_t graphicsQueueFamiliIndex_;
   uint32_t presentQueueFamiliIndex_;
-  VkDevice device_;
-  VkQueue graphicsQueue_;
-  VkQueue presentQueue_;
+  VkDevice vkDevice_;
+  VkQueue vkGraphicsQueue_;
+  VkQueue vkPresentQueue_;
   VkFence fence_;
-  VkSwapchainKHR swapchain_;
-  VkSurfaceFormatKHR swapchainFormat_;
+  VkSwapchainKHR vkSwapchain_;
+  VkSurfaceFormatKHR vkSwapchainFormat_;
   std::vector<VkImage> swapchainImages_;
   std::vector<VkImageView> swapchainImageViews_;
   std::vector<std::shared_ptr<FrameBuffer>> frameBuffers_;
@@ -65,11 +65,11 @@ public:
   }
 
   [[ nodiscard ]] VkInstance instance() {
-    return this->instance_;
+    return this->vkInstance_;
   }
 
   [[ nodiscard ]] VkDevice device() {
-    return this->device_;
+    return this->vkDevice_;
   }
 
   [[ nodiscard ]] util::Logger log() {

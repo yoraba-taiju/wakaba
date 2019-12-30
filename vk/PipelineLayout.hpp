@@ -18,14 +18,14 @@ class Vulkan;
 class PipelineLayout final {
 private:
   std::weak_ptr<Vulkan> vulkan_;
-  VkPipelineLayout obj_;
+  VkPipelineLayout vkPipelineLayout_;
 private:
   PipelineLayout(std::weak_ptr<Vulkan> vulkan, VkPipelineLayout pipelineLayout)
   : vulkan_(std::move(vulkan))
-  , obj_(pipelineLayout) {
+  , vkPipelineLayout_(pipelineLayout) {
   }
 public:
-  [[ nodiscard ]] VkPipelineLayout obj() { return this->obj_; };
+  [[ nodiscard ]] VkPipelineLayout vkPipelineLayout() { return this->vkPipelineLayout_; }
   ~PipelineLayout() noexcept;
 public:
   ENABLE_SHARED_HELPER

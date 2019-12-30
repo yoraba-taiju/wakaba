@@ -23,7 +23,6 @@ private:
   GraphicsPipeline(std::weak_ptr<Vulkan> vulkan, VkPipeline pipeline)
   : Pipeline(std::move(vulkan), pipeline)
   {
-
   }
 public:
   ~GraphicsPipeline() noexcept = default;

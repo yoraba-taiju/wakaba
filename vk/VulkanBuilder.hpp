@@ -19,11 +19,14 @@ class Vulkan;
 
 class VulkanBuilder final {
 private:
-  util::Logger &log_;
+  util::Logger& log_;
   std::shared_ptr<Vulkan> vulkan_;
   std::string appName_;
   int const width_;
   int const height_;
+private:
+  [[ nodiscard ]] util::Logger& log() { return this->log_; }
+  [[ nodiscard ]] std::shared_ptr<Vulkan> const& vulkan() { return this->vulkan_; }
 private:
   void createWindow();
   void createInstance();

@@ -19,16 +19,16 @@ namespace vk {
 
 Vulkan::Vulkan(util::Logger &log)
 : log_(log)
-, instance_()
-, surface_()
+, vkInstance_()
+, vkSurface_()
 , window_()
-, physicalDevice_()
+, vkPhysicalDevice_()
 , graphicsQueueFamiliIndex_()
-, device_()
+, vkDevice_()
 , fence_()
 , vkDebugReportCallback_()
 , vkDestroyDebugReportCallback_()
-, swapchain_()
+, vkSwapchain_()
 , swapchainImages_()
 , swapchainImageViews_()
 , frameBuffers_()
@@ -41,17 +41,17 @@ Vulkan::~Vulkan() {
 void Vulkan::destroy() {
   frameBuffers_.clear();
   for(auto & view : swapchainImageViews_) {
-    vkDestroyImageView(device_, view, nullptr);
+    vkDestroyImageView(vkDevice_, view, nullptr);
   }
-  vkDestroySwapchainKHR(device_, swapchain_, nullptr);
+  vkDestroySwapchainKHR(vkDevice_, vkSwapchain_, nullptr);
 
-  vkDestroyFence(device_, fence_, nullptr);
+  vkDestroyFence(vkDevice_, fence_, nullptr);
 
-  vkDestroyDevice(device_, nullptr);
-  vkDestroySurfaceKHR(this->instance_, this->surface_, nullptr);
-  this->vkDestroyDebugReportCallback_(this->instance_, this->vkDebugReportCallback_, nullptr);
+  vkDestroyDevice(vkDevice_, nullptr);
+  vkDestroySurfaceKHR(this->vkInstance_, this->vkSurface_, nullptr);
+  this->vkDestroyDebugReportCallback_(this->vkInstance_, this->vkDebugReportCallback_, nullptr);
 
-  vkDestroyInstance(this->instance_, nullptr);
+  vkDestroyInstance(this->vkInstance_, nullptr);
   glfwDestroyWindow(this->window_);
 }
 

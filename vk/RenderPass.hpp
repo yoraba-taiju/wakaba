@@ -17,16 +17,16 @@ class VulkanBuilder;
 class RenderPass {
 private:
   std::weak_ptr<Vulkan> vulkan_;
-  VkRenderPass obj_;
+  VkRenderPass vkRenderPass_;
 public:
   RenderPass() = delete;
   RenderPass(std::weak_ptr<Vulkan> vulkan, VkRenderPass renderPass)
   : vulkan_(std::move(vulkan))
-  , obj_(renderPass) {
+  , vkRenderPass_(renderPass) {
   }
   ~RenderPass() noexcept;
-  inline VkRenderPass vkObj() {
-    return this->obj_;
+  [[ nodiscard ]] VkRenderPass vkRenderPass() {
+    return this->vkRenderPass_;
   }
 
 public:
