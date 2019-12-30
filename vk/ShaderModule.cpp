@@ -12,7 +12,7 @@ namespace vk {
 ShaderModule::~ShaderModule() noexcept {
   std::shared_ptr<Vulkan> vulkan = this->vulkan_.lock();
   if(vulkan) {
-    vkDestroyShaderModule(vulkan->device(), vkShaderModule_, nullptr);
+    vkDestroyShaderModule(vulkan->vkDevice(), vkShaderModule_, nullptr);
   }
 }
 
@@ -30,7 +30,7 @@ ShaderModule::create(
   };
 
   VkShaderModule mod{};
-  if (vkCreateShaderModule(vulkan->device(), &shaderInfo, nullptr, &mod) != VK_SUCCESS) {
+  if (vkCreateShaderModule(vulkan->vkDevice(), &shaderInfo, nullptr, &mod) != VK_SUCCESS) {
     vulkan->log().fatal("Failed to create shader module: {}", className);
   }
 

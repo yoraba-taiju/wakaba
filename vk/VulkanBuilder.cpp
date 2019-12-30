@@ -13,6 +13,7 @@
 #include "FrameBuffer.hpp"
 #include "CommandPool.hpp"
 #include "CommandBuffer.hpp"
+#include "image/Image.hpp"
 
 namespace vk {
 
@@ -51,7 +52,6 @@ std::shared_ptr<Vulkan> VulkanBuilder::create() {
   this->createFence();
   this->createSwapchain();
   this->createSwapchainImages();
-  this->createSwapchainImageViews();
   this->createFrameBuffers();
 
   return this->vulkan_;
@@ -343,18 +343,14 @@ void VulkanBuilder::createSwapchain() {
 }
 
 void VulkanBuilder::createSwapchainImages() {
-  vulkan()->swapchainImages_ = getSwapchainImages(vulkan()->vkDevice_, vulkan()->vkSwapchain_);
+  std::vector<VkImage> vkImages = getSwapchainImages(vulkan()->vkDevice_, vulkan()->vkSwapchain_);
   if (vulkan()->swapchainImages_.empty()) {
     log().fatal("No swapchain images available.");
   }
-}
-
-void VulkanBuilder::createSwapchainImageViews() {
-  vulkan()->swapchainImageViews_.resize(vulkan()->swapchainImages_.size());
-  for (size_t i = 0; i < vulkan()->swapchainImages_.size(); ++i) {
+  for(VkImage& vkImage : vkImages) {
     VkImageViewCreateInfo imageViewCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image = vulkan()->swapchainImages_[i],
+        .image = vkImage,
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
         .format = vulkan()->vkSwapchainFormat_.format,
         .components = {
@@ -371,13 +367,16 @@ void VulkanBuilder::createSwapchainImageViews() {
             .layerCount = 1,
         }
     };
-    if (vkCreateImageView(vulkan()->vkDevice_, &imageViewCreateInfo, nullptr, &vulkan()->swapchainImageViews_[i]) != VK_SUCCESS) {
+    VkImageView vkImageView;
+    if (vkCreateImageView(vulkan()->vkDevice_, &imageViewCreateInfo, nullptr, &vkImageView) != VK_SUCCESS) {
       log().fatal("[Vulkan] Failed to create an image view");
     }
+    vulkan()->swapchainImages_.emplace_back(std::make_shared<Image>(vulkan(), vkImage, vkImageView));
   }
 }
 
 void VulkanBuilder::createFrameBuffers() {
+  /*
   for (size_t i = 0; i < this->vulkan()->swapchainImageViews_.size(); ++i) {
     VkRenderPass pass;
     {
@@ -420,7 +419,7 @@ void VulkanBuilder::createFrameBuffers() {
       info.queueFamilyIndex = vulkan()->graphicsQueueFamiliIndex_;
       info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-      if (vkCreateCommandPool(vulkan()->vkDevice_, &info, nullptr, &vkCommandPool) != VK_SUCCESS) {
+      if (vkCreateCommandPool(vulkan()->vkDevice(), &info, nullptr, &vkCommandPool) != VK_SUCCESS) {
         log().fatal("[Vulkan] Failed to create a command pool.");
       }
     }
@@ -435,7 +434,7 @@ void VulkanBuilder::createFrameBuffers() {
       cbAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
       cbAllocInfo.commandBufferCount = 1;
 
-      if (vkAllocateCommandBuffers(vulkan()->vkDevice_, &cbAllocInfo, &vkCommandBuffer) != VK_SUCCESS) {
+      if (vkAllocateCommandBuffers(vulkan()->vkDevice(), &cbAllocInfo, &vkCommandBuffer) != VK_SUCCESS) {
         log().fatal("[Vulkan] Failed to create a Command Buffer.");
       }
     }
@@ -453,14 +452,15 @@ void VulkanBuilder::createFrameBuffers() {
       fbinfo.width = vulkan()->width();
       fbinfo.height = vulkan()->height();
       fbinfo.layers = 1;
-      if (vkCreateFramebuffer(vulkan()->vkDevice_, &fbinfo, nullptr, &vkFramebuffer) != VK_SUCCESS) {
+      if (vkCreateFramebuffer(vulkan()->vkDevice(), &fbinfo, nullptr, &vkFramebuffer) != VK_SUCCESS) {
         log().fatal("[Vulkan] Failed to create a FrameBuffer.");
       }
     }
     this->vulkan()->frameBuffers_.emplace_back(
-      util::make_shared<FrameBuffer>(vulkan_, vkFramebuffer, std::move(renderPass), std::move(commandPool), std::move(commandBuffer))
+      util::make_shared<FrameBuffer>(vulkan(), vkFramebuffer, std::move(renderPass), std::move(commandPool), std::move(commandBuffer))
     );
   }
+   */
 }
 
 }

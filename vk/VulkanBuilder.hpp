@@ -36,7 +36,6 @@ private:
   void createFence();
   void createSwapchain();
   void createSwapchainImages();
-  void createSwapchainImageViews();
   void createFrameBuffers();
 
 public:

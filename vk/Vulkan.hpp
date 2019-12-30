@@ -24,6 +24,7 @@ class FrameBuffer;
 class ShaderModule;
 class PipelineLayout;
 class GraphicsPipelineBuilder;
+class Image;
 
 class Vulkan final : public std::enable_shared_from_this<Vulkan> {
 private:
@@ -33,27 +34,26 @@ private: /* Util */
   util::Logger &log_;
 
 private: /* Vulkan */
-  VkInstance vkInstance_;
-  VkSurfaceKHR vkSurface_;
-  GLFWwindow* window_;
-  uint32_t width_;
-  uint32_t height_;
-  VkPhysicalDevice vkPhysicalDevice_;
-  uint32_t graphicsQueueFamiliIndex_;
-  uint32_t presentQueueFamiliIndex_;
-  VkDevice vkDevice_;
-  VkQueue vkGraphicsQueue_;
-  VkQueue vkPresentQueue_;
-  VkFence fence_;
-  VkSwapchainKHR vkSwapchain_;
-  VkSurfaceFormatKHR vkSwapchainFormat_;
-  std::vector<VkImage> swapchainImages_;
-  std::vector<VkImageView> swapchainImageViews_;
-  std::vector<std::shared_ptr<FrameBuffer>> frameBuffers_;
+  VkInstance vkInstance_{};
+  VkSurfaceKHR vkSurface_{};
+  GLFWwindow* window_{};
+  uint32_t width_{};
+  uint32_t height_{};
+  VkPhysicalDevice vkPhysicalDevice_{};
+  uint32_t graphicsQueueFamiliIndex_{};
+  uint32_t presentQueueFamiliIndex_{};
+  VkDevice vkDevice_{};
+  VkQueue vkGraphicsQueue_{};
+  VkQueue vkPresentQueue_{};
+  VkFence fence_{};
+  VkSwapchainKHR vkSwapchain_{};
+  VkSurfaceFormatKHR vkSwapchainFormat_{};
+  std::vector<std::shared_ptr<Image>> swapchainImages_{};
+  std::vector<std::shared_ptr<FrameBuffer>> frameBuffers_{};
 
 private:
-  VkDebugReportCallbackEXT vkDebugReportCallback_;
-  PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback_;
+  VkDebugReportCallbackEXT vkDebugReportCallback_{};
+  PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback_{};
 
 public:
   explicit Vulkan(util::Logger &log);
@@ -64,11 +64,11 @@ public:
     return this->window_;
   }
 
-  [[ nodiscard ]] VkInstance instance() {
+  [[ nodiscard ]] VkInstance vkInstance() {
     return this->vkInstance_;
   }
 
-  [[ nodiscard ]] VkDevice device() {
+  [[ nodiscard ]] VkDevice vkDevice() {
     return this->vkDevice_;
   }
 
@@ -86,6 +86,10 @@ public:
 
   [[ nodiscard ]] uint32_t height() const {
     return this->height_;
+  }
+
+  [[ nodiscard ]] std::vector<std::shared_ptr<Image>>& swapchainImages() {
+    return this->swapchainImages_;
   }
 
 public:

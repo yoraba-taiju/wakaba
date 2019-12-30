@@ -145,7 +145,7 @@ std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
 
   // https://vulkan.lunarg.com/doc/view/1.0.33.0/linux/vkspec.chunked/ch09s02.html
   // 一個しか作らない。複数作ることもできる。
-  if(vkCreateGraphicsPipelines(vulkan_->device(), nullptr, 1, &pipelineCreateInfo, nullptr, &obj) != VK_SUCCESS) {
+  if(vkCreateGraphicsPipelines(vulkan_->vkDevice(), nullptr, 1, &pipelineCreateInfo, nullptr, &obj) != VK_SUCCESS) {
     vulkan_->log().fatal("Failed to create graphics pipeline.");
   }
   return util::make_shared<GraphicsPipeline>(vulkan_, obj);
@@ -216,7 +216,7 @@ std::shared_ptr<PipelineLayout> GraphicsPipelineBuilder::buildPipelineLayout() {
       .pPushConstantRanges = nullptr, // Optional
   };
 
-  if (vkCreatePipelineLayout(vulkan_->device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+  if (vkCreatePipelineLayout(vulkan_->vkDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
     vulkan_->log().fatal("failed to create pipeline layout!");
   }
 

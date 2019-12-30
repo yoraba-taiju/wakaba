@@ -10,7 +10,7 @@ namespace vk {
 Pipeline::~Pipeline() noexcept {
   std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
   if(vulkan) {
-    vkDestroyPipeline(vulkan->device(), vkPipeline_, nullptr);
+    vkDestroyPipeline(vulkan->vkDevice(), vkPipeline_, nullptr);
   }
 }
 

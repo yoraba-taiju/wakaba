@@ -19,19 +19,6 @@ namespace vk {
 
 Vulkan::Vulkan(util::Logger &log)
 : log_(log)
-, vkInstance_()
-, vkSurface_()
-, window_()
-, vkPhysicalDevice_()
-, graphicsQueueFamiliIndex_()
-, vkDevice_()
-, fence_()
-, vkDebugReportCallback_()
-, vkDestroyDebugReportCallback_()
-, vkSwapchain_()
-, swapchainImages_()
-, swapchainImageViews_()
-, frameBuffers_()
 {
 }
 
@@ -40,9 +27,7 @@ Vulkan::~Vulkan() {
 
 void Vulkan::destroy() {
   frameBuffers_.clear();
-  for(auto & view : swapchainImageViews_) {
-    vkDestroyImageView(vkDevice_, view, nullptr);
-  }
+  swapchainImages_.clear();
   vkDestroySwapchainKHR(vkDevice_, vkSwapchain_, nullptr);
 
   vkDestroyFence(vkDevice_, fence_, nullptr);
