@@ -141,12 +141,16 @@ void VulkanBuilder::createSurface() {
 
 // Create vulkan's debug reporter callback.
 void VulkanBuilder::createDebugReportCallback() {
-  VkDebugReportCallbackCreateInfoEXT callbackInfo{};
-  callbackInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-  callbackInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT |
-                       VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;// | VK_DEBUG_REPORT_INFORMATION_BIT_EXT;
-  callbackInfo.pfnCallback = &onError;
-  callbackInfo.pUserData = vulkan_.get();
+  VkDebugReportCallbackCreateInfoEXT callbackInfo{
+      .sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,
+      .pNext = nullptr,
+      .flags =
+          VK_DEBUG_REPORT_ERROR_BIT_EXT |
+          VK_DEBUG_REPORT_WARNING_BIT_EXT |
+          VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT, // | VK_DEBUG_REPORT_INFORMATION_BIT_EXT
+      .pfnCallback = &onError,
+      .pUserData = vulkan_.get(),
+  };
 
   auto _vkCreateDebugReportCallback = (PFN_vkCreateDebugReportCallbackEXT) (glfwGetInstanceProcAddress(
       this->vulkan()->vkInstance_, "vkCreateDebugReportCallbackEXT"));
@@ -195,7 +199,6 @@ void VulkanBuilder::createDeviceAndCommandPool() {
   }
   vulkan()->vkPhysicalDevice_ = physicalDevices[0];
   {
-    VkDeviceCreateInfo devInfo{};
     { // Search queue family index for Graphics Queue and Present Queue
       std::optional<uint32_t> graphicsQueueFamilyIndex;
       std::optional<uint32_t> presentQueueFamilyIndex;
@@ -234,6 +237,7 @@ void VulkanBuilder::createDeviceAndCommandPool() {
       queueCreateInfos.emplace_back(VkDeviceQueueCreateInfo{
           .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
           .pNext = nullptr,
+          .flags = 0,
           .queueFamilyIndex = vulkan()->graphicsQueueFamiliIndex_,
           .queueCount = 1,
           .pQueuePriorities = qPriorities,
@@ -243,23 +247,29 @@ void VulkanBuilder::createDeviceAndCommandPool() {
         queueCreateInfos.emplace_back(VkDeviceQueueCreateInfo{
             .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
             .pNext = nullptr,
+            .flags = 0,
             .queueFamilyIndex = vulkan()->presentQueueFamiliIndex_,
             .queueCount = 1,
             .pQueuePriorities = qPriorities,
         });
       }
     }
-    devInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    devInfo.queueCreateInfoCount = queueCreateInfos.size();
-    devInfo.pQueueCreateInfos = queueCreateInfos.data();
-    // enabledLayerCount is deprecated and ignored.
-    // ppEnabledLayerNames is deprecated and ignored.
-    // See https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#extendingvulkan-layers-devicelayerdeprecation.
-    devInfo.enabledLayerCount = 0;
-    devInfo.ppEnabledLayerNames = nullptr;
     const char *extensions[] = {"VK_KHR_swapchain"};
-    devInfo.enabledExtensionCount = std::size(extensions);
-    devInfo.ppEnabledExtensionNames = extensions;
+    VkDeviceCreateInfo devInfo = {
+        .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        .queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
+        .pQueueCreateInfos = queueCreateInfos.data(),
+        // enabledLayerCount is deprecated and ignored.
+        // ppEnabledLayerNames is deprecated and ignored.
+        // See https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#extendingvulkan-layers-devicelayerdeprecation.
+        .enabledLayerCount = 0,
+        .ppEnabledLayerNames = nullptr,
+        .enabledExtensionCount = std::size(extensions),
+        .ppEnabledExtensionNames = extensions,
+        .pEnabledFeatures = nullptr, // optional
+    };
 
     if (vkCreateDevice(vulkan()->vkPhysicalDevice_, &devInfo, nullptr, &vulkan()->vkDevice_) != VK_SUCCESS) {
       log().fatal("[Vulkan] Failed to create a device.");
@@ -278,7 +288,6 @@ void VulkanBuilder::createFence() {
 }
 
 void VulkanBuilder::createSwapchain() {
-  VkSwapchainCreateInfoKHR swapchainCreateInfo{};
   VkSurfaceCapabilitiesKHR surfaceCaps{};
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vulkan()->vkPhysicalDevice_, vulkan()->vkSurface_, &surfaceCaps);
 
@@ -310,6 +319,7 @@ void VulkanBuilder::createSwapchain() {
     log().fatal("[Vulkan] VK_PRESENT_MODE_FIFO_KHR is not supported.");
   }
 
+  VkSwapchainCreateInfoKHR swapchainCreateInfo{};
   swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
   swapchainCreateInfo.surface = vulkan()->vkSurface_;
   swapchainCreateInfo.minImageCount = surfaceCaps.minImageCount + 1;
@@ -344,12 +354,14 @@ void VulkanBuilder::createSwapchain() {
 
 void VulkanBuilder::createSwapchainImages() {
   std::vector<VkImage> vkImages = getSwapchainImages(vulkan()->vkDevice_, vulkan()->vkSwapchain_);
-  if (vulkan()->swapchainImages_.empty()) {
+  if (vkImages.empty()) {
     log().fatal("No swapchain images available.");
   }
   for(VkImage& vkImage : vkImages) {
     VkImageViewCreateInfo imageViewCreateInfo = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
         .image = vkImage,
         .viewType = VK_IMAGE_VIEW_TYPE_2D,
         .format = vulkan()->vkSwapchainFormat_.format,
@@ -411,34 +423,6 @@ void VulkanBuilder::createFrameBuffers() {
     }
     std::shared_ptr<RenderPass> renderPass = util::make_shared<RenderPass>(vulkan_, pass);
 
-    VkCommandPool vkCommandPool;
-    {
-      VkCommandPoolCreateInfo info{};
-
-      info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-      info.queueFamilyIndex = vulkan()->graphicsQueueFamiliIndex_;
-      info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-      if (vkCreateCommandPool(vulkan()->vkDevice(), &info, nullptr, &vkCommandPool) != VK_SUCCESS) {
-        log().fatal("[Vulkan] Failed to create a command pool.");
-      }
-    }
-    std::shared_ptr<CommandPool> commandPool = util::make_shared<CommandPool>(vulkan_, vkCommandPool);
-
-    VkCommandBuffer vkCommandBuffer;
-    {
-      VkCommandBufferAllocateInfo cbAllocInfo{};
-
-      cbAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-      cbAllocInfo.commandPool = commandPool->vkCommandPool();
-      cbAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-      cbAllocInfo.commandBufferCount = 1;
-
-      if (vkAllocateCommandBuffers(vulkan()->vkDevice(), &cbAllocInfo, &vkCommandBuffer) != VK_SUCCESS) {
-        log().fatal("[Vulkan] Failed to create a Command Buffer.");
-      }
-    }
-    std::shared_ptr<CommandBuffer> commandBuffer = util::make_shared<CommandBuffer>(vulkan_, commandPool, vkCommandBuffer);
 
     VkFramebuffer vkFramebuffer;
     {

@@ -12,6 +12,8 @@
 #include "FrameBuffer.hpp"
 #include "ShaderModule.hpp"
 #include "GraphicsPipelineBuilder.hpp"
+#include "CommandBuffer.hpp"
+#include "CommandPool.hpp"
 
 namespace vk {
 
@@ -43,6 +45,40 @@ void Vulkan::destroy() {
 
 std::shared_ptr<GraphicsPipelineBuilder> Vulkan::createGraphicsPipelineBuilder() {
   return util::make_shared<GraphicsPipelineBuilder>(self());
+}
+
+std::shared_ptr<CommandBuffer> Vulkan::createCommandBuffer() {
+  VkCommandPool vkCommandPool;
+  {
+    VkCommandPoolCreateInfo info = {
+        .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+        .queueFamilyIndex = graphicsQueueFamiliIndex_,
+    };
+
+    if (vkCreateCommandPool(vkDevice_, &info, nullptr, &vkCommandPool) != VK_SUCCESS) {
+      log().fatal("[Vulkan] Failed to create a command pool.");
+    }
+  }
+  std::shared_ptr<CommandPool> commandPool = util::make_shared<CommandPool>(self(), vkCommandPool);
+
+  VkCommandBuffer vkCommandBuffer;
+  {
+    VkCommandBufferAllocateInfo commandBufferAllocateInfo = {
+        .sType =  VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+        .pNext = nullptr,
+        .commandPool = commandPool->vkCommandPool(),
+        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+        .commandBufferCount = 1
+    };
+
+    if (vkAllocateCommandBuffers(vkDevice(), &commandBufferAllocateInfo, &vkCommandBuffer) != VK_SUCCESS) {
+      log().fatal("[Vulkan] Failed to create a Command Buffer.");
+    }
+  }
+  std::shared_ptr<CommandBuffer> commandBuffer = util::make_shared<CommandBuffer>(self(), commandPool, vkCommandBuffer);
+  return std::move(commandBuffer);
 }
 
 }

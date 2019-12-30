@@ -34,18 +34,21 @@ private: /* Util */
   util::Logger &log_;
 
 private: /* Vulkan */
+  // physical device
+  GLFWwindow* window_{};
   VkInstance vkInstance_{};
   VkSurfaceKHR vkSurface_{};
-  GLFWwindow* window_{};
   uint32_t width_{};
   uint32_t height_{};
   VkPhysicalDevice vkPhysicalDevice_{};
+  // logical device
   uint32_t graphicsQueueFamiliIndex_{};
   uint32_t presentQueueFamiliIndex_{};
   VkDevice vkDevice_{};
   VkQueue vkGraphicsQueue_{};
   VkQueue vkPresentQueue_{};
   VkFence fence_{};
+  // swapchan
   VkSwapchainKHR vkSwapchain_{};
   VkSurfaceFormatKHR vkSwapchainFormat_{};
   std::vector<std::shared_ptr<Image>> swapchainImages_{};
@@ -96,6 +99,7 @@ public:
   void destroy();
 
 public:
+  std::shared_ptr<CommandBuffer> createCommandBuffer();
   std::shared_ptr<GraphicsPipelineBuilder> createGraphicsPipelineBuilder();
 
   template<typename T, typename... Args>
