@@ -1,6 +1,9 @@
-//
-// Created by kaede on 2019/10/30.
-//
+/* coding: utf-8 */
+/**
+ * YorabaTaiju/Wakaba
+ *
+ * Copyright 2019-, Kaede Fujisaki
+ */
 
 #include <utility>
 #include <vector>

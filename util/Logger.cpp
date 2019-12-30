@@ -1,5 +1,8 @@
-//
-// Created by psi on 2019/08/10.
-//
+/* coding: utf-8 */
+/**
+ * YorabaTaiju/Wakaba
+ *
+ * Copyright 2019-, Kaede Fujisaki
+ */
 
 #include "Logger.hpp"

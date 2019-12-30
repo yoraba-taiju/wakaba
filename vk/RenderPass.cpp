@@ -1,6 +1,9 @@
-//
-// Created by kaede on 2019/11/13.
-//
+/* coding: utf-8 */
+/**
+ * YorabaTaiju/Wakaba
+ *
+ * Copyright 2019-, Kaede Fujisaki
+ */
 
 #include "RenderPass.hpp"
 #include "Vulkan.hpp"
