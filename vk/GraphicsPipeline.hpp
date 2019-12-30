@@ -20,7 +20,7 @@ namespace vk {
 class Vulkan;
 class GraphicsPipelineBuilder;
 
-class GraphicsPipeline final : Pipeline {
+class GraphicsPipeline final : public Pipeline {
   friend class GraphicsPipelineBuilder;
 private:
   GraphicsPipeline(std::weak_ptr<Vulkan> vulkan, VkPipeline pipeline)
