@@ -10,8 +10,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "GraphicsPipeline.hpp"
-#include "../util/Shared.hpp"
+#include "../GraphicsPipeline.hpp"
+#include "../../util/Shared.hpp"
 
 namespace vk {
 

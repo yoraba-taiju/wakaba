@@ -14,7 +14,7 @@
 #include "RenderPass.hpp"
 #include "FrameBuffer.hpp"
 #include "ShaderModule.hpp"
-#include "GraphicsPipelineBuilder.hpp"
+#include "builder/GraphicsPipelineBuilder.hpp"
 #include "CommandBuffer.hpp"
 #include "CommandPool.hpp"
 

@@ -13,9 +13,9 @@
 
 #include "util/Logger.hpp"
 #include "vk/Vulkan.hpp"
-#include "vk/VulkanBuilder.hpp"
+#include "vk/builder/VulkanBuilder.hpp"
 #include "vk/Util.hpp"
-#include "vk/GraphicsPipelineBuilder.hpp"
+#include "vk/builder/GraphicsPipelineBuilder.hpp"
 #include "taiju/shaders/vert/Triangle.hpp"
 #include "taiju/shaders/frag/Triangle.hpp"
 
