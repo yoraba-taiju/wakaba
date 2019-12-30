@@ -96,6 +96,8 @@ add_executable(wakaba
     vk/Pipeline.hpp
     vk/GraphicsPipelineBuilder.cpp
     vk/GraphicsPipelineBuilder.hpp
+    vk/image/Image.cpp
+    vk/image/Image.hpp
     vk/shader/Shader.cpp
     vk/shader/Shader.hpp
     vk/shader/VertexShader.cpp
@@ -116,7 +118,7 @@ add_executable(wakaba
     taiju/shaders/vert/Triangle.hpp
     taiju/shaders/frag/Triangle.cpp
     taiju/shaders/frag/Triangle.hpp
-    vk/image/Image.cpp vk/image/Image.hpp)
+)
 
 target_link_libraries(wakaba fmt::fmt)
 target_link_libraries(wakaba glm_static)
