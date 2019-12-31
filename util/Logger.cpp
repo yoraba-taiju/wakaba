@@ -6,3 +6,7 @@
  */
 
 #include "Logger.hpp"
+
+namespace util {
+
+}

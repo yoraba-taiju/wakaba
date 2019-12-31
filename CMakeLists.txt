@@ -14,7 +14,6 @@ endif(WIN32)
 ###############################################################################
 # Vulkan
 find_package(Vulkan REQUIRED)
-include_directories(Vulkan::Vulkan)
 # GLFW
 set(GLFW_VULKAN_STATIC ON CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -119,10 +118,15 @@ add_executable(wakaba
     taiju/shaders/vert/Triangle.hpp
     taiju/shaders/frag/Triangle.cpp
     taiju/shaders/frag/Triangle.hpp
-    vk/builder/RenderPassBuilder.cpp vk/builder/RenderPassBuilder.hpp vk/image/SwapchainImage.cpp vk/image/SwapchainImage.hpp vk/buffer/Buffer.cpp vk/buffer/Buffer.hpp vk/buffer/DeviceMemory.cpp vk/buffer/DeviceMemory.hpp vk/builder/DeviceMemoryBuilder.cpp vk/builder/DeviceMemoryBuilder.hpp vk/builder/BufferBuilder.cpp vk/builder/BufferBuilder.hpp)
+    vk/builder/RenderPassBuilder.cpp vk/builder/RenderPassBuilder.hpp vk/image/SwapchainImage.cpp vk/image/SwapchainImage.hpp vk/buffer/Buffer.cpp vk/buffer/Buffer.hpp vk/buffer/DeviceMemory.cpp vk/buffer/DeviceMemory.hpp vk/builder/DeviceMemoryBuilder.cpp vk/builder/DeviceMemoryBuilder.hpp vk/builder/BufferBuilder.cpp vk/builder/BufferBuilder.hpp vk/buffer/HostVisibleDeviceMemory.cpp vk/buffer/HostVisibleDeviceMemory.hpp vk/builder/HostInvisibleDeviceMemoryBuilder.cpp vk/builder/HostInvisibleDeviceMemoryBuilder.hpp)
 
 target_link_libraries(wakaba fmt::fmt)
 target_link_libraries(wakaba glm_static)
 target_link_libraries(wakaba glfw)
 target_link_libraries(wakaba Vulkan::Vulkan)
 target_include_directories(wakaba PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(wakaba PRIVATE Vulkan::Vulkan)
+target_include_directories(wakaba PRIVATE glfw::glfw)
+target_include_directories(wakaba PRIVATE glm::glm)
+target_include_directories(wakaba PRIVATE fmt::fmt)
+
