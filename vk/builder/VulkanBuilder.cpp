@@ -34,7 +34,12 @@ VKAPI_ATTR VkBool32 VKAPI_CALL onError(
   void *pUserData)
 {
   auto v = reinterpret_cast<Vulkan*>(pUserData);
-  v->log().debug("[From Vulkan :: {}({})] \n{}", pLayerPrefix, messageCode, pMessage);
+  if((flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) == VK_DEBUG_REPORT_ERROR_BIT_EXT) {
+    v->log().error("<< from Vulkan (layer={},messageCode={}) >> \n{}", pLayerPrefix, messageCode, pMessage);
+    // return VK_TRUE; // crash on error.
+  }else{
+    v->log().debug("<< from Vulkan (layer={}, messageCode={}) >> \n{}", pLayerPrefix, messageCode, pMessage);
+  }
   return VK_FALSE;
 }
 

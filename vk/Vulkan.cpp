@@ -20,8 +20,6 @@
 
 namespace vk {
 
-//Builderみたいなのほしい
-
 Vulkan::Vulkan(util::Logger &log)
 : log_(log)
 {

@@ -23,7 +23,7 @@ private:
   VkImageView vkImageView_;
 
 protected:
-  Image(std::shared_ptr<Vulkan> const& vulkan, VkImage vkImage, VkImageView vkImageView)
+  explicit Image(std::shared_ptr<Vulkan> const& vulkan, VkImage vkImage, VkImageView vkImageView)
   :vulkan_(vulkan)
   ,vkImage_(vkImage)
   ,vkImageView_(vkImageView){

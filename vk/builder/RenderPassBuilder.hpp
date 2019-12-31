@@ -69,7 +69,7 @@ private:
   std::optional<VkAttachmentReference> depthStencil_;
   std::vector<uint32_t> preserves_;
 public:
-  SubPassBuilder();
+  explicit SubPassBuilder(VkPipelineBindPoint vkPipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS);
   VkSubpassDescription build();
 
 public:

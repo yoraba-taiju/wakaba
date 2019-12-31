@@ -14,7 +14,7 @@ namespace vk {
 class SwapchainImage : public Image {
 public:
   SwapchainImage() = delete;
-  SwapchainImage(std::shared_ptr<Vulkan> const& vulkan, VkImage vkImage, VkImageView vkImageView);
+  explicit SwapchainImage(std::shared_ptr<Vulkan> const& vulkan, VkImage vkImage, VkImageView vkImageView);
   ~SwapchainImage() noexcept override;
 };
 

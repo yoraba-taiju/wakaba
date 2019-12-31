@@ -87,10 +87,10 @@ VkAttachmentDescription AttachmentBuilder::build() {
   return this->vkAttachmentDescription_;
 }
 
-SubPassBuilder::SubPassBuilder() {
+SubPassBuilder::SubPassBuilder(VkPipelineBindPoint const vkPipelineBindPoint) {
   vkSubpassDescription_ = {
       .flags = 0,
-      .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+      .pipelineBindPoint = vkPipelineBindPoint,
       .inputAttachmentCount = static_cast<uint32_t>(this->inputs_.size()),
       .pInputAttachments = this->inputs_.data(),
       .colorAttachmentCount = static_cast<uint32_t>(this->colors_.size()),

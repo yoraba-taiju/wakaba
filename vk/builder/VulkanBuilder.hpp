@@ -42,7 +42,7 @@ private:
   void createFrameBuffers();
 
 public:
-  VulkanBuilder(util::Logger &log, std::string appName, int width, int height);
+  explicit VulkanBuilder(util::Logger &log, std::string appName, int width, int height);
   VulkanBuilder() = delete;
   VulkanBuilder(VulkanBuilder&&) = delete;
   VulkanBuilder(VulkanBuilder const&) = delete;
