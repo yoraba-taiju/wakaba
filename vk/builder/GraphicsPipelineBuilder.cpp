@@ -6,16 +6,20 @@
  */
 
 #include "../Vulkan.hpp"
-#include "GraphicsPipelineBuilder.hpp"
+#include "../RenderPass.hpp"
 #include "../shader/VertexShader.hpp"
 #include "../shader/FragmentShader.hpp"
-#include "../ShaderModule.hpp"
 #include "../PipelineLayout.hpp"
+
+#include "GraphicsPipelineBuilder.hpp"
+
+#include <utility>
 
 namespace vk {
 
-GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan)
+GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, std::shared_ptr<RenderPass> renderPass)
 :vulkan_(std::move(vulkan))
+,renderPass_(std::move(renderPass))
 {
   // https://vulkan-tutorial.com/en/Drawing_a_triangle/Graphics_pipeline_basics/Fixed_functions
   vertexInputInfo_ = {
@@ -92,7 +96,17 @@ GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan)
       .alphaToCoverageEnable = VK_FALSE, // Optional
       .alphaToOneEnable = VK_FALSE, // Optional
   };
-  this->disableAlphaBlending();
+  // disable color blending
+  colorBlender_ = {
+      .blendEnable = VK_FALSE,
+      .srcColorBlendFactor = VK_BLEND_FACTOR_ONE, // Optional
+      .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO, // Optional
+      .colorBlendOp = VK_BLEND_OP_ADD, // Optional
+      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE, // Optional
+      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO, // Optional
+      .alphaBlendOp = VK_BLEND_OP_ADD, // Optional
+      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+  };
   colorBlendingInfo_ = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
       .pNext = nullptr,
@@ -117,6 +131,7 @@ GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan)
   };
 }
 
+
 std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
   VkPipeline obj;
   std::vector<VkPipelineShaderStageCreateInfo> stages = buildStages();
@@ -139,7 +154,7 @@ std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
       .pColorBlendState = &this->colorBlendingInfo_,
       .pDynamicState = &this->dynamicStateInfo_,
       .layout = pipelineLayout->vkPipelineLayout(),
-      .renderPass = nullptr, // FIXME
+      .renderPass = renderPass_->vkRenderPass(),
       .subpass = 0,
       // unused fields
       .basePipelineHandle = nullptr,
@@ -154,7 +169,11 @@ std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
   return util::make_shared<GraphicsPipeline>(vulkan_, obj);
 }
 
-void GraphicsPipelineBuilder::enableAlphaBlending() {
+std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::self() {
+  return this->shared_from_this();
+}
+
+std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::enableAlphaBlending() {
   this->colorBlender_ = {
       .blendEnable = VK_TRUE,
       .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
@@ -165,9 +184,10 @@ void GraphicsPipelineBuilder::enableAlphaBlending() {
       .alphaBlendOp = VK_BLEND_OP_ADD,
       .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
   };
+  return self();
 }
 
-void GraphicsPipelineBuilder::disableAlphaBlending() {
+std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::disableAlphaBlending() {
   this->colorBlender_ = {
       .blendEnable = VK_FALSE,
       .srcColorBlendFactor = VK_BLEND_FACTOR_ONE, // Optional
@@ -178,6 +198,7 @@ void GraphicsPipelineBuilder::disableAlphaBlending() {
       .alphaBlendOp = VK_BLEND_OP_ADD, // Optional
       .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
   };
+  return self();
 }
 
 std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineBuilder::buildStages() {
@@ -189,7 +210,7 @@ std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineBuilder::buildStage
         .flags = 0,
         .stage = VK_SHADER_STAGE_VERTEX_BIT,
         .module = vertexShader_->module()->vkShaderModule(),
-        .pName = vertexShader_->module()->name().c_str(),
+        .pName = "main",
         .pSpecializationInfo = nullptr,
     });
   }
@@ -200,7 +221,7 @@ std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineBuilder::buildStage
         .flags = 0,
         .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
         .module = fragmentShader_->module()->vkShaderModule(),
-        .pName = fragmentShader_->module()->name().c_str(),
+        .pName = "main",
         .pSpecializationInfo = nullptr,
     });
   }
@@ -226,12 +247,19 @@ std::shared_ptr<PipelineLayout> GraphicsPipelineBuilder::buildPipelineLayout() {
   return util::make_shared<PipelineLayout>(vulkan_, pipelineLayout);
 }
 
-void GraphicsPipelineBuilder::addVertexStage(std::shared_ptr<VertexShader> const& shader) {
-  this->vertexShader_ = shader;
+std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::setRenderPass(std::shared_ptr<RenderPass> renderPass) {
+  this->renderPass_ = std::move(renderPass);
+  return self();
 }
 
-void GraphicsPipelineBuilder::addFragmentStage(std::shared_ptr<FragmentShader> const& shader) {
-  this->fragmentShader_ = shader;
+std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::addVertexStage(std::shared_ptr<VertexShader> shader) {
+  this->vertexShader_ = std::move(shader);
+  return self();
+}
+
+std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::addFragmentStage(std::shared_ptr<FragmentShader> shader) {
+  this->fragmentShader_ = std::move(shader);
+  return self();
 }
 
 

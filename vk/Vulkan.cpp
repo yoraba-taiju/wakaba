@@ -46,8 +46,12 @@ void Vulkan::destroy() {
 }
 
 
-std::shared_ptr<GraphicsPipelineBuilder> Vulkan::createGraphicsPipelineBuilder() {
-  return util::make_shared<GraphicsPipelineBuilder>(self());
+std::shared_ptr<RenderPassBuilder> Vulkan::createRenderPassBuilder() {
+  return util::make_shared<RenderPassBuilder>(self());
+}
+
+std::shared_ptr<GraphicsPipelineBuilder> Vulkan::createGraphicsPipelineBuilder(std::shared_ptr<RenderPass> const& renderPass) {
+  return std::make_shared<GraphicsPipelineBuilder>(self(), renderPass);
 }
 
 std::shared_ptr<CommandBuffer> Vulkan::createCommandBuffer() {

@@ -24,6 +24,7 @@ ShaderModule::create(
     std::shared_ptr<Vulkan> const &vulkan,
     uint32_t const *code, size_t length,
     const char *className) noexcept(false) {
+
   VkShaderModuleCreateInfo shaderInfo{
       .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
       .pNext = nullptr,

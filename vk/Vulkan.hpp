@@ -19,6 +19,8 @@
 #include "ShaderModule.hpp"
 
 #include "shader/Shader.hpp"
+#include "builder/RenderPassBuilder.hpp"
+
 
 namespace vk {
 
@@ -27,7 +29,8 @@ class FrameBuffer;
 class ShaderModule;
 class PipelineLayout;
 class GraphicsPipelineBuilder;
-class Image;
+class RenderPassBuilder;
+class SwapchainImage;
 
 class Vulkan final : public std::enable_shared_from_this<Vulkan> {
 private:
@@ -54,7 +57,7 @@ private: /* Vulkan */
   // swapchan
   VkSwapchainKHR vkSwapchain_{};
   VkSurfaceFormatKHR vkSwapchainFormat_{};
-  std::vector<std::shared_ptr<Image>> swapchainImages_{};
+  std::vector<std::shared_ptr<SwapchainImage>> swapchainImages_{};
   std::vector<std::shared_ptr<FrameBuffer>> frameBuffers_{};
 
 private:
@@ -94,7 +97,7 @@ public:
     return this->height_;
   }
 
-  [[ nodiscard ]] std::vector<std::shared_ptr<Image>>& swapchainImages() {
+  [[ nodiscard ]] std::vector<std::shared_ptr<SwapchainImage>>& swapchainImages() {
     return this->swapchainImages_;
   }
 
@@ -103,7 +106,8 @@ public:
 
 public:
   std::shared_ptr<CommandBuffer> createCommandBuffer();
-  std::shared_ptr<GraphicsPipelineBuilder> createGraphicsPipelineBuilder();
+  std::shared_ptr<RenderPassBuilder> createRenderPassBuilder();
+  std::shared_ptr<GraphicsPipelineBuilder> createGraphicsPipelineBuilder(std::shared_ptr<RenderPass> const& renderPass);
 
   template<typename T, typename... Args>
   std::shared_ptr<T> createShader(Args &&... args) {

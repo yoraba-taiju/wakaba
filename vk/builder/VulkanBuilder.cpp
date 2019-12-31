@@ -17,6 +17,7 @@
 #include "../CommandPool.hpp"
 #include "../CommandBuffer.hpp"
 #include "../image/Image.hpp"
+#include "../image/SwapchainImage.hpp"
 
 namespace vk {
 
@@ -43,7 +44,7 @@ VulkanBuilder::VulkanBuilder(util::Logger &log, std::string appName, int width, 
     : log_(log), appName_(std::move(appName)), width_(width), height_(height), vulkan_() {
 }
 
-std::shared_ptr<Vulkan> VulkanBuilder::create() {
+std::shared_ptr<Vulkan> VulkanBuilder::build() {
   //FIXME: util::make_sharedつかったらshared_from_thisがうまく動かなかった
   this->vulkan_ = std::make_shared<Vulkan>(this->log_);
 
@@ -386,47 +387,12 @@ void VulkanBuilder::createSwapchainImages() {
     if (vkCreateImageView(vulkan()->vkDevice_, &imageViewCreateInfo, nullptr, &vkImageView) != VK_SUCCESS) {
       log().fatal("[Vulkan] Failed to create an image view");
     }
-    vulkan()->swapchainImages_.emplace_back(std::make_shared<Image>(vulkan(), vkImage, vkImageView));
+    vulkan()->swapchainImages_.emplace_back(std::make_shared<SwapchainImage>(vulkan(), vkImage, vkImageView));
   }
 }
 
 void VulkanBuilder::createFrameBuffers() {
   /*
-  for (size_t i = 0; i < this->vulkan()->swapchainImageViews_.size(); ++i) {
-    VkRenderPass pass;
-    {
-      VkAttachmentDescription attachmentDesc{};
-      VkAttachmentReference attachmentRef{};
-
-      attachmentDesc.format = vulkan()->vkSwapchainFormat_.format;
-      attachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-      attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-      attachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-      attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-      attachmentDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-      attachmentRef.attachment = 0;
-      attachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-      VkSubpassDescription subpass{};
-      VkRenderPassCreateInfo renderPassInfo{};
-
-      subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-      subpass.colorAttachmentCount = 1;
-      subpass.pColorAttachments = &attachmentRef;
-      renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-      renderPassInfo.attachmentCount = 1;
-      renderPassInfo.pAttachments = &attachmentDesc;
-      renderPassInfo.subpassCount = 1;
-      renderPassInfo.pSubpasses = &subpass;
-
-      if (vkCreateRenderPass(vulkan()->vkDevice_, &renderPassInfo, nullptr, &pass) != VK_SUCCESS) {
-        log().fatal("[Vulkan] Failed to create a RenderPass.");
-      }
-    }
-    std::shared_ptr<RenderPass> renderPass = util::make_shared<RenderPass>(vulkan_, pass);
-
-
     VkFramebuffer vkFramebuffer;
     {
       VkFramebufferCreateInfo fbinfo{};

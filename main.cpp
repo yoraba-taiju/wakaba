@@ -53,7 +53,7 @@ static int _main(util::Logger& log) {
   log.debug("Vulkan is supported.");
 
   {
-    std::shared_ptr<vk::Vulkan> vulkan = vk::VulkanBuilder(log, "YorabaTaiju", 1920, 1080).create();
+    std::shared_ptr<vk::Vulkan> vulkan = vk::VulkanBuilder(log, "YorabaTaiju", 1920, 1080).build();
     try {
       _mainLoop(log, vulkan);
     } catch (std::exception& e) {
@@ -73,7 +73,11 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   glfwSetInputMode(vulkan->window(), GLFW_STICKY_KEYS, GL_TRUE);
 
   // FIXME: コンパイルが通るのを調べるだけ。
-  auto builder = vulkan->createGraphicsPipelineBuilder();
+  auto renderPassBuilder = vulkan->createRenderPassBuilder();
+  renderPassBuilder->addSubPass().addColor(0);
+  renderPassBuilder->addAttachment(VK_FORMAT_B8G8R8A8_UNORM);
+  auto renderPass = renderPassBuilder->build();
+  auto builder = vulkan->createGraphicsPipelineBuilder(renderPass);
   auto vert = vulkan->createShader<taiju::shaders::vert::Triangle>();
   auto frag = vulkan->createShader<taiju::shaders::frag::Triangle>();
   builder->addVertexStage(vert);

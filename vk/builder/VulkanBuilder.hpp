@@ -43,8 +43,14 @@ private:
 
 public:
   VulkanBuilder(util::Logger &log, std::string appName, int width, int height);
+  VulkanBuilder() = delete;
+  VulkanBuilder(VulkanBuilder&&) = delete;
+  VulkanBuilder(VulkanBuilder const&) = delete;
+  VulkanBuilder& operator=(VulkanBuilder&&) = delete;
+  VulkanBuilder& operator=(VulkanBuilder const&) = delete;
 
-  std::shared_ptr<Vulkan> create();
+public:
+  std::shared_ptr<Vulkan> build();
 
 };
 
