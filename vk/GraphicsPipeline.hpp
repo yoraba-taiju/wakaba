@@ -23,7 +23,7 @@ class GraphicsPipelineBuilder;
 class GraphicsPipeline final : public Pipeline {
   friend class GraphicsPipelineBuilder;
 private:
-  GraphicsPipeline(std::weak_ptr<Vulkan> vulkan, VkPipeline pipeline)
+  explicit GraphicsPipeline(std::weak_ptr<Vulkan> vulkan, VkPipeline pipeline)
   : Pipeline(std::move(vulkan), pipeline)
   {
   }

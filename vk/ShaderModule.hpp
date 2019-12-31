@@ -25,7 +25,7 @@ private:
   std::string name_;
   VkShaderModule vkShaderModule_;
 private:
-  ShaderModule(std::weak_ptr<Vulkan> vulkan, std::string name, VkShaderModule shaderModule)
+  explicit ShaderModule(std::weak_ptr<Vulkan> vulkan, std::string name, VkShaderModule shaderModule)
   : vulkan_(std::move(vulkan))
   , name_(std::move(name))
   , vkShaderModule_(shaderModule) {

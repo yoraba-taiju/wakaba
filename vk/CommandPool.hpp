@@ -22,7 +22,7 @@ private:
   std::weak_ptr<Vulkan> vulkan_;
   VkCommandPool vkCommandPool_;
 public:
-  CommandPool(std::weak_ptr<Vulkan> vulkan, VkCommandPool vkObj)
+  explicit CommandPool(std::weak_ptr<Vulkan> vulkan, VkCommandPool vkObj)
   : vulkan_(std::move(vulkan))
   , vkCommandPool_(vkObj)
   {

@@ -20,7 +20,7 @@ private:
   std::weak_ptr<Vulkan> vulkan_;
   VkPipeline vkPipeline_;
 protected:
-  Pipeline(std::weak_ptr<Vulkan> vulkan, VkPipeline pipeline)
+  explicit Pipeline(std::weak_ptr<Vulkan> vulkan, VkPipeline pipeline)
   : vulkan_(std::move(vulkan))
   , vkPipeline_(pipeline) {
   }

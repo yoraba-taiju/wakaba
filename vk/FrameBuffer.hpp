@@ -33,9 +33,9 @@ public:
   FrameBuffer() = delete;
   ~FrameBuffer() noexcept;
 
-  explicit FrameBuffer(std::weak_ptr<Vulkan> vulkan, VkFramebuffer vkObj, std::shared_ptr<RenderPass> rendrPass, std::shared_ptr<CommandPool> commandPool, std::shared_ptr<CommandBuffer> commandBuffer)
+  explicit FrameBuffer(std::weak_ptr<Vulkan> vulkan, VkFramebuffer vkFramebuffer, std::shared_ptr<RenderPass> rendrPass, std::shared_ptr<CommandPool> commandPool, std::shared_ptr<CommandBuffer> commandBuffer)
   : vulkan_(std::move(vulkan))
-  , vkFramebuffer_(vkObj)
+  , vkFramebuffer_(vkFramebuffer)
   , rendrPass_(std::move(rendrPass))
   , commandPool_(std::move(commandPool))
   , commandBuffer_(std::move(commandBuffer)) {

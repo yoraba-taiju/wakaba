@@ -23,7 +23,7 @@ private:
   std::weak_ptr<Vulkan> vulkan_;
   VkPipelineLayout vkPipelineLayout_;
 private:
-  PipelineLayout(std::weak_ptr<Vulkan> vulkan, VkPipelineLayout pipelineLayout)
+  explicit PipelineLayout(std::weak_ptr<Vulkan> vulkan, VkPipelineLayout pipelineLayout)
   : vulkan_(std::move(vulkan))
   , vkPipelineLayout_(pipelineLayout) {
   }

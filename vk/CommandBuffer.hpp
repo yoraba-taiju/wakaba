@@ -27,7 +27,7 @@ private:
   VkCommandBuffer vkCommandBuffer_;
 public:
   CommandBuffer() = delete;
-  CommandBuffer(std::weak_ptr<Vulkan> vulkan, std::shared_ptr<CommandPool> commandPool, VkCommandBuffer vkObj)
+  explicit CommandBuffer(std::weak_ptr<Vulkan> vulkan, std::shared_ptr<CommandPool> commandPool, VkCommandBuffer vkObj)
   : vulkan_(std::move(vulkan))
   , commandPool_(std::move(commandPool))
   , vkCommandBuffer_(vkObj)

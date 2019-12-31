@@ -37,7 +37,7 @@ private: // input info
   VkPipelineViewportStateCreateInfo viewportInfo_{};
   VkPipelineRasterizationStateCreateInfo rasterizerInfo_{};
   VkPipelineMultisampleStateCreateInfo multisamplingInfo_{};
-  //VkPipelineDepthStencilStateCreateInfo depthStencilInfo_{};
+  VkPipelineDepthStencilStateCreateInfo depthStencilInfo_{};
   VkPipelineColorBlendAttachmentState colorBlender_{};
   VkPipelineColorBlendStateCreateInfo colorBlendingInfo_{};
 

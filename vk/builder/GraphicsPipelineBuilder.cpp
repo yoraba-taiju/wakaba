@@ -96,6 +96,16 @@ GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan,
       .alphaToCoverageEnable = VK_FALSE, // Optional
       .alphaToOneEnable = VK_FALSE, // Optional
   };
+  depthStencilInfo_ = {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = 0,
+      .depthTestEnable = VK_FALSE,
+      .depthWriteEnable = VK_FALSE,
+      .depthCompareOp = VK_COMPARE_OP_NEVER,
+      .depthBoundsTestEnable = VK_FALSE,
+      .stencilTestEnable = VK_FALSE,
+  };
   // disable color blending
   colorBlender_ = {
       .blendEnable = VK_FALSE,
@@ -150,7 +160,7 @@ std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
       .pViewportState = &this->viewportInfo_,
       .pRasterizationState = &this->rasterizerInfo_,
       .pMultisampleState = &this->multisamplingInfo_,
-      .pDepthStencilState = nullptr, // FIXME
+      .pDepthStencilState = &this->depthStencilInfo_,
       .pColorBlendState = &this->colorBlendingInfo_,
       .pDynamicState = &this->dynamicStateInfo_,
       .layout = pipelineLayout->vkPipelineLayout(),

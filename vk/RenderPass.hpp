@@ -23,7 +23,7 @@ private:
   VkRenderPass vkRenderPass_;
 public:
   RenderPass() = delete;
-  RenderPass(std::weak_ptr<Vulkan> vulkan, VkRenderPass renderPass)
+  explicit RenderPass(std::weak_ptr<Vulkan> vulkan, VkRenderPass renderPass)
   : vulkan_(std::move(vulkan))
   , vkRenderPass_(renderPass) {
   }
