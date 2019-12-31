@@ -23,4 +23,6 @@ namespace {
 #include "taiju/shaders/frag/Triangle.frag.h"
 }
 template <>
-std::tuple<size_t, const uint32_t*> Shader::shaderBianry<Triangle> = std::tuple<size_t, const uint32_t*>(sizeof(shaderBinary), shaderBinary);
+std::tuple<size_t, const uint32_t*> Shader::loadBianry<Triangle>() {
+  return std::tuple<size_t, const uint32_t*>(sizeof(shaderBinary), shaderBinary);
+}

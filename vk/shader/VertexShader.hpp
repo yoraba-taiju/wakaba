@@ -9,6 +9,8 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
+
 #include "../../util/Shared.hpp"
 #include "../ShaderModule.hpp"
 #include "Shader.hpp"
@@ -31,6 +33,10 @@ protected:
   {
   }
 
+public:
+  virtual std::tuple<
+      std::vector<VkVertexInputBindingDescription>,
+      std::vector<VkVertexInputAttributeDescription>> inputDescription() = 0;
 public:
   ~VertexShader() noexcept override;
 };

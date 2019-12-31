@@ -27,8 +27,8 @@ private:
 private:
   std::shared_ptr<RenderPass> renderPass_;
 private:
-  std::shared_ptr<Shader> vertexShader_{};
-  std::shared_ptr<Shader> fragmentShader_{};
+  std::shared_ptr<VertexShader> vertexShader_{};
+  std::shared_ptr<FragmentShader> fragmentShader_{};
 private: // input info
   VkPipelineVertexInputStateCreateInfo vertexInputInfo_{};
   VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo_{};
@@ -57,7 +57,6 @@ public:
   GraphicsPipelineBuilder& operator=(GraphicsPipelineBuilder&&) = delete;
   GraphicsPipelineBuilder& operator=(GraphicsPipelineBuilder const&) = delete;
 private:
-  std::vector<VkPipelineShaderStageCreateInfo> buildStages();
   std::shared_ptr<PipelineLayout> buildPipelineLayout();
 public:
   GraphicsPipelineBuilder& setRenderPass(std::shared_ptr<RenderPass> renderPass);

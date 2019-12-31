@@ -11,6 +11,7 @@
 
 #include "../../../vk/shader/VertexShader.hpp"
 #include "../../../util/Shared.hpp"
+#include "../../../external/glm/glm/glm.hpp"
 
 namespace vk {
 class Vulkan;
@@ -21,8 +22,16 @@ namespace taiju::shaders::vert {
 
 class Triangle final : public vk::VertexShader {
 public:
+  struct Input {
+    glm::vec2 pos;
+    glm::vec3 color;
+  };
+public:
   explicit Triangle(std::shared_ptr<vk::Vulkan> const& vulkan, std::shared_ptr<vk::ShaderModule> module);
   ~Triangle() noexcept override = default;
+  std::tuple<
+      std::vector<VkVertexInputBindingDescription>,
+      std::vector<VkVertexInputAttributeDescription>> inputDescription() override;
 };
 
 }

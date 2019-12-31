@@ -21,7 +21,7 @@ private:
   std::shared_ptr<ShaderModule> module_;
 protected:
   template <typename T>
-  static std::tuple<size_t, const uint32_t*> const shaderBianry;
+  static std::tuple<size_t, const uint32_t*> loadBianry();
 public:
   Shader(Shader&&) = delete;
   Shader(Shader const&) = delete;

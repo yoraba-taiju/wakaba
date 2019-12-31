@@ -144,8 +144,43 @@ GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan,
 
 std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
   VkPipeline obj;
-  std::vector<VkPipelineShaderStageCreateInfo> stages = buildStages();
+
+  // temporary storage to build
+  std::vector<VkPipelineShaderStageCreateInfo> stages;
+  std::tuple<
+      std::vector<VkVertexInputBindingDescription>,
+      std::vector<VkVertexInputAttributeDescription>> vertexInputDescription;
+
+  if(vertexShader_) {
+    stages.emplace_back(VkPipelineShaderStageCreateInfo {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        .stage = VK_SHADER_STAGE_VERTEX_BIT,
+        .module = vertexShader_->module()->vkShaderModule(),
+        .pName = "main",
+        .pSpecializationInfo = nullptr,
+    });
+    vertexInputDescription = vertexShader_->inputDescription();
+    this->vertexInputInfo_.vertexBindingDescriptionCount = std::get<0>(vertexInputDescription).size();
+    this->vertexInputInfo_.pVertexBindingDescriptions = std::get<0>(vertexInputDescription).data();
+    this->vertexInputInfo_.vertexAttributeDescriptionCount = std::get<1>(vertexInputDescription).size();
+    this->vertexInputInfo_.pVertexAttributeDescriptions = std::get<1>(vertexInputDescription).data();
+  }
+  if(fragmentShader_) {
+    stages.emplace_back(VkPipelineShaderStageCreateInfo {
+        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+        .pNext = nullptr,
+        .flags = 0,
+        .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+        .module = fragmentShader_->module()->vkShaderModule(),
+        .pName = "main",
+        .pSpecializationInfo = nullptr,
+    });
+  }
+
   std::shared_ptr<PipelineLayout> pipelineLayout = buildPipelineLayout();
+
   VkGraphicsPipelineCreateInfo pipelineCreateInfo = {
       .sType =  VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
       .pNext = nullptr,
@@ -176,6 +211,7 @@ std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
   if(vkCreateGraphicsPipelines(vulkan_->vkDevice(), nullptr, 1, &pipelineCreateInfo, nullptr, &obj) != VK_SUCCESS) {
     vulkan_->log().fatal("Failed to create graphics pipeline.");
   }
+
   return util::make_shared<GraphicsPipeline>(vulkan_, obj);
 }
 
@@ -205,33 +241,6 @@ GraphicsPipelineBuilder& GraphicsPipelineBuilder::disableAlphaBlending() {
       .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
   };
   return *this;
-}
-
-std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineBuilder::buildStages() {
-  std::vector<VkPipelineShaderStageCreateInfo> stages;
-  if(vertexShader_) {
-    stages.emplace_back(VkPipelineShaderStageCreateInfo {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-        .pNext = nullptr,
-        .flags = 0,
-        .stage = VK_SHADER_STAGE_VERTEX_BIT,
-        .module = vertexShader_->module()->vkShaderModule(),
-        .pName = "main",
-        .pSpecializationInfo = nullptr,
-    });
-  }
-  if(fragmentShader_) {
-    stages.emplace_back(VkPipelineShaderStageCreateInfo {
-        .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-        .pNext = nullptr,
-        .flags = 0,
-        .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-        .module = fragmentShader_->module()->vkShaderModule(),
-        .pName = "main",
-        .pSpecializationInfo = nullptr,
-    });
-  }
-  return std::move(stages);
 }
 
 std::shared_ptr<PipelineLayout> GraphicsPipelineBuilder::buildPipelineLayout() {

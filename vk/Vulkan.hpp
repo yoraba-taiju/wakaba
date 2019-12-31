@@ -117,7 +117,7 @@ public:
   template<typename T, typename... Args>
   std::shared_ptr<T> createShader(Args &&... args) {
     static_assert(std::is_base_of<Shader, T>::value);
-    std::tuple<size_t, const uint32_t*> const binary = Shader::shaderBianry<T>;
+    std::tuple<size_t, const uint32_t*> const binary = Shader::loadBianry<T>();
     std::shared_ptr<Vulkan> vulkan = self();
     std::shared_ptr<ShaderModule> shaderModule =
         ShaderModule::create(vulkan, std::get<1>(binary), std::get<0>(binary), typeid(T).name());
