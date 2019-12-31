@@ -21,10 +21,6 @@ RenderPassBuilder::RenderPassBuilder(std::shared_ptr<Vulkan> vulkan)
   };
 }
 
-std::shared_ptr<RenderPassBuilder> RenderPassBuilder::self() {
-  return this->shared_from_this();
-}
-
 std::shared_ptr<RenderPass> RenderPassBuilder::build() {
   VkRenderPass pass{};
   VkRenderPassCreateInfo renderPassInfo = renderPassInfo_;

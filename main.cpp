@@ -73,16 +73,16 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   glfwSetInputMode(vulkan->window(), GLFW_STICKY_KEYS, GL_TRUE);
 
   // FIXME: コンパイルが通るのを調べるだけ。
-  auto renderPassBuilder = vulkan->createRenderPassBuilder();
-  renderPassBuilder->addSubPass().addColor(0);
-  renderPassBuilder->addAttachment(VK_FORMAT_B8G8R8A8_UNORM);
-  auto renderPass = renderPassBuilder->build();
-  auto builder = vulkan->createGraphicsPipelineBuilder(renderPass);
+  auto renderPassBuilder = vk::RenderPassBuilder(vulkan);
+  renderPassBuilder.addSubPass().addColor(0);
+  renderPassBuilder.addAttachment(VK_FORMAT_B8G8R8A8_UNORM);
+  auto renderPass = renderPassBuilder.build();
+  auto builder = vk::GraphicsPipelineBuilder(vulkan, renderPass);
   auto vert = vulkan->createShader<taiju::shaders::vert::Triangle>();
   auto frag = vulkan->createShader<taiju::shaders::frag::Triangle>();
-  builder->addVertexStage(vert);
-  builder->addFragmentStage(frag);
-  auto pipeline = builder->build();
+  builder.addVertexStage(vert);
+  builder.addFragmentStage(frag);
+  auto pipeline = builder.build();
 
   do {
     // Swap buffers

@@ -25,7 +25,7 @@ class SubPassBuilder;
 class AttachmentBuilder;
 class SubPassDependencyBuilder;
 
-class RenderPassBuilder final : std::enable_shared_from_this<RenderPassBuilder> {
+class RenderPassBuilder final {
 private:
   std::shared_ptr<Vulkan> vulkan_;
 
@@ -45,7 +45,6 @@ private:
   VkRenderPassCreateInfo renderPassInfo_{};
 public:
   std::shared_ptr<RenderPass> build();
-  std::shared_ptr<RenderPassBuilder> self();
 
 public:
   AttachmentBuilder& addAttachment(VkFormat format);

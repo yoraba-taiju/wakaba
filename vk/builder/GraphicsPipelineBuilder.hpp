@@ -21,7 +21,7 @@ class Shader;
 class VertexShader;
 class FragmentShader;
 
-class GraphicsPipelineBuilder final : public std::enable_shared_from_this<GraphicsPipelineBuilder> {
+class GraphicsPipelineBuilder final {
 private:
   std::shared_ptr<Vulkan> vulkan_;
 private:
@@ -47,9 +47,8 @@ public:
   std::shared_ptr<GraphicsPipeline> build();
 
 public:
-  std::shared_ptr<GraphicsPipelineBuilder> self();
-  std::shared_ptr<GraphicsPipelineBuilder> enableAlphaBlending();
-  std::shared_ptr<GraphicsPipelineBuilder> disableAlphaBlending();
+  GraphicsPipelineBuilder& enableAlphaBlending();
+  GraphicsPipelineBuilder& disableAlphaBlending();
 
 public:
   explicit GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, std::shared_ptr<RenderPass> renderPass);
@@ -61,9 +60,9 @@ private:
   std::vector<VkPipelineShaderStageCreateInfo> buildStages();
   std::shared_ptr<PipelineLayout> buildPipelineLayout();
 public:
-  std::shared_ptr<GraphicsPipelineBuilder> setRenderPass(std::shared_ptr<RenderPass> renderPass);
-  std::shared_ptr<GraphicsPipelineBuilder> addVertexStage(std::shared_ptr<VertexShader> shader);
-  std::shared_ptr<GraphicsPipelineBuilder> addFragmentStage(std::shared_ptr<FragmentShader> shader);
+  GraphicsPipelineBuilder& setRenderPass(std::shared_ptr<RenderPass> renderPass);
+  GraphicsPipelineBuilder& addVertexStage(std::shared_ptr<VertexShader> shader);
+  GraphicsPipelineBuilder& addFragmentStage(std::shared_ptr<FragmentShader> shader);
 };
 
 }

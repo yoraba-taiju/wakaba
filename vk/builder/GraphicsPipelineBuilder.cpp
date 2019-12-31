@@ -179,11 +179,7 @@ std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
   return util::make_shared<GraphicsPipeline>(vulkan_, obj);
 }
 
-std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::self() {
-  return this->shared_from_this();
-}
-
-std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::enableAlphaBlending() {
+GraphicsPipelineBuilder& GraphicsPipelineBuilder::enableAlphaBlending() {
   this->colorBlender_ = {
       .blendEnable = VK_TRUE,
       .srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA,
@@ -194,10 +190,10 @@ std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::enableAlphaBle
       .alphaBlendOp = VK_BLEND_OP_ADD,
       .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
   };
-  return self();
+  return *this;
 }
 
-std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::disableAlphaBlending() {
+GraphicsPipelineBuilder& GraphicsPipelineBuilder::disableAlphaBlending() {
   this->colorBlender_ = {
       .blendEnable = VK_FALSE,
       .srcColorBlendFactor = VK_BLEND_FACTOR_ONE, // Optional
@@ -208,7 +204,7 @@ std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::disableAlphaBl
       .alphaBlendOp = VK_BLEND_OP_ADD, // Optional
       .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
   };
-  return self();
+  return *this;
 }
 
 std::vector<VkPipelineShaderStageCreateInfo> GraphicsPipelineBuilder::buildStages() {
@@ -257,19 +253,19 @@ std::shared_ptr<PipelineLayout> GraphicsPipelineBuilder::buildPipelineLayout() {
   return util::make_shared<PipelineLayout>(vulkan_, pipelineLayout);
 }
 
-std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::setRenderPass(std::shared_ptr<RenderPass> renderPass) {
+GraphicsPipelineBuilder& GraphicsPipelineBuilder::setRenderPass(std::shared_ptr<RenderPass> renderPass) {
   this->renderPass_ = std::move(renderPass);
-  return self();
+  return *this;
 }
 
-std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::addVertexStage(std::shared_ptr<VertexShader> shader) {
+GraphicsPipelineBuilder& GraphicsPipelineBuilder::addVertexStage(std::shared_ptr<VertexShader> shader) {
   this->vertexShader_ = std::move(shader);
-  return self();
+  return *this;
 }
 
-std::shared_ptr<GraphicsPipelineBuilder> GraphicsPipelineBuilder::addFragmentStage(std::shared_ptr<FragmentShader> shader) {
+GraphicsPipelineBuilder& GraphicsPipelineBuilder::addFragmentStage(std::shared_ptr<FragmentShader> shader) {
   this->fragmentShader_ = std::move(shader);
-  return self();
+  return *this;
 }
 
 

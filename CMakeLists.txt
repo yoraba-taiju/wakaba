@@ -119,7 +119,7 @@ add_executable(wakaba
     taiju/shaders/vert/Triangle.hpp
     taiju/shaders/frag/Triangle.cpp
     taiju/shaders/frag/Triangle.hpp
-    vk/builder/RenderPassBuilder.cpp vk/builder/RenderPassBuilder.hpp vk/image/SwapchainImage.cpp vk/image/SwapchainImage.hpp)
+    vk/builder/RenderPassBuilder.cpp vk/builder/RenderPassBuilder.hpp vk/image/SwapchainImage.cpp vk/image/SwapchainImage.hpp vk/buffer/Buffer.cpp vk/buffer/Buffer.hpp vk/buffer/DeviceMemory.cpp vk/buffer/DeviceMemory.hpp vk/builder/DeviceMemoryBuilder.cpp vk/builder/DeviceMemoryBuilder.hpp vk/builder/BufferBuilder.cpp vk/builder/BufferBuilder.hpp)
 
 target_link_libraries(wakaba fmt::fmt)
 target_link_libraries(wakaba glm_static)

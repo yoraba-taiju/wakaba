@@ -28,9 +28,11 @@ class VulkanBuilder;
 class FrameBuffer;
 class ShaderModule;
 class PipelineLayout;
+class SwapchainImage;
 class GraphicsPipelineBuilder;
 class RenderPassBuilder;
-class SwapchainImage;
+class DeviceMemoryBuilder;
+class BufferBuilder;
 
 class Vulkan final : public std::enable_shared_from_this<Vulkan> {
 private:
@@ -47,6 +49,7 @@ private: /* Vulkan */
   uint32_t width_{};
   uint32_t height_{};
   VkPhysicalDevice vkPhysicalDevice_{};
+  VkPhysicalDeviceMemoryProperties vkPhysicalDeviceMemoryProperties_{};
   // logical device
   uint32_t graphicsQueueFamiliIndex_{};
   uint32_t presentQueueFamiliIndex_{};
@@ -71,6 +74,10 @@ public:
 public:
   [[ nodiscard ]] GLFWwindow* window() {
     return this->window_;
+  }
+
+  [[ nodiscard ]] VkPhysicalDeviceMemoryProperties const& vkPhysicalDeviceMemoryProperties() const {
+    return this->vkPhysicalDeviceMemoryProperties_;
   }
 
   [[ nodiscard ]] VkInstance vkInstance() {
@@ -106,8 +113,6 @@ public:
 
 public:
   std::shared_ptr<CommandBuffer> createCommandBuffer();
-  std::shared_ptr<RenderPassBuilder> createRenderPassBuilder();
-  std::shared_ptr<GraphicsPipelineBuilder> createGraphicsPipelineBuilder(std::shared_ptr<RenderPass> const& renderPass);
 
   template<typename T, typename... Args>
   std::shared_ptr<T> createShader(Args &&... args) {

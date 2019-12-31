@@ -207,6 +207,7 @@ void VulkanBuilder::createDeviceAndCommandPool() {
     log().info("     - inherited queries: {}", features.inheritedQueries ? "yes" : "no");
   }
   vulkan()->vkPhysicalDevice_ = physicalDevices[0];
+  vkGetPhysicalDeviceMemoryProperties(vulkan()->vkPhysicalDevice_, &vulkan()->vkPhysicalDeviceMemoryProperties_);
   {
     { // Search queue family index for Graphics Queue and Present Queue
       std::optional<uint32_t> graphicsQueueFamilyIndex;
