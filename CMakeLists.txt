@@ -64,45 +64,84 @@ compileShaders(SHADER_HEADERS
 add_executable(wakaba
     ${SHADER_HEADERS}
     main.cpp
+
     # util
     util/Logger.cpp
     util/Logger.hpp
     util/File.hpp
     util/File.cpp
+
     # vk
     vk/Util.cpp
     vk/Util.hpp
     vk/Vulkan.cpp
     vk/Vulkan.hpp
-    vk/Framebuffer.cpp
-    vk/Framebuffer.hpp
+
+    #
     vk/RenderPass.cpp
     vk/RenderPass.hpp
-    vk/CommandBuffer.cpp
-    vk/CommandBuffer.hpp
+
+    vk/Framebuffer.cpp
+    vk/Framebuffer.hpp
+
+    # vk commands
     vk/CommandPool.cpp
     vk/CommandPool.hpp
-    vk/ShaderModule.cpp
-    vk/ShaderModule.hpp
+    vk/CommandBuffer.cpp
+    vk/CommandBuffer.hpp
+
+    # vk pipelines
     vk/PipelineLayout.cpp
     vk/PipelineLayout.hpp
-    vk/GraphicsPipeline.cpp
-    vk/GraphicsPipeline.hpp
+
     vk/Pipeline.cpp
     vk/Pipeline.hpp
+    vk/GraphicsPipeline.cpp
+    vk/GraphicsPipeline.hpp
+
+    # vk images
     vk/image/Image.cpp
     vk/image/Image.hpp
+    vk/image/SwapchainImage.cpp
+    vk/image/SwapchainImage.hpp
+
+    # vk shaders
+    vk/ShaderModule.cpp
+    vk/ShaderModule.hpp
+
     vk/shader/Shader.cpp
     vk/shader/Shader.hpp
     vk/shader/VertexShader.cpp
     vk/shader/VertexShader.hpp
     vk/shader/FragmentShader.cpp
     vk/shader/FragmentShader.hpp
+    # vk buffers
+    vk/buffer/Buffer.cpp
+    vk/buffer/Buffer.hpp
+    vk/buffer/DeviceMemory.cpp
+    vk/buffer/DeviceMemory.hpp
+
+    vk/buffer/VertexBuffer.cpp
+    vk/buffer/VertexBuffer.hpp
+
     # vk builder
     vk/builder/VulkanBuilder.cpp
     vk/builder/VulkanBuilder.hpp
+
+    vk/builder/DeviceMemoryBuilder.cpp
+    vk/builder/DeviceMemoryBuilder.hpp
+    vk/builder/BufferBuilder.cpp
+    vk/builder/BufferBuilder.hpp
+
+    vk/builder/VertexBufferBuilder.cpp
+    vk/builder/VertexBufferBuilder.hpp
+
+    vk/builder/RenderPassBuilder.cpp
+    vk/builder/RenderPassBuilder.hpp
     vk/builder/GraphicsPipelineBuilder.cpp
     vk/builder/GraphicsPipelineBuilder.hpp
+    vk/builder/FramebufferBuilder.cpp
+    vk/builder/FramebufferBuilder.hpp
     # donut
     donut/runtime/Value.hpp
     donut/runtime/Value.cpp
@@ -117,7 +156,7 @@ add_executable(wakaba
     taiju/shaders/vert/Triangle.hpp
     taiju/shaders/frag/Triangle.cpp
     taiju/shaders/frag/Triangle.hpp
-    vk/builder/RenderPassBuilder.cpp vk/builder/RenderPassBuilder.hpp vk/image/SwapchainImage.cpp vk/image/SwapchainImage.hpp vk/buffer/Buffer.cpp vk/buffer/Buffer.hpp vk/buffer/DeviceMemory.cpp vk/buffer/DeviceMemory.hpp vk/builder/DeviceMemoryBuilder.cpp vk/builder/DeviceMemoryBuilder.hpp vk/builder/BufferBuilder.cpp vk/builder/BufferBuilder.hpp vk/buffer/VertexBuffer.cpp vk/buffer/VertexBuffer.hpp vk/builder/VertexBufferBuilder.cpp vk/builder/VertexBufferBuilder.hpp vk/builder/FramebufferBuilder.cpp vk/builder/FramebufferBuilder.hpp)
+    )
 
 target_link_libraries(wakaba fmt::fmt)
 target_link_libraries(wakaba glm_static)
