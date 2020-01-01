@@ -31,6 +31,10 @@ public:
   ~Buffer() noexcept;
 
 public:
+  [[ nodiscard ]] std::shared_ptr<Vulkan> vulkan() {
+    return this->vulkan_.lock();
+  }
+
   [[ nodiscard ]] VkBuffer vkBuffer() {
     return vkBuffer_;
   }

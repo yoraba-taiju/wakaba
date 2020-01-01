@@ -28,6 +28,10 @@ public:
   DeviceMemory(std::shared_ptr<Vulkan> const& vulkan, VkDeviceMemory vkDeviceMemory, VkDeviceSize size);
   ~DeviceMemory() noexcept;
 
+  [[ nodiscard ]] std::shared_ptr<Vulkan> vulkan() {
+    return this->vulkan_.lock();
+  }
+
   [[ nodiscard ]] VkDeviceMemory vkDeviceMemory() {
     return vkDeviceMemory_;
   }
