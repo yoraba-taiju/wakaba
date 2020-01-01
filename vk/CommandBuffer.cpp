@@ -43,6 +43,7 @@ void CommandBuffer::copyBufferSync(Buffer &dst, VkDeviceSize dstOffset, Buffer &
     };
     vkCmdCopyBuffer(this->vkCommandBuffer_, src.vkBuffer(), dst.vkBuffer(), 1, &copyRegion);
   }
+
   if(vkEndCommandBuffer(this->vkCommandBuffer_) != VK_SUCCESS) {
     throw std::runtime_error("Failed to end command buffer!");
   }

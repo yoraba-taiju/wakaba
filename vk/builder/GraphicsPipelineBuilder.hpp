@@ -43,6 +43,7 @@ private: // input info
 
   std::array<VkDynamicState, 2> dynamicStates_{};
   VkPipelineDynamicStateCreateInfo dynamicStateInfo_{};
+
 public:
   GraphicsPipeline build();
 

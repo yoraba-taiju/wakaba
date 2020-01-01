@@ -47,12 +47,11 @@ private: /* Vulkan */
   VkPhysicalDevice vkPhysicalDevice_{};
   VkPhysicalDeviceMemoryProperties vkPhysicalDeviceMemoryProperties_{};
   // logical device
-  uint32_t graphicsQueueFamiliIndex_{};
-  uint32_t presentQueueFamiliIndex_{};
+  uint32_t graphicsQueueFamilyIndex_{};
+  uint32_t presentQueueFamilyIndex_{};
   VkDevice vkDevice_{};
   VkQueue vkGraphicsQueue_{};
   VkQueue vkPresentQueue_{};
-  VkFence fence_{};
   // swapchan
   VkSwapchainKHR vkSwapchain_{};
   VkSurfaceFormatKHR vkSwapchainFormat_{};

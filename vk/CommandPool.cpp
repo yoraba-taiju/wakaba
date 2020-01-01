@@ -29,7 +29,7 @@ CommandBuffer CommandPool::createBuffer() {
     VkCommandBufferAllocateInfo commandBufferAllocateInfo = {
         .sType =  VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
         .pNext = nullptr,
-        .commandPool = vkCommandPool(),
+        .commandPool = vkCommandPool_,
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
         .commandBufferCount = 1
     };

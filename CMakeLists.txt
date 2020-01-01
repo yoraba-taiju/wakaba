@@ -84,6 +84,9 @@ add_executable(wakaba
     vk/Framebuffer.cpp
     vk/Framebuffer.hpp
 
+    vk/RenderingDispatcher.cpp
+    vk/RenderingDispatcher.hpp
+
     # vk commands
     vk/CommandPool.cpp
     vk/CommandPool.hpp
@@ -142,6 +145,10 @@ add_executable(wakaba
     vk/builder/GraphicsPipelineBuilder.hpp
     vk/builder/FramebufferBuilder.cpp
     vk/builder/FramebufferBuilder.hpp
+
+    vk/builder/RenderingDispatcherBuilder.cpp
+    vk/builder/RenderingDispatcherBuilder.hpp
+
     # donut
     donut/runtime/Value.hpp
     donut/runtime/Value.cpp

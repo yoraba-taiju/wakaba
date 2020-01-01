@@ -36,7 +36,6 @@ private:
   void createSurface();
   void createDebugReportCallback();
   void createDeviceAndCommandPool();
-  void createFence();
   void createSwapchain();
   void createSwapchainImages();
 

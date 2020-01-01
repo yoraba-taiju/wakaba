@@ -33,8 +33,6 @@ void Vulkan::destroy() {
   swapchainImages_.clear();
   vkDestroySwapchainKHR(vkDevice_, vkSwapchain_, nullptr);
 
-  vkDestroyFence(vkDevice_, fence_, nullptr);
-
   vkDestroyDevice(vkDevice_, nullptr);
   vkDestroySurfaceKHR(this->vkInstance_, this->vkSurface_, nullptr);
   this->vkDestroyDebugReportCallback_(this->vkInstance_, this->vkDebugReportCallback_, nullptr);
@@ -50,7 +48,7 @@ std::shared_ptr<CommandPool> Vulkan::createCommandPool() {
         .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
         .pNext = nullptr,
         .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
-        .queueFamilyIndex = graphicsQueueFamiliIndex_,
+        .queueFamilyIndex = graphicsQueueFamilyIndex_,
     };
 
     if (vkCreateCommandPool(vkDevice_, &info, nullptr, &vkCommandPool) != VK_SUCCESS) {

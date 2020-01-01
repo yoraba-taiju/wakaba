@@ -54,7 +54,6 @@ std::shared_ptr<Vulkan> VulkanBuilder::build() {
   this->createSurface();
   this->createDebugReportCallback();
   this->createDeviceAndCommandPool();
-  this->createFence();
   this->createSwapchain();
   this->createSwapchainImages();
 
@@ -231,8 +230,8 @@ void VulkanBuilder::createDeviceAndCommandPool() {
       if (!presentQueueFamilyIndex) {
         log().fatal("[Vulkan] Physical device does not support swapchain.");
       }
-      vulkan()->graphicsQueueFamiliIndex_ = graphicsQueueFamilyIndex.value();
-      vulkan()->presentQueueFamiliIndex_ = presentQueueFamilyIndex.value();
+      vulkan()->graphicsQueueFamilyIndex_ = graphicsQueueFamilyIndex.value();
+      vulkan()->presentQueueFamilyIndex_ = presentQueueFamilyIndex.value();
     }
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -243,17 +242,17 @@ void VulkanBuilder::createDeviceAndCommandPool() {
           .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
           .pNext = nullptr,
           .flags = 0,
-          .queueFamilyIndex = vulkan()->graphicsQueueFamiliIndex_,
+          .queueFamilyIndex = vulkan()->graphicsQueueFamilyIndex_,
           .queueCount = 1,
           .pQueuePriorities = qPriorities,
       });
-      if(vulkan()->graphicsQueueFamiliIndex_ != vulkan()->presentQueueFamiliIndex_) {
+      if(vulkan()->graphicsQueueFamilyIndex_ != vulkan()->presentQueueFamilyIndex_) {
         // Present queue
         queueCreateInfos.emplace_back(VkDeviceQueueCreateInfo{
             .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
             .pNext = nullptr,
             .flags = 0,
-            .queueFamilyIndex = vulkan()->presentQueueFamiliIndex_,
+            .queueFamilyIndex = vulkan()->presentQueueFamilyIndex_,
             .queueCount = 1,
             .pQueuePriorities = qPriorities,
         });
@@ -279,16 +278,8 @@ void VulkanBuilder::createDeviceAndCommandPool() {
     if (vkCreateDevice(vulkan()->vkPhysicalDevice_, &devInfo, nullptr, &vulkan()->vkDevice_) != VK_SUCCESS) {
       log().fatal("[Vulkan] Failed to create a device.");
     }
-    vkGetDeviceQueue(vulkan()->vkDevice_, vulkan()->graphicsQueueFamiliIndex_, 0, &vulkan()->vkGraphicsQueue_);
-    vkGetDeviceQueue(vulkan()->vkDevice_, vulkan()->presentQueueFamiliIndex_, 0, &vulkan()->vkPresentQueue_);
-  }
-}
-
-void VulkanBuilder::createFence() {
-  VkFenceCreateInfo finfo{};
-  finfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-  if (vkCreateFence(vulkan()->vkDevice_, &finfo, nullptr, &vulkan()->fence_) != VK_SUCCESS) {
-    log().fatal("[Vulkan] Failed to create a fence.");
+    vkGetDeviceQueue(vulkan()->vkDevice_, vulkan()->graphicsQueueFamilyIndex_, 0, &vulkan()->vkGraphicsQueue_);
+    vkGetDeviceQueue(vulkan()->vkDevice_, vulkan()->presentQueueFamilyIndex_, 0, &vulkan()->vkPresentQueue_);
   }
 }
 
@@ -335,10 +326,10 @@ void VulkanBuilder::createSwapchain() {
   swapchainCreateInfo.imageArrayLayers = 1;
   swapchainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
   std::vector<uint32_t> queueFamilyIndex;
-  if (vulkan()->graphicsQueueFamiliIndex_ != vulkan()->presentQueueFamiliIndex_) {
+  if (vulkan()->graphicsQueueFamilyIndex_ != vulkan()->presentQueueFamilyIndex_) {
     swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-    queueFamilyIndex.emplace_back(vulkan()->graphicsQueueFamiliIndex_);
-    queueFamilyIndex.emplace_back(vulkan()->presentQueueFamiliIndex_);
+    queueFamilyIndex.emplace_back(vulkan()->graphicsQueueFamilyIndex_);
+    queueFamilyIndex.emplace_back(vulkan()->presentQueueFamilyIndex_);
     swapchainCreateInfo.queueFamilyIndexCount = queueFamilyIndex.size();
     swapchainCreateInfo.pQueueFamilyIndices = queueFamilyIndex.data();
   } else {
