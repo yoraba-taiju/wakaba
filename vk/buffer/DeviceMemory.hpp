@@ -26,9 +26,9 @@ private:
 public:
   DeviceMemory() = delete;
   DeviceMemory(DeviceMemory const&) = delete;
-  DeviceMemory(DeviceMemory&&) = default;
+  DeviceMemory(DeviceMemory&&) = delete;
   DeviceMemory& operator=(DeviceMemory const&) = delete;
-  DeviceMemory& operator=(DeviceMemory&&) = default;
+  DeviceMemory& operator=(DeviceMemory&&) = delete;
 
   DeviceMemory(std::shared_ptr<Vulkan> const& vulkan, VkDeviceMemory vkDeviceMemory, VkDeviceSize size);
   ~DeviceMemory() noexcept;
@@ -44,6 +44,8 @@ public:
   [[ nodiscard ]] VkDeviceSize size() const {
     return size_;
   }
+
+  void send(VkDeviceSize offset, void const* src, size_t size);
 };
 
 }

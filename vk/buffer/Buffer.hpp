@@ -23,8 +23,9 @@ class Buffer {
 private:
   std::weak_ptr<Vulkan> vulkan_;
   VkBuffer vkBuffer_;
-  VkDeviceSize size_;
   std::shared_ptr<DeviceMemory> deviceMemory_{};
+  VkDeviceSize offset_{};
+  VkDeviceSize size_;
 
 public:
   Buffer() = delete;
@@ -33,7 +34,7 @@ public:
   Buffer& operator=(Buffer const&) = delete;
   Buffer& operator=(Buffer&&) = default;
 
-  Buffer(std::shared_ptr<Vulkan> const& vulkan, VkBuffer vkBuffer, VkDeviceSize size);
+  Buffer(std::shared_ptr<Vulkan> const& vulkan, VkBuffer vkBuffer, std::shared_ptr<DeviceMemory> deviceMemory, VkDeviceSize offset, VkDeviceSize size);
   ~Buffer() noexcept;
 
 public:
@@ -49,8 +50,7 @@ public:
     return size_;
   }
 
-public:
-  void bind(std::shared_ptr<DeviceMemory> const& deviceMemory, VkDeviceSize offset = 0);
+  void send(VkDeviceSize offset, void const* src, size_t size);
 };
 
 }

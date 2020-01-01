@@ -11,9 +11,11 @@
 
 namespace vk {
 
-Buffer::Buffer(std::shared_ptr<Vulkan> const& vulkan, VkBuffer vkBuffer, VkDeviceSize const size)
+Buffer::Buffer(std::shared_ptr<Vulkan> const& vulkan, VkBuffer vkBuffer, std::shared_ptr<DeviceMemory> deviceMemory, VkDeviceSize offset, VkDeviceSize size)
 :vulkan_(vulkan)
 ,vkBuffer_(vkBuffer)
+,deviceMemory_(std::move(deviceMemory))
+,offset_(offset)
 ,size_(size)
 {
 
@@ -26,17 +28,8 @@ Buffer::~Buffer() noexcept {
   }
 }
 
-void Buffer::bind(std::shared_ptr<DeviceMemory> const& deviceMemory, VkDeviceSize offset) {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(!vulkan) {
-    throw std::runtime_error("Vulkan is already deleted.");
-  }
-  std::shared_ptr<DeviceMemory> old = this->deviceMemory_;
-  if(old) {
-    throw std::runtime_error("Buffer is already binded.");
-  }
-  this->deviceMemory_ = deviceMemory;
-  vkBindBufferMemory(vulkan->vkDevice(), this->vkBuffer_, deviceMemory->vkDeviceMemory(), offset);
+void Buffer::send(VkDeviceSize offset, void const *src, size_t size) {
+  this->deviceMemory_->send(offset + this->offset_, src, size);
 }
 
 }

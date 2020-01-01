@@ -34,7 +34,7 @@ public:
   explicit DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan, VkDeviceSize allocationSize,
                                const VkMemoryRequirements& requirements, VkMemoryPropertyFlags propertyFlags);
 
-  DeviceMemory build();
+  std::shared_ptr<DeviceMemory> build();
 };
 
 }

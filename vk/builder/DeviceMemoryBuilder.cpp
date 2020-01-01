@@ -22,7 +22,8 @@ DeviceMemoryBuilder::DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan,VkDevice
 {
 
 }
-DeviceMemory DeviceMemoryBuilder::build() {
+
+std::shared_ptr<DeviceMemory> DeviceMemoryBuilder::build() {
   VkPhysicalDeviceMemoryProperties const& memProperties = vulkan_->vkPhysicalDeviceMemoryProperties();
 
   std::optional<uint32_t> memoryType;
@@ -48,7 +49,7 @@ DeviceMemory DeviceMemoryBuilder::build() {
   if (vkAllocateMemory(vulkan_->vkDevice(), &allocInfo, nullptr, &vkDeviceMemory) != VK_SUCCESS) {
     throw std::runtime_error("failed to allocate image memory!");
   }
-  return DeviceMemory(vulkan_, vkDeviceMemory, allocationSize_);
+  return std::make_shared<DeviceMemory>(vulkan_, vkDeviceMemory, allocationSize_);
 }
 
 }
