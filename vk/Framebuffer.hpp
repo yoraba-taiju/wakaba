@@ -21,12 +21,17 @@ class VulkanBuilder;
 class RenderPass;
 class CommandPool;
 class CommandBuffer;
+class Image;
 
 class Framebuffer final {
 private:
   std::weak_ptr<Vulkan> vulkan_;
   VkFramebuffer vkFramebuffer_;
-  std::shared_ptr<RenderPass> rendrPass_;
+  std::shared_ptr<RenderPass> renderPass_;
+  std::vector<std::shared_ptr<Image>> images_;
+  std::vector<VkClearValue> clears_;
+  uint32_t width_;
+  uint32_t height_;
 public:
   Framebuffer() = delete;
   Framebuffer(Framebuffer const&) = delete;
@@ -35,12 +40,16 @@ public:
   Framebuffer& operator=(Framebuffer&&) = default;
   ~Framebuffer() noexcept;
 
-  explicit Framebuffer(std::weak_ptr<Vulkan> vulkan, VkFramebuffer vkFramebuffer, std::shared_ptr<RenderPass> rendrPass)
+public:
+  explicit Framebuffer(std::weak_ptr<Vulkan> vulkan, VkFramebuffer vkFramebuffer, std::shared_ptr<RenderPass> renderPass, std::vector<std::shared_ptr<Image>> images, std::vector<VkClearValue> clears, uint32_t width, uint32_t height)
   :vulkan_(std::move(vulkan))
   ,vkFramebuffer_(vkFramebuffer)
-  ,rendrPass_(std::move(rendrPass))
+  ,renderPass_(std::move(renderPass))
+  ,images_(std::move(images))
+  ,clears_(std::move(clears))
+  ,width_(width)
+  ,height_(height)
   {
-
   }
 
   [[ nodiscard ]] VkFramebuffer vkFramebuffer() {
@@ -48,7 +57,23 @@ public:
   }
 
   [[ nodiscard ]] std::shared_ptr<RenderPass> renderPass() {
-    return this->rendrPass_;
+    return this->renderPass_;
+  }
+
+  [[ nodiscard ]] std::vector<std::shared_ptr<Image>> const& images() const {
+    return this->images_;
+  }
+
+  [[ nodiscard ]] std::vector<VkClearValue> const& clears() const {
+    return this->clears_;
+  }
+
+  [[ nodiscard ]] uint32_t width() const {
+    return this->width_;
+  }
+
+  [[ nodiscard ]] uint32_t height() const {
+    return this->height_;
   }
 
 };

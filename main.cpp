@@ -116,9 +116,8 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
 
   std::vector<vk::Framebuffer> framebuffers;
   for(std::shared_ptr<vk::SwapchainImage>& image : vulkan->swapchainImages()) {
-    framebuffers.emplace_back(vk::FramebufferBuilder(vulkan, renderPass).addImage(image).build());
+    framebuffers.emplace_back(vk::FramebufferBuilder(vulkan, renderPass).addColor(image, {0.0f, 0.0f, 0.0f, 1.0f}).build());
   }
-
 
   do {
     //

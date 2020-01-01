@@ -27,6 +27,7 @@ private:
   uint32_t const height_;
 private:
   std::vector<std::shared_ptr<Image>> images_;
+  std::vector<VkClearValue> clears_;
 public:
   FramebufferBuilder() = delete;
   FramebufferBuilder(FramebufferBuilder&&) = delete;
@@ -37,7 +38,9 @@ public:
 public:
   explicit FramebufferBuilder(std::shared_ptr<Vulkan> const& vulkan, std::shared_ptr<RenderPass> renderPass);
   explicit FramebufferBuilder(std::shared_ptr<Vulkan>  vulkan, uint32_t width, uint32_t height, std::shared_ptr<RenderPass> renderPass);
-  FramebufferBuilder& addImage(std::shared_ptr<Image> image);
+  FramebufferBuilder& addColor(std::shared_ptr<Image> image, std::array<float, 4> const& value);
+  FramebufferBuilder& addDepth(std::shared_ptr<Image> image, float value);
+  FramebufferBuilder& addStencil(std::shared_ptr<Image> image, uint32_t value);
 
   Framebuffer build();
 };

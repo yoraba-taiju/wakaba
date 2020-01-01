@@ -32,15 +32,38 @@ FramebufferBuilder::FramebufferBuilder(std::shared_ptr<Vulkan> vulkan, uint32_t 
 
 }
 
-FramebufferBuilder& FramebufferBuilder::addImage(std::shared_ptr<Image> image) {
+FramebufferBuilder& FramebufferBuilder::addColor(std::shared_ptr<Image> image, std::array<float, 4> const& value) {
   this->images_.emplace_back(std::move(image));
+  this->clears_.emplace_back(VkClearValue{
+    .color = {value[0], value[1], value[2], value[3]},
+  });
+  return *this;
+}
+
+FramebufferBuilder &FramebufferBuilder::addDepth(std::shared_ptr<Image> image, float const value) {
+  this->images_.emplace_back(std::move(image));
+  this->clears_.emplace_back(VkClearValue{
+      .depthStencil = {
+          .depth = value,
+      },
+  });
+  return *this;
+}
+
+FramebufferBuilder &FramebufferBuilder::addStencil(std::shared_ptr<Image> image, uint32_t const value) {
+  this->images_.emplace_back(std::move(image));
+  this->clears_.emplace_back(VkClearValue{
+      .depthStencil = {
+          .stencil = value
+      },
+  });
   return *this;
 }
 
 Framebuffer FramebufferBuilder::build() {
   std::vector<VkImageView> attachmentViews;
-  for(std::shared_ptr<Image>& image : this->images_) {
-    attachmentViews.emplace_back(image->vkImageView());
+  for(std::shared_ptr<Image>& it : this->images_) {
+    attachmentViews.emplace_back(it->vkImageView());
   }
   VkFramebufferCreateInfo vkFramebufferCreateInfo = {
       .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
@@ -57,7 +80,7 @@ Framebuffer FramebufferBuilder::build() {
   if (vkCreateFramebuffer(vulkan_->vkDevice(), &vkFramebufferCreateInfo, nullptr, &vkFramebuffer) != VK_SUCCESS) {
     vulkan_->log().fatal("[Vulkan] Failed to create a FrameBuffer.");
   }
-  return Framebuffer(vulkan_, vkFramebuffer, renderPass_);
+  return Framebuffer(vulkan_, vkFramebuffer, renderPass_, images_, clears_, width_, height_);
 }
 
 
