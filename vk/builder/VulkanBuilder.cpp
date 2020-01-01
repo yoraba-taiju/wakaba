@@ -388,7 +388,7 @@ void VulkanBuilder::createSwapchainImages() {
     if (vkCreateImageView(vulkan()->vkDevice_, &imageViewCreateInfo, nullptr, &vkImageView) != VK_SUCCESS) {
       log().fatal("[Vulkan] Failed to create an image view");
     }
-    vulkan()->swapchainImages_.emplace_back(std::make_shared<SwapchainImage>(vulkan(), vkImage, vkImageView));
+    vulkan()->swapchainImages_.emplace_back(std::make_shared<SwapchainImage>(vulkan(), vkImage, vkImageView, vulkan()->width(), vulkan()->height()));
   }
 }
 

@@ -26,7 +26,7 @@ private:
   uint32_t const width_;
   uint32_t const height_;
 private:
-  std::vector<std::shared_ptr<Image>> colorImages_;
+  std::vector<std::shared_ptr<Image>> images_;
 public:
   FramebufferBuilder() = delete;
   FramebufferBuilder(FramebufferBuilder&&) = delete;
@@ -37,7 +37,7 @@ public:
 public:
   explicit FramebufferBuilder(std::shared_ptr<Vulkan> const& vulkan, std::shared_ptr<RenderPass> renderPass);
   explicit FramebufferBuilder(std::shared_ptr<Vulkan>  vulkan, uint32_t width, uint32_t height, std::shared_ptr<RenderPass> renderPass);
-  FramebufferBuilder& addColorImage(std::shared_ptr<Image> image);
+  FramebufferBuilder& addImage(std::shared_ptr<Image> image);
 
   Framebuffer build();
 };

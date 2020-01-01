@@ -5,12 +5,13 @@
  * Copyright 2019-, Kaede Fujisaki
  */
 
+#include <utility>
+
 #include "FramebufferBuilder.hpp"
 #include "../Vulkan.hpp"
 #include "../Framebuffer.hpp"
 #include "../RenderPass.hpp"
-
-#include <utility>
+#include "../image/Image.hpp"
 
 namespace vk {
 
@@ -31,29 +32,30 @@ FramebufferBuilder::FramebufferBuilder(std::shared_ptr<Vulkan> vulkan, uint32_t 
 
 }
 
-FramebufferBuilder& FramebufferBuilder::addColorImage(std::shared_ptr<Image> image) {
-  this->colorImages_.emplace_back(std::move(image));
+FramebufferBuilder& FramebufferBuilder::addImage(std::shared_ptr<Image> image) {
+  this->images_.emplace_back(std::move(image));
   return *this;
 }
 
 Framebuffer FramebufferBuilder::build() {
-  VkFramebuffer vkFramebuffer;
   std::vector<VkImageView> attachmentViews;
-  {
-    VkFramebufferCreateInfo vkFramebufferCreateInfo = {
-        .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-        .pNext = nullptr,
-        .flags = 0,
-        .renderPass = renderPass_->vkRenderPass(),
-        .attachmentCount = static_cast<uint32_t>(attachmentViews.size()),
-        .pAttachments = attachmentViews.data(),
-        .width = width_,
-        .height = height_,
-        .layers = 1,
-    };
-    if (vkCreateFramebuffer(vulkan_->vkDevice(), &vkFramebufferCreateInfo, nullptr, &vkFramebuffer) != VK_SUCCESS) {
-      vulkan_->log().fatal("[Vulkan] Failed to create a FrameBuffer.");
-    }
+  for(std::shared_ptr<Image>& image : this->images_) {
+    attachmentViews.emplace_back(image->vkImageView());
+  }
+  VkFramebufferCreateInfo vkFramebufferCreateInfo = {
+      .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = 0,
+      .renderPass = renderPass_->vkRenderPass(),
+      .attachmentCount = static_cast<uint32_t>(attachmentViews.size()),
+      .pAttachments = attachmentViews.data(),
+      .width = width_,
+      .height = height_,
+      .layers = 1,
+  };
+  VkFramebuffer vkFramebuffer;
+  if (vkCreateFramebuffer(vulkan_->vkDevice(), &vkFramebufferCreateInfo, nullptr, &vkFramebuffer) != VK_SUCCESS) {
+    vulkan_->log().fatal("[Vulkan] Failed to create a FrameBuffer.");
   }
   return Framebuffer(vulkan_, vkFramebuffer, renderPass_);
 }

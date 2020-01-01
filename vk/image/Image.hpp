@@ -21,11 +21,16 @@ private:
   std::weak_ptr<Vulkan> vulkan_;
   VkImage vkImage_;
   VkImageView vkImageView_;
+  uint32_t const width_;
+  uint32_t const height_;
 protected:
-  explicit Image(std::shared_ptr<Vulkan> const& vulkan, VkImage vkImage, VkImageView vkImageView)
+  explicit Image(std::shared_ptr<Vulkan> const& vulkan, VkImage vkImage, VkImageView vkImageView, uint32_t width, uint32_t height)
   :vulkan_(vulkan)
   ,vkImage_(vkImage)
-  ,vkImageView_(vkImageView){
+  ,vkImageView_(vkImageView)
+  ,width_(width)
+  ,height_(height)
+  {
   }
 
 public:
@@ -45,6 +50,12 @@ public:
   }
   [[ nodiscard ]] VkImageView vkImageView() {
     return this->vkImageView_;
+  }
+  [[ nodiscard ]] uint32_t width() {
+    return this->width_;
+  }
+  [[ nodiscard ]] uint32_t height() {
+    return this->height_;
   }
 };
 

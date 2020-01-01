@@ -9,8 +9,8 @@
 #include "../Vulkan.hpp"
 
 namespace vk {
-SwapchainImage::SwapchainImage(std::shared_ptr<Vulkan> const &vulkan, VkImage vkImage, VkImageView vkImageView)
-:Image(vulkan, vkImage, vkImageView)
+SwapchainImage::SwapchainImage(std::shared_ptr<Vulkan> const &vulkan, VkImage vkImage, VkImageView vkImageView, uint32_t width, uint32_t height)
+:Image(vulkan, vkImage, vkImageView, width, height)
 {
 
 }

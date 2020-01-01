@@ -24,6 +24,9 @@
 #include "vk/buffer/VertexBuffer.hpp"
 #include "vk/CommandPool.hpp"
 #include "vk/CommandBuffer.hpp"
+#include "vk/Framebuffer.hpp"
+#include "vk/image/SwapchainImage.hpp"
+#include "vk/builder/FramebufferBuilder.hpp"
 
 static int _main(util::Logger& log);
 static int _mainLoop(util::Logger& log, const std::shared_ptr<vk::Vulkan>& vulkan);
@@ -110,6 +113,12 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
 
   auto vertBuffer = vk::VertexBufferBuilder(vulkan, vertInputs.size() * sizeof(taiju::shaders::vert::Triangle::Input)).build();
   vertBuffer.update(cmdBuffer, vertInputs);
+
+  std::vector<vk::Framebuffer> framebuffers;
+  for(std::shared_ptr<vk::SwapchainImage>& image : vulkan->swapchainImages()) {
+    framebuffers.emplace_back(vk::FramebufferBuilder(vulkan, renderPass).addImage(image).build());
+  }
+
 
   do {
     //
