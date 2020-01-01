@@ -57,7 +57,6 @@ std::shared_ptr<Vulkan> VulkanBuilder::build() {
   this->createFence();
   this->createSwapchain();
   this->createSwapchainImages();
-  this->createFrameBuffers();
 
   return this->vulkan_;
 }
@@ -391,31 +390,6 @@ void VulkanBuilder::createSwapchainImages() {
     }
     vulkan()->swapchainImages_.emplace_back(std::make_shared<SwapchainImage>(vulkan(), vkImage, vkImageView));
   }
-}
-
-void VulkanBuilder::createFrameBuffers() {
-  /*
-    VkFramebuffer vkFramebuffer;
-    {
-      VkFramebufferCreateInfo fbinfo{};
-      VkImageView attachmentViews[1] = {vulkan()->swapchainImageViews_[i]};
-
-      fbinfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-      fbinfo.attachmentCount = 1;
-      fbinfo.renderPass = renderPass->vkRenderPass();
-      fbinfo.pAttachments = attachmentViews;
-      fbinfo.width = vulkan()->width();
-      fbinfo.height = vulkan()->height();
-      fbinfo.layers = 1;
-      if (vkCreateFramebuffer(vulkan()->vkDevice(), &fbinfo, nullptr, &vkFramebuffer) != VK_SUCCESS) {
-        log().fatal("[Vulkan] Failed to create a FrameBuffer.");
-      }
-    }
-    this->vulkan()->frameBuffers_.emplace_back(
-      util::make_shared<FrameBuffer>(vulkan(), vkFramebuffer, std::move(renderPass), std::move(commandPool), std::move(commandBuffer))
-    );
-  }
-   */
 }
 
 }

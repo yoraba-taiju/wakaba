@@ -25,7 +25,7 @@ class GraphicsPipelineBuilder final {
 private:
   std::shared_ptr<Vulkan> vulkan_;
 private:
-  RenderPass renderPass_;
+  std::shared_ptr<RenderPass> renderPass_;
 private:
   std::shared_ptr<VertexShader> vertexShader_{};
   std::shared_ptr<FragmentShader> fragmentShader_{};
@@ -51,7 +51,7 @@ public:
   GraphicsPipelineBuilder& disableAlphaBlending();
 
 public:
-  explicit GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, RenderPass&& renderPass);
+  explicit GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, std::shared_ptr<RenderPass> renderPass);
   GraphicsPipelineBuilder(GraphicsPipelineBuilder&&) = delete;
   GraphicsPipelineBuilder(GraphicsPipelineBuilder const&) = delete;
   GraphicsPipelineBuilder& operator=(GraphicsPipelineBuilder&&) = delete;
@@ -59,7 +59,7 @@ public:
 private:
   PipelineLayout buildPipelineLayout();
 public:
-  GraphicsPipelineBuilder& setRenderPass(RenderPass&& renderPass);
+  GraphicsPipelineBuilder& setRenderPass(std::shared_ptr<RenderPass> renderPass);
   GraphicsPipelineBuilder& addVertexStage(std::shared_ptr<VertexShader> shader);
   GraphicsPipelineBuilder& addFragmentStage(std::shared_ptr<FragmentShader> shader);
 };

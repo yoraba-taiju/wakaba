@@ -14,7 +14,7 @@
 
 #include <GLFW/glfw3.h>
 #include "../../util/Logger.hpp"
-#include "../FrameBuffer.hpp"
+#include "../Framebuffer.hpp"
 #include "../Vulkan.hpp"
 
 namespace vk {
@@ -39,7 +39,6 @@ private:
   void createFence();
   void createSwapchain();
   void createSwapchainImages();
-  void createFrameBuffers();
 
 public:
   explicit VulkanBuilder(util::Logger &log, std::string appName, int width, int height);

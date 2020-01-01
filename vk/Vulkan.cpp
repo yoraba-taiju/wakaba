@@ -12,7 +12,7 @@
 
 #include "Vulkan.hpp"
 #include "RenderPass.hpp"
-#include "FrameBuffer.hpp"
+#include "Framebuffer.hpp"
 #include "ShaderModule.hpp"
 #include "builder/GraphicsPipelineBuilder.hpp"
 #include "CommandBuffer.hpp"

@@ -26,6 +26,7 @@ private:
   VkMemoryRequirements requirements_{};
   VkMemoryPropertyFlags propertyFlags_{};
 public:
+  DeviceMemoryBuilder() = delete;
   DeviceMemoryBuilder(DeviceMemoryBuilder&&) = delete;
   DeviceMemoryBuilder(DeviceMemoryBuilder const&) = delete;
   DeviceMemoryBuilder& operator=(DeviceMemoryBuilder&&) = delete;

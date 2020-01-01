@@ -88,7 +88,8 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
 
   auto vert = vulkan->createShader<taiju::shaders::vert::Triangle>();
   auto frag = vulkan->createShader<taiju::shaders::frag::Triangle>();
-  auto gfxPipeline = vk::GraphicsPipelineBuilder(vulkan, renderPassBuilder.build())
+  auto renderPass = renderPassBuilder.build();
+  auto gfxPipeline = vk::GraphicsPipelineBuilder(vulkan, renderPass)
                        .addVertexStage(vert)
                        .addFragmentStage(frag).build();
 

@@ -20,7 +20,7 @@
 namespace vk {
 
 class VulkanBuilder;
-class FrameBuffer;
+class Framebuffer;
 class ShaderModule;
 class PipelineLayout;
 class SwapchainImage;
@@ -57,7 +57,7 @@ private: /* Vulkan */
   VkSwapchainKHR vkSwapchain_{};
   VkSurfaceFormatKHR vkSwapchainFormat_{};
   std::vector<std::shared_ptr<SwapchainImage>> swapchainImages_{};
-  std::vector<std::shared_ptr<FrameBuffer>> frameBuffers_{};
+  std::vector<std::shared_ptr<Framebuffer>> frameBuffers_{};
 
 private:
   VkDebugReportCallbackEXT vkDebugReportCallback_{};

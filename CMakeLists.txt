@@ -74,8 +74,8 @@ add_executable(wakaba
     vk/Util.hpp
     vk/Vulkan.cpp
     vk/Vulkan.hpp
-    vk/FrameBuffer.cpp
-    vk/FrameBuffer.hpp
+    vk/Framebuffer.cpp
+    vk/Framebuffer.hpp
     vk/RenderPass.cpp
     vk/RenderPass.hpp
     vk/CommandBuffer.cpp
@@ -117,7 +117,7 @@ add_executable(wakaba
     taiju/shaders/vert/Triangle.hpp
     taiju/shaders/frag/Triangle.cpp
     taiju/shaders/frag/Triangle.hpp
-    vk/builder/RenderPassBuilder.cpp vk/builder/RenderPassBuilder.hpp vk/image/SwapchainImage.cpp vk/image/SwapchainImage.hpp vk/buffer/Buffer.cpp vk/buffer/Buffer.hpp vk/buffer/DeviceMemory.cpp vk/buffer/DeviceMemory.hpp vk/builder/DeviceMemoryBuilder.cpp vk/builder/DeviceMemoryBuilder.hpp vk/builder/BufferBuilder.cpp vk/builder/BufferBuilder.hpp vk/buffer/VertexBuffer.cpp vk/buffer/VertexBuffer.hpp vk/builder/VertexBufferBuilder.cpp vk/builder/VertexBufferBuilder.hpp)
+    vk/builder/RenderPassBuilder.cpp vk/builder/RenderPassBuilder.hpp vk/image/SwapchainImage.cpp vk/image/SwapchainImage.hpp vk/buffer/Buffer.cpp vk/buffer/Buffer.hpp vk/buffer/DeviceMemory.cpp vk/buffer/DeviceMemory.hpp vk/builder/DeviceMemoryBuilder.cpp vk/builder/DeviceMemoryBuilder.hpp vk/builder/BufferBuilder.cpp vk/builder/BufferBuilder.hpp vk/buffer/VertexBuffer.cpp vk/buffer/VertexBuffer.hpp vk/builder/VertexBufferBuilder.cpp vk/builder/VertexBufferBuilder.hpp vk/builder/FramebufferBuilder.cpp vk/builder/FramebufferBuilder.hpp)
 
 target_link_libraries(wakaba fmt::fmt)
 target_link_libraries(wakaba glm_static)

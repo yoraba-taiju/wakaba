@@ -17,7 +17,7 @@
 
 namespace vk {
 
-GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, RenderPass&& renderPass)
+GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, std::shared_ptr<RenderPass> renderPass)
 :vulkan_(std::move(vulkan))
 ,renderPass_(std::move(renderPass))
 {
@@ -199,7 +199,7 @@ GraphicsPipeline GraphicsPipelineBuilder::build() {
       .pColorBlendState = &this->colorBlendingInfo_,
       .pDynamicState = &this->dynamicStateInfo_,
       .layout = pipelineLayout.vkPipelineLayout(),
-      .renderPass = renderPass_.vkRenderPass(),
+      .renderPass = renderPass_->vkRenderPass(),
       .subpass = 0,
       // unused fields
       .basePipelineHandle = nullptr,
@@ -262,7 +262,7 @@ PipelineLayout GraphicsPipelineBuilder::buildPipelineLayout() {
   return PipelineLayout(vulkan_, pipelineLayout);
 }
 
-GraphicsPipelineBuilder& GraphicsPipelineBuilder::setRenderPass(RenderPass&& renderPass) {
+GraphicsPipelineBuilder& GraphicsPipelineBuilder::setRenderPass(std::shared_ptr<RenderPass> renderPass) {
   this->renderPass_ = std::move(renderPass);
   return *this;
 }
