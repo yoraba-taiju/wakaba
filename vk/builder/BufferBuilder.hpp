@@ -29,12 +29,11 @@ private:
   VkBufferUsageFlags usages_{};
 public:
   BufferBuilder() = delete;
-  explicit BufferBuilder(std::shared_ptr<Vulkan> vulkan);
-  BufferBuilder& setSize(VkDeviceSize size);
+  explicit BufferBuilder(std::shared_ptr<Vulkan> vulkan, VkDeviceSize size);
   BufferBuilder& addUsages(VkBufferUsageFlags usage);
   BufferBuilder& setUsages(VkBufferUsageFlags usages);
   BufferBuilder& clearUsages();
-  std::shared_ptr<Buffer> build();
+  Buffer build();
 };
 
 }

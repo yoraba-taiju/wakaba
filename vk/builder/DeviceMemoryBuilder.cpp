@@ -13,18 +13,7 @@
 
 namespace vk {
 
-DeviceMemoryBuilder::DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan)
-:vulkan_(std::move(vulkan))
-{
-  this->vkMemoryAllocateInfo_ = {
-      .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-      .pNext = nullptr,
-      .allocationSize = 0,
-      .memoryTypeIndex = 0,
-  };
-}
-
-DeviceMemoryBuilder::DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan,VkDeviceSize allocationSize,
+DeviceMemoryBuilder::DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan,VkDeviceSize const allocationSize,
                                          VkMemoryRequirements const& requirements, VkMemoryPropertyFlags propertyFlags)
     :vulkan_(std::move(vulkan))
     ,allocationSize_(allocationSize)
@@ -33,7 +22,7 @@ DeviceMemoryBuilder::DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan,VkDevice
 {
 
 }
-std::shared_ptr<DeviceMemory> DeviceMemoryBuilder::build() {
+DeviceMemory DeviceMemoryBuilder::build() {
   VkPhysicalDeviceMemoryProperties const& memProperties = vulkan_->vkPhysicalDeviceMemoryProperties();
 
   std::optional<uint32_t> memoryType;
@@ -59,23 +48,7 @@ std::shared_ptr<DeviceMemory> DeviceMemoryBuilder::build() {
   if (vkAllocateMemory(vulkan_->vkDevice(), &allocInfo, nullptr, &vkDeviceMemory) != VK_SUCCESS) {
     throw std::runtime_error("failed to allocate image memory!");
   }
-  return std::make_shared<DeviceMemory>(vulkan_, vkDeviceMemory, allocationSize_);
+  return DeviceMemory(vulkan_, vkDeviceMemory, allocationSize_);
 }
-
-DeviceMemoryBuilder& DeviceMemoryBuilder::setAllocationSize(VkDeviceSize allocationSize) {
-  this->allocationSize_ = allocationSize;
-  return *this;
-}
-
-DeviceMemoryBuilder& DeviceMemoryBuilder::setRequirements(VkMemoryRequirements requirements) {
-  this->requirements_ = requirements;
-  return *this;
-}
-
-DeviceMemoryBuilder& DeviceMemoryBuilder::setPropertyFlags(VkMemoryPropertyFlags propertyFlags) {
-  this->propertyFlags_ = propertyFlags;
-  return *this;
-}
-
 
 }
