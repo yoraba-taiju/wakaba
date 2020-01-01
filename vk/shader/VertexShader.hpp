@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "../../util/Shared.hpp"
 #include "../ShaderModule.hpp"
 #include "Shader.hpp"
 

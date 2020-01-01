@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <utility>
-#include "../../util/Shared.hpp"
 #include "../ShaderModule.hpp"
 #include "Shader.hpp"
 

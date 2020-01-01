@@ -11,7 +11,7 @@
 #include <GLFW/glfw3.h>
 
 #include <utility>
-#include "../util/Shared.hpp"
+#include <memory>
 #include "CommandBuffer.hpp"
 
 namespace vk {
@@ -57,8 +57,6 @@ public:
     return this->commandBuffer_;
   }
 
-public:
-  ENABLE_SHARED_HELPER
 };
 
 }

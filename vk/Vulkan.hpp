@@ -13,7 +13,6 @@
 #include <GLFW/glfw3.h>
 
 #include "../util/Logger.hpp"
-#include "../util/Shared.hpp"
 
 #include "CommandBuffer.hpp"
 #include "ShaderModule.hpp"

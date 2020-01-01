@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "../../../vk/shader/VertexShader.hpp"
-#include "../../../util/Shared.hpp"
 #include <glm/glm.hpp>
 
 namespace vk {

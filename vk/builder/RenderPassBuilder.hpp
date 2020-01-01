@@ -15,8 +15,6 @@
 #include <vector>
 #include <optional>
 
-#include "../../util/Shared.hpp"
-
 namespace vk {
 
 class Vulkan;

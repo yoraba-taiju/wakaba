@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "../../../vk/shader/FragmentShader.hpp"
-#include "../../../util/Shared.hpp"
 
 namespace vk {
 class Vulkan;

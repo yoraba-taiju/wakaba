@@ -11,7 +11,6 @@
 
 #include <memory>
 #include <utility>
-#include "../util/Shared.hpp"
 
 namespace vk {
 

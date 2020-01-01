@@ -65,7 +65,6 @@ add_executable(wakaba
     ${SHADER_HEADERS}
     main.cpp
     # util
-    util/Shared.hpp
     util/Logger.cpp
     util/Logger.hpp
     util/File.hpp
