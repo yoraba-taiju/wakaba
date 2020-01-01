@@ -15,8 +15,9 @@
 namespace vk {
 
 class Vulkan;
+class CommandBuffer;
 
-class CommandPool {
+class CommandPool final : public std::enable_shared_from_this<CommandPool> {
 private:
   std::weak_ptr<Vulkan> vulkan_;
   VkCommandPool vkCommandPool_;
@@ -27,9 +28,9 @@ public:
   CommandPool& operator=(CommandPool const&) = delete;
   CommandPool& operator=(CommandPool&&) = delete;
 
-  explicit CommandPool(std::weak_ptr<Vulkan> vulkan, VkCommandPool vkObj)
+  explicit CommandPool(std::weak_ptr<Vulkan> vulkan, VkCommandPool vkCommandPool)
   : vulkan_(std::move(vulkan))
-  , vkCommandPool_(vkObj)
+  , vkCommandPool_(vkCommandPool)
   {
 
   }
@@ -39,6 +40,9 @@ public:
   [[ nodiscard ]] VkCommandPool vkCommandPool() {
     return this->vkCommandPool_;
   }
+
+public:
+  CommandBuffer createBuffer();
 };
 
 }

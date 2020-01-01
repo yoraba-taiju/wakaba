@@ -18,6 +18,7 @@ namespace vk {
 
 class Vulkan;
 class DeviceMemory;
+class CommandBuffer;
 
 class Buffer {
 private:
@@ -34,7 +35,7 @@ public:
   Buffer& operator=(Buffer const&) = delete;
   Buffer& operator=(Buffer&&) = default;
 
-  Buffer(std::shared_ptr<Vulkan> const& vulkan, VkBuffer vkBuffer, std::shared_ptr<DeviceMemory> deviceMemory, VkDeviceSize offset, VkDeviceSize size);
+  Buffer(std::shared_ptr<Vulkan> const& vulkan, VkBuffer vkBuffer, VkDeviceSize size);
   ~Buffer() noexcept;
 
 public:
@@ -50,7 +51,12 @@ public:
     return size_;
   }
 
-  void send(VkDeviceSize offset, void const* src, size_t size);
+  void bindTo(std::shared_ptr<DeviceMemory> devMem, VkDeviceSize offset);
+
+  void sendDirect(VkDeviceSize offset, void const* src, size_t size);
+  void sendIndirect(CommandBuffer& cmdBuffer, VkDeviceSize offset, void const* src, size_t size);
+
+  VkMemoryRequirements vkMemoryRequirements();
 };
 
 }

@@ -23,7 +23,6 @@ class DeviceMemoryBuilder final {
 private:
   std::shared_ptr<Vulkan> vulkan_;
   VkMemoryAllocateInfo vkMemoryAllocateInfo_{};
-  VkDeviceSize allocationSize_;
   VkMemoryRequirements requirements_{};
   VkMemoryPropertyFlags propertyFlags_{};
 public:
@@ -31,8 +30,7 @@ public:
   DeviceMemoryBuilder(DeviceMemoryBuilder const&) = delete;
   DeviceMemoryBuilder& operator=(DeviceMemoryBuilder&&) = delete;
   DeviceMemoryBuilder& operator=(DeviceMemoryBuilder const&) = delete;
-  explicit DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan, VkDeviceSize allocationSize,
-                               const VkMemoryRequirements& requirements, VkMemoryPropertyFlags propertyFlags);
+  explicit DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan, VkMemoryRequirements const& requirements, VkMemoryPropertyFlags propertyFlags);
 
   std::shared_ptr<DeviceMemory> build();
 };

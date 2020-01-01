@@ -43,7 +43,7 @@ void Vulkan::destroy() {
   glfwDestroyWindow(this->window_);
 }
 
-CommandBuffer Vulkan::createCommandBuffer() {
+std::shared_ptr<CommandPool> Vulkan::createCommandPool() {
   VkCommandPool vkCommandPool;
   {
     VkCommandPoolCreateInfo info = {
@@ -57,23 +57,7 @@ CommandBuffer Vulkan::createCommandBuffer() {
       log().fatal("[Vulkan] Failed to create a command pool.");
     }
   }
-  std::shared_ptr<CommandPool> commandPool = std::make_shared<CommandPool>(self(), vkCommandPool);
-
-  VkCommandBuffer vkCommandBuffer;
-  {
-    VkCommandBufferAllocateInfo commandBufferAllocateInfo = {
-        .sType =  VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-        .pNext = nullptr,
-        .commandPool = commandPool->vkCommandPool(),
-        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-        .commandBufferCount = 1
-    };
-
-    if (vkAllocateCommandBuffers(vkDevice(), &commandBufferAllocateInfo, &vkCommandBuffer) != VK_SUCCESS) {
-      log().fatal("[Vulkan] Failed to create a Command Buffer.");
-    }
-  }
-  return CommandBuffer(self(), commandPool, vkCommandBuffer);
+  return std::make_shared<CommandPool>(self(), vkCommandPool);
 }
 
 }

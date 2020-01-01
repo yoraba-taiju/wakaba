@@ -45,7 +45,7 @@ public:
     return size_;
   }
 
-  void send(VkDeviceSize offset, void const* src, size_t size);
+  void sendDirect(VkDeviceSize offset, void const* src, size_t size);
 };
 
 }

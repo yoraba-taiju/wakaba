@@ -14,12 +14,8 @@
 
 #include "../util/Logger.hpp"
 
-#include "CommandBuffer.hpp"
 #include "ShaderModule.hpp"
-
 #include "shader/Shader.hpp"
-#include "builder/RenderPassBuilder.hpp"
-
 
 namespace vk {
 
@@ -32,6 +28,7 @@ class GraphicsPipelineBuilder;
 class RenderPassBuilder;
 class DeviceMemoryBuilder;
 class BufferBuilder;
+class CommandPool;
 
 class Vulkan final : public std::enable_shared_from_this<Vulkan> {
 private:
@@ -112,11 +109,19 @@ public:
     return this->swapchainImages_;
   }
 
+  [[ nodiscard ]] VkQueue vkGraphicsQueue() {
+    return this->vkGraphicsQueue_;
+  }
+
+  [[ nodiscard ]] VkQueue vkPresentQueue() {
+    return this->vkPresentQueue_;
+  }
+
 public:
   void destroy();
 
 public:
-  CommandBuffer createCommandBuffer();
+  std::shared_ptr<CommandPool> createCommandPool();
 
   template<typename T, typename... Args>
   std::shared_ptr<T> createShader(Args &&... args) {

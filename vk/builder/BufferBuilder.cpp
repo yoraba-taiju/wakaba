@@ -14,12 +14,13 @@ namespace vk {
 
 BufferBuilder::BufferBuilder(std::shared_ptr<Vulkan> vulkan, VkDeviceSize const size)
 :vulkan_(std::move(vulkan))
+,size_(size)
 {
   this->vkBufferCreateInfo_ = {
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
       .pNext = nullptr,
       .flags = 0,
-      .size = size,
+      .size = 0,
       .usage = 0,
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
       .queueFamilyIndexCount = 0, // TODO?
@@ -35,16 +36,7 @@ Buffer BufferBuilder::build() {
     throw std::runtime_error("failed to create buffer!");
   }
 
-  if (vkBindBufferMemory(vulkan_->vkDevice(), vkBuffer, deviceMemory_->vkDeviceMemory(), offset_) != VK_SUCCESS) {
-    throw std::runtime_error("failed to bind buffer to device memory!");
-  }
-
-  return Buffer(vulkan_, vkBuffer, this->deviceMemory_, this->offset_, size_);
-}
-
-BufferBuilder& BufferBuilder::bindTo(std::shared_ptr<DeviceMemory> deviceMemory, VkDeviceSize offset) {
-  this->deviceMemory_ = std::move(deviceMemory);
-  this->offset_ = offset;
+  return Buffer(vulkan_, vkBuffer, size_);
 }
 
 BufferBuilder& BufferBuilder::addUsages(VkBufferUsageFlags usage) {

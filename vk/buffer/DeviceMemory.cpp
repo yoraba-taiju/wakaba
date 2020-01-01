@@ -25,9 +25,9 @@ DeviceMemory::~DeviceMemory() noexcept {
   }
 }
 
-void DeviceMemory::send(VkDeviceSize const offset, void const *src, size_t const size) {
+void DeviceMemory::sendDirect(VkDeviceSize offset, void const *src, size_t size) {
   std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(vulkan) {
+  if(!vulkan) {
     throw std::runtime_error("vulkan is already deleted.");
   }
   void* dst;

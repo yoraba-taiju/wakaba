@@ -18,6 +18,7 @@ namespace vk {
 class Vulkan;
 class VulkanBuilder;
 class CommandPool;
+class Buffer;
 
 class CommandBuffer final {
 private:
@@ -30,16 +31,20 @@ public:
   CommandBuffer(CommandBuffer&&) = default;
   CommandBuffer& operator=(CommandBuffer const&) = delete;
   CommandBuffer& operator=(CommandBuffer&&) = default;
-  explicit CommandBuffer(std::weak_ptr<Vulkan> vulkan, std::shared_ptr<CommandPool> commandPool, VkCommandBuffer vkObj)
+  explicit CommandBuffer(std::weak_ptr<Vulkan> vulkan, std::shared_ptr<CommandPool> commandPool, VkCommandBuffer vkCommandBuffer)
   : vulkan_(std::move(vulkan))
   , commandPool_(std::move(commandPool))
-  , vkCommandBuffer_(vkObj)
+  , vkCommandBuffer_(vkCommandBuffer)
   {
   }
   ~CommandBuffer() noexcept;
 
 public:
+  void copyBufferSync(Buffer& dst, VkDeviceSize dstOffset, Buffer& src, VkDeviceSize srcOffset, VkDeviceSize size);
+
+public:
   [[ nodiscard ]] VkCommandBuffer vkCommandBuffer() { return this->vkCommandBuffer_;}
+  [[ nodiscard ]] std::shared_ptr<CommandPool> commandPool() { return this->commandPool_;}
 };
 
 }
