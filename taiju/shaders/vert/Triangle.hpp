@@ -27,7 +27,7 @@ public:
     glm::vec3 color;
   };
 public:
-  explicit Triangle(std::shared_ptr<vk::Vulkan> const& vulkan, std::shared_ptr<vk::ShaderModule> module);
+  explicit Triangle(std::shared_ptr<vk::Vulkan> const& vulkan, vk::ShaderModule&& module);
   ~Triangle() noexcept override = default;
   std::tuple<
       std::vector<VkVertexInputBindingDescription>,

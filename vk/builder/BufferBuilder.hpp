@@ -28,7 +28,12 @@ private:
   VkDeviceSize size_{};
   VkBufferUsageFlags usages_{};
 public:
+  BufferBuilder(BufferBuilder&&) = delete;
+  BufferBuilder(BufferBuilder const&) = delete;
+  BufferBuilder& operator=(BufferBuilder&&) = delete;
+  BufferBuilder& operator=(BufferBuilder const&) = delete;
   BufferBuilder() = delete;
+
   explicit BufferBuilder(std::shared_ptr<Vulkan> vulkan, VkDeviceSize size);
   BufferBuilder& addUsages(VkBufferUsageFlags usage);
   BufferBuilder& setUsages(VkBufferUsageFlags usages);

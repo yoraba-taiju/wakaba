@@ -21,7 +21,6 @@ private:
   std::weak_ptr<Vulkan> vulkan_;
   VkImage vkImage_;
   VkImageView vkImageView_;
-
 protected:
   explicit Image(std::shared_ptr<Vulkan> const& vulkan, VkImage vkImage, VkImageView vkImageView)
   :vulkan_(vulkan)
@@ -31,6 +30,10 @@ protected:
 
 public:
   Image() = delete;
+  Image(Image const&) = delete;
+  Image(Image&&) = delete;
+  Image& operator=(Image const&) = delete;
+  Image& operator=(Image&&) = delete;
   virtual ~Image() noexcept = default;
 
 public:

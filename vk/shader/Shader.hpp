@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include "../ShaderModule.hpp"
 
 namespace vk {
 class Vulkan;
@@ -18,7 +19,7 @@ class Shader {
   friend class Vulkan;
 private:
   std::weak_ptr<Vulkan> vulkan_;
-  std::shared_ptr<ShaderModule> module_;
+  ShaderModule module_;
 protected:
   template <typename T>
   static std::tuple<size_t, const uint32_t*> loadBianry();
@@ -29,10 +30,10 @@ public:
   Shader& operator=(Shader const&) = delete;
 
 public:
-  [[ nodiscard ]] std::shared_ptr<ShaderModule> const& module() { return this->module_; }
+  [[ nodiscard ]] ShaderModule& module() { return this->module_; }
 
 protected:
-  explicit Shader(std::shared_ptr<Vulkan> const& vulkan, std::shared_ptr<ShaderModule> module)
+  explicit Shader(std::shared_ptr<Vulkan> const& vulkan, ShaderModule&& module)
   :vulkan_(vulkan)
   ,module_(std::move(module))
   {

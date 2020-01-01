@@ -9,8 +9,8 @@
 
 namespace taiju {
 
-Taiju::Taiju(util::Logger &log) :
-    log_(log) {
+Taiju::Taiju(util::Logger &log)
+:log_(log) {
 
 }
 

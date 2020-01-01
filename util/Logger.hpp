@@ -26,11 +26,18 @@ public:
   };
 
 public:
-  explicit Logger(FILE *const output)
-      : output_(output), level_(Level::WARN) {
+  Logger(Logger const&) = delete;
+  Logger(Logger&&) = delete;
+  Logger& operator=(Logger const&) = delete;
+  Logger& operator=(Logger&&) = delete;
+
+  explicit Logger(FILE *const outputStandard, FILE *const outputError)
+  :outputStandard_(outputStandard)
+  ,outputError_(outputError)
+  ,level_(Level::WARN) {
   }
 
-  Logger() : Logger(stdout) {
+  Logger() : Logger(stdout, stderr) {
   }
 
   template<typename ...Args>
@@ -81,28 +88,33 @@ private:
     std::string const time = ss.str();
     switch (level) {
       case Level::TRACE:
-        fprintf(this->output_, "[%s TRACE] %s\n", time.c_str(), msg.c_str());
+        fprintf(this->outputStandard_, "[%s TRACE] %s\n", time.c_str(), msg.c_str());
+        fflush(this->outputStandard_);
         break;
       case Level::DEBUG:
-        fprintf(this->output_, "[%s DEBUG] %s\n", time.c_str(), msg.c_str());
+        fprintf(this->outputStandard_, "[%s DEBUG] %s\n", time.c_str(), msg.c_str());
+        fflush(this->outputStandard_);
         break;
       case Level::INFO:
-        fprintf(this->output_, "[%s INFO ] %s\n", time.c_str(), msg.c_str());
+        fprintf(this->outputStandard_, "[%s INFO ] %s\n", time.c_str(), msg.c_str());
+        fflush(this->outputStandard_);
         break;
       case Level::WARN:
-        fprintf(this->output_, "[%s WARN ] %s\n", time.c_str(), msg.c_str());
+        fprintf(this->outputError_, "[%s WARN ] %s\n", time.c_str(), msg.c_str());
+        fflush(this->outputError_);
         break;
       case Level::ERROR:
-        fprintf(this->output_, "[%s ERROR] %s\n", time.c_str(), msg.c_str());
+        fprintf(this->outputError_, "[%s ERROR] %s\n", time.c_str(), msg.c_str());
+        fflush(this->outputError_);
         break;
       case Level::FATAL:
         throw std::runtime_error("[FATAL] " + msg);
     }
-    fflush(this->output_);
   }
 
 private:
-  FILE *const output_;
+  FILE *const outputStandard_;
+  FILE *const outputError_;
   Level level_;
 };
 }

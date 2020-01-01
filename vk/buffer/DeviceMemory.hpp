@@ -25,6 +25,11 @@ private:
   VkDeviceSize size_;
 public:
   DeviceMemory() = delete;
+  DeviceMemory(DeviceMemory const&) = delete;
+  DeviceMemory(DeviceMemory&&) = default;
+  DeviceMemory& operator=(DeviceMemory const&) = delete;
+  DeviceMemory& operator=(DeviceMemory&&) = default;
+
   DeviceMemory(std::shared_ptr<Vulkan> const& vulkan, VkDeviceMemory vkDeviceMemory, VkDeviceSize size);
   ~DeviceMemory() noexcept;
 

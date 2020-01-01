@@ -11,7 +11,7 @@
 #include <GLFW/glfw3.h>
 
 #include "../GraphicsPipeline.hpp"
-#include "../../util/Shared.hpp"
+#include "../RenderPass.hpp"
 
 namespace vk {
 
@@ -25,7 +25,7 @@ class GraphicsPipelineBuilder final {
 private:
   std::shared_ptr<Vulkan> vulkan_;
 private:
-  std::shared_ptr<RenderPass> renderPass_;
+  RenderPass renderPass_;
 private:
   std::shared_ptr<VertexShader> vertexShader_{};
   std::shared_ptr<FragmentShader> fragmentShader_{};
@@ -44,22 +44,22 @@ private: // input info
   std::array<VkDynamicState, 2> dynamicStates_{};
   VkPipelineDynamicStateCreateInfo dynamicStateInfo_{};
 public:
-  std::shared_ptr<GraphicsPipeline> build();
+  GraphicsPipeline build();
 
 public:
   GraphicsPipelineBuilder& enableAlphaBlending();
   GraphicsPipelineBuilder& disableAlphaBlending();
 
 public:
-  explicit GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, std::shared_ptr<RenderPass> renderPass);
+  explicit GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, RenderPass&& renderPass);
   GraphicsPipelineBuilder(GraphicsPipelineBuilder&&) = delete;
   GraphicsPipelineBuilder(GraphicsPipelineBuilder const&) = delete;
   GraphicsPipelineBuilder& operator=(GraphicsPipelineBuilder&&) = delete;
   GraphicsPipelineBuilder& operator=(GraphicsPipelineBuilder const&) = delete;
 private:
-  std::shared_ptr<PipelineLayout> buildPipelineLayout();
+  PipelineLayout buildPipelineLayout();
 public:
-  GraphicsPipelineBuilder& setRenderPass(std::shared_ptr<RenderPass> renderPass);
+  GraphicsPipelineBuilder& setRenderPass(RenderPass&& renderPass);
   GraphicsPipelineBuilder& addVertexStage(std::shared_ptr<VertexShader> shader);
   GraphicsPipelineBuilder& addFragmentStage(std::shared_ptr<FragmentShader> shader);
 };

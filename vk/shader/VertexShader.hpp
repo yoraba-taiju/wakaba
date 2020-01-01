@@ -28,7 +28,7 @@ public:
   VertexShader& operator=(VertexShader&&) = delete;
   VertexShader& operator=(VertexShader const&) = delete;
 protected:
-  explicit VertexShader(std::shared_ptr<Vulkan> const& vulkan, std::shared_ptr<ShaderModule> module)
+  explicit VertexShader(std::shared_ptr<Vulkan> const& vulkan, ShaderModule&& module)
   :Shader(vulkan,std::move(module))
   {
   }

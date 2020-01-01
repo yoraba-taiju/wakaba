@@ -17,7 +17,7 @@
 
 namespace vk {
 
-GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, std::shared_ptr<RenderPass> renderPass)
+GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, RenderPass&& renderPass)
 :vulkan_(std::move(vulkan))
 ,renderPass_(std::move(renderPass))
 {
@@ -142,7 +142,7 @@ GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan,
 }
 
 
-std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
+GraphicsPipeline GraphicsPipelineBuilder::build() {
   VkPipeline obj;
 
   // temporary storage to build
@@ -157,7 +157,7 @@ std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
         .pNext = nullptr,
         .flags = 0,
         .stage = VK_SHADER_STAGE_VERTEX_BIT,
-        .module = vertexShader_->module()->vkShaderModule(),
+        .module = vertexShader_->module().vkShaderModule(),
         .pName = "main",
         .pSpecializationInfo = nullptr,
     });
@@ -173,13 +173,13 @@ std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
         .pNext = nullptr,
         .flags = 0,
         .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-        .module = fragmentShader_->module()->vkShaderModule(),
+        .module = fragmentShader_->module().vkShaderModule(),
         .pName = "main",
         .pSpecializationInfo = nullptr,
     });
   }
 
-  std::shared_ptr<PipelineLayout> pipelineLayout = buildPipelineLayout();
+  PipelineLayout pipelineLayout = buildPipelineLayout();
 
   VkGraphicsPipelineCreateInfo pipelineCreateInfo = {
       .sType =  VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
@@ -198,8 +198,8 @@ std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
       .pDepthStencilState = &this->depthStencilInfo_,
       .pColorBlendState = &this->colorBlendingInfo_,
       .pDynamicState = &this->dynamicStateInfo_,
-      .layout = pipelineLayout->vkPipelineLayout(),
-      .renderPass = renderPass_->vkRenderPass(),
+      .layout = pipelineLayout.vkPipelineLayout(),
+      .renderPass = renderPass_.vkRenderPass(),
       .subpass = 0,
       // unused fields
       .basePipelineHandle = nullptr,
@@ -212,7 +212,7 @@ std::shared_ptr<GraphicsPipeline> GraphicsPipelineBuilder::build() {
     vulkan_->log().fatal("Failed to create graphics pipeline.");
   }
 
-  return util::make_shared<GraphicsPipeline>(vulkan_, obj);
+  return GraphicsPipeline(vulkan_, obj);
 }
 
 GraphicsPipelineBuilder& GraphicsPipelineBuilder::enableAlphaBlending() {
@@ -243,7 +243,7 @@ GraphicsPipelineBuilder& GraphicsPipelineBuilder::disableAlphaBlending() {
   return *this;
 }
 
-std::shared_ptr<PipelineLayout> GraphicsPipelineBuilder::buildPipelineLayout() {
+PipelineLayout GraphicsPipelineBuilder::buildPipelineLayout() {
   VkPipelineLayout pipelineLayout;
   VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
@@ -259,10 +259,10 @@ std::shared_ptr<PipelineLayout> GraphicsPipelineBuilder::buildPipelineLayout() {
     vulkan_->log().fatal("failed to create pipeline layout!");
   }
 
-  return util::make_shared<PipelineLayout>(vulkan_, pipelineLayout);
+  return PipelineLayout(vulkan_, pipelineLayout);
 }
 
-GraphicsPipelineBuilder& GraphicsPipelineBuilder::setRenderPass(std::shared_ptr<RenderPass> renderPass) {
+GraphicsPipelineBuilder& GraphicsPipelineBuilder::setRenderPass(RenderPass&& renderPass) {
   this->renderPass_ = std::move(renderPass);
   return *this;
 }

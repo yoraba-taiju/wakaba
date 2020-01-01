@@ -51,7 +51,6 @@ public:
 
 public:
   std::shared_ptr<Vulkan> build();
-
 };
 
 

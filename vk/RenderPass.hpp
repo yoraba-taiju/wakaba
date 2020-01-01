@@ -23,17 +23,22 @@ private:
   VkRenderPass vkRenderPass_;
 public:
   RenderPass() = delete;
+  RenderPass(RenderPass const&) = delete;
+  RenderPass(RenderPass&&) = default;
+  RenderPass& operator=(RenderPass const&) = delete;
+  RenderPass& operator=(RenderPass&&) = default;
+
   explicit RenderPass(std::weak_ptr<Vulkan> vulkan, VkRenderPass renderPass)
   : vulkan_(std::move(vulkan))
-  , vkRenderPass_(renderPass) {
+  , vkRenderPass_(renderPass)
+  {
   }
   ~RenderPass() noexcept;
+
   [[ nodiscard ]] VkRenderPass vkRenderPass() {
     return this->vkRenderPass_;
   }
 
-public:
-  ENABLE_SHARED_HELPER
 };
 
 }

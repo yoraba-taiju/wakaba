@@ -15,6 +15,7 @@
 #include "vk/Vulkan.hpp"
 #include "vk/builder/VulkanBuilder.hpp"
 #include "vk/Util.hpp"
+#include "vk/RenderPass.hpp"
 #include "vk/builder/GraphicsPipelineBuilder.hpp"
 #include "taiju/shaders/vert/Triangle.hpp"
 #include "taiju/shaders/frag/Triangle.hpp"
@@ -76,8 +77,7 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   auto renderPassBuilder = vk::RenderPassBuilder(vulkan);
   renderPassBuilder.addSubPass().addColor(0);
   renderPassBuilder.addAttachment(VK_FORMAT_B8G8R8A8_UNORM);
-  auto renderPass = renderPassBuilder.build();
-  auto builder = vk::GraphicsPipelineBuilder(vulkan, renderPass);
+  auto builder = vk::GraphicsPipelineBuilder(vulkan, renderPassBuilder.build());
   auto vert = vulkan->createShader<taiju::shaders::vert::Triangle>();
   auto frag = vulkan->createShader<taiju::shaders::frag::Triangle>();
   builder.addVertexStage(vert);

@@ -19,7 +19,15 @@ class Pipeline {
 private:
   std::weak_ptr<Vulkan> vulkan_;
   VkPipeline vkPipeline_;
+public:
+  Pipeline() = delete;
+  Pipeline(Pipeline const&) = delete;
+  Pipeline& operator=(Pipeline const&) = delete;
+
 protected:
+  Pipeline(Pipeline&&) = default;
+  Pipeline& operator=(Pipeline&&) = default;
+
   explicit Pipeline(std::weak_ptr<Vulkan> vulkan, VkPipeline pipeline)
   : vulkan_(std::move(vulkan))
   , vkPipeline_(pipeline) {

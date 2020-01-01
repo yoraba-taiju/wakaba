@@ -26,7 +26,7 @@ public:
   FragmentShader& operator=(FragmentShader const&) = delete;
 
 protected:
-  explicit FragmentShader(std::shared_ptr<Vulkan> const& vulkan, std::shared_ptr<ShaderModule> module)
+  explicit FragmentShader(std::shared_ptr<Vulkan> const& vulkan, ShaderModule&& module)
   :Shader(vulkan,std::move(module))
   {
   }

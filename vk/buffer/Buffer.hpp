@@ -27,6 +27,12 @@ private:
   std::shared_ptr<DeviceMemory> deviceMemory_{};
 
 public:
+  Buffer() = delete;
+  Buffer(Buffer const&) = delete;
+  Buffer(Buffer&&) = default;
+  Buffer& operator=(Buffer const&) = delete;
+  Buffer& operator=(Buffer&&) = default;
+
   Buffer(std::shared_ptr<Vulkan> const& vulkan, VkBuffer vkBuffer, VkDeviceSize size);
   ~Buffer() noexcept;
 

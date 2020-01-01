@@ -29,6 +29,10 @@ private:
   VkMemoryRequirements requirements_{};
   VkMemoryPropertyFlags propertyFlags_{};
 public:
+  DeviceMemoryBuilder(DeviceMemoryBuilder&&) = delete;
+  DeviceMemoryBuilder(DeviceMemoryBuilder const&) = delete;
+  DeviceMemoryBuilder& operator=(DeviceMemoryBuilder&&) = delete;
+  DeviceMemoryBuilder& operator=(DeviceMemoryBuilder const&) = delete;
   explicit DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan, VkDeviceSize allocationSize,
                                const VkMemoryRequirements& requirements, VkMemoryPropertyFlags propertyFlags);
 

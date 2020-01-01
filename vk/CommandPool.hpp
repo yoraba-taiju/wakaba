@@ -22,6 +22,12 @@ private:
   std::weak_ptr<Vulkan> vulkan_;
   VkCommandPool vkCommandPool_;
 public:
+  CommandPool() = delete;
+  CommandPool(CommandPool const&) = delete;
+  CommandPool(CommandPool&&) = delete;
+  CommandPool& operator=(CommandPool const&) = delete;
+  CommandPool& operator=(CommandPool&&) = delete;
+
   explicit CommandPool(std::weak_ptr<Vulkan> vulkan, VkCommandPool vkObj)
   : vulkan_(std::move(vulkan))
   , vkCommandPool_(vkObj)
@@ -34,8 +40,6 @@ public:
   [[ nodiscard ]] VkCommandPool vkCommandPool() {
     return this->vkCommandPool_;
   }
-public:
-  ENABLE_SHARED_HELPER
 };
 
 }

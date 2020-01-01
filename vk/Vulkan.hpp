@@ -39,7 +39,7 @@ private:
   friend class VulkanBuilder;
 
 private: /* Util */
-  util::Logger &log_;
+  util::Logger& log_;
 
 private: /* Vulkan */
   // physical device
@@ -68,7 +68,12 @@ private:
   PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallback_{};
 
 public:
-  explicit Vulkan(util::Logger &log);
+  explicit Vulkan(util::Logger& log);
+  Vulkan() = delete;
+  Vulkan(Vulkan const&) = delete;
+  Vulkan(Vulkan&&) = delete;
+  Vulkan& operator=(Vulkan const&) = delete;
+  Vulkan& operator=(Vulkan&&) = delete;
   ~Vulkan();
 
 public:
@@ -88,7 +93,7 @@ public:
     return this->vkDevice_;
   }
 
-  [[ nodiscard ]] util::Logger log() {
+  [[ nodiscard ]] util::Logger& log() {
     return this->log_;
   }
 
@@ -112,16 +117,15 @@ public:
   void destroy();
 
 public:
-  std::shared_ptr<CommandBuffer> createCommandBuffer();
+  CommandBuffer createCommandBuffer();
 
   template<typename T, typename... Args>
   std::shared_ptr<T> createShader(Args &&... args) {
     static_assert(std::is_base_of<Shader, T>::value);
     std::tuple<size_t, const uint32_t*> const binary = Shader::loadBianry<T>();
     std::shared_ptr<Vulkan> vulkan = self();
-    std::shared_ptr<ShaderModule> shaderModule =
-        ShaderModule::create(vulkan, std::get<1>(binary), std::get<0>(binary), typeid(T).name());
-    return std::make_shared<T>(vulkan, shaderModule, std::forward<Args>(args)...);
+    ShaderModule module = ShaderModule::create(vulkan, std::get<1>(binary), std::get<0>(binary), typeid(T).name());
+    return std::make_shared<T>(vulkan, std::move(module), std::forward<Args>(args)...);
   }
 
 };

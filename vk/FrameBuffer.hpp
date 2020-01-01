@@ -22,7 +22,7 @@ class RenderPass;
 class CommandPool;
 class CommandBuffer;
 
-class FrameBuffer final{
+class FrameBuffer final {
 private:
   std::weak_ptr<Vulkan> vulkan_;
   VkFramebuffer vkFramebuffer_;
@@ -31,6 +31,10 @@ private:
   std::shared_ptr<CommandBuffer> commandBuffer_;
 public:
   FrameBuffer() = delete;
+  FrameBuffer(FrameBuffer const&) = delete;
+  FrameBuffer(FrameBuffer&&) = default;
+  FrameBuffer& operator=(FrameBuffer const&) = delete;
+  FrameBuffer& operator=(FrameBuffer&&) = default;
   ~FrameBuffer() noexcept;
 
   explicit FrameBuffer(std::weak_ptr<Vulkan> vulkan, VkFramebuffer vkFramebuffer, std::shared_ptr<RenderPass> rendrPass, std::shared_ptr<CommandPool> commandPool, std::shared_ptr<CommandBuffer> commandBuffer)

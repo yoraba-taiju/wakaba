@@ -12,7 +12,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "../util/Shared.hpp"
 #include "Pipeline.hpp"
 
 namespace vk {
@@ -22,15 +21,15 @@ class GraphicsPipelineBuilder;
 
 class GraphicsPipeline final : public Pipeline {
   friend class GraphicsPipelineBuilder;
-private:
+
+public:
   explicit GraphicsPipeline(std::weak_ptr<Vulkan> vulkan, VkPipeline pipeline)
   : Pipeline(std::move(vulkan), pipeline)
   {
   }
 public:
   ~GraphicsPipeline() noexcept = default;
-public:
-  ENABLE_SHARED_HELPER
+
 };
 
 }

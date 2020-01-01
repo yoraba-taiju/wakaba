@@ -27,6 +27,10 @@ private:
   VkCommandBuffer vkCommandBuffer_;
 public:
   CommandBuffer() = delete;
+  CommandBuffer(CommandBuffer const&) = delete;
+  CommandBuffer(CommandBuffer&&) = default;
+  CommandBuffer& operator=(CommandBuffer const&) = delete;
+  CommandBuffer& operator=(CommandBuffer&&) = default;
   explicit CommandBuffer(std::weak_ptr<Vulkan> vulkan, std::shared_ptr<CommandPool> commandPool, VkCommandBuffer vkObj)
   : vulkan_(std::move(vulkan))
   , commandPool_(std::move(commandPool))
@@ -37,8 +41,6 @@ public:
 
 public:
   [[ nodiscard ]] VkCommandBuffer vkCommandBuffer() { return this->vkCommandBuffer_;}
-public:
-  ENABLE_SHARED_HELPER
 };
 
 }

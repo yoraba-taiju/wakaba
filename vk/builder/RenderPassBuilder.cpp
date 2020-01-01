@@ -21,7 +21,7 @@ RenderPassBuilder::RenderPassBuilder(std::shared_ptr<Vulkan> vulkan)
   };
 }
 
-std::shared_ptr<RenderPass> RenderPassBuilder::build() {
+RenderPass RenderPassBuilder::build() {
   VkRenderPass pass{};
   VkRenderPassCreateInfo renderPassInfo = renderPassInfo_;
   std::vector<VkAttachmentDescription> attachments;
@@ -55,7 +55,7 @@ std::shared_ptr<RenderPass> RenderPassBuilder::build() {
   if (vkCreateRenderPass(vulkan_->vkDevice(), &renderPassInfo, nullptr, &pass) != VK_SUCCESS) {
     vulkan_->log().fatal("[Vulkan] Failed to create a RenderPass.");
   }
-  return util::make_shared<RenderPass>(vulkan_, pass);
+  return RenderPass(vulkan_, pass);
 }
 
 AttachmentBuilder& RenderPassBuilder::addAttachment(VkFormat format) {

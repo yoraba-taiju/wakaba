@@ -44,7 +44,7 @@ private:
 private:
   VkRenderPassCreateInfo renderPassInfo_{};
 public:
-  std::shared_ptr<RenderPass> build();
+  RenderPass build();
 
 public:
   AttachmentBuilder& addAttachment(VkFormat format);
