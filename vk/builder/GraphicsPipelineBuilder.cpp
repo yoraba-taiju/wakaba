@@ -197,7 +197,7 @@ GraphicsPipeline GraphicsPipelineBuilder::build() {
       .pMultisampleState = &this->multisamplingInfo_,
       .pDepthStencilState = &this->depthStencilInfo_,
       .pColorBlendState = &this->colorBlendingInfo_,
-      .pDynamicState = &this->dynamicStateInfo_,
+      .pDynamicState = nullptr,//&this->dynamicStateInfo_,
       .layout = pipelineLayout.vkPipelineLayout(),
       .renderPass = renderPass_->vkRenderPass(),
       .subpass = 0,

@@ -8,6 +8,8 @@
 #pragma once
 
 #include <memory>
+#include "../RenderingDispatcher.hpp"
+
 
 namespace vk {
 
@@ -18,7 +20,7 @@ class RenderingDispatcherBuilder final {
 private:
   std::shared_ptr<Vulkan> vulkan_;
 
-private:
+public:
   explicit RenderingDispatcherBuilder(std::shared_ptr<Vulkan> vulkan);
   RenderingDispatcherBuilder(RenderingDispatcherBuilder&&) = delete;
   RenderingDispatcherBuilder(RenderingDispatcherBuilder const&) = delete;

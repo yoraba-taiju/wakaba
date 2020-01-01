@@ -27,6 +27,7 @@
 #include "vk/Framebuffer.hpp"
 #include "vk/image/SwapchainImage.hpp"
 #include "vk/builder/FramebufferBuilder.hpp"
+#include "vk/builder/RenderingDispatcherBuilder.hpp"
 
 static int _main(util::Logger& log);
 static int _mainLoop(util::Logger& log, const std::shared_ptr<vk::Vulkan>& vulkan);
@@ -119,8 +120,18 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
     framebuffers.emplace_back(vk::FramebufferBuilder(vulkan, renderPass).addColor(image, {0.0f, 0.0f, 0.0f, 1.0f}).build());
   }
 
+  auto dispatcher = vk::RenderingDispatcherBuilder(vulkan).build();
+
   do {
     //
+    vk::CommandBuffer cmd = cmdPool->createBuffer();
+    cmd.recordRenderPass(framebuffers[dispatcher.currentImageIndex()],[&](std::shared_ptr<vk::Vulkan> const& vulkan, vk::CommandBuffer&)-> void{
+      cmd.bindPipeline(gfxPipeline);
+      cmd.bindVertexBuffer(0, vertBuffer.buffer());
+      cmd.draw(3, 1);
+    });
+    dispatcher.push(std::move(cmd));
+    dispatcher.draw();
 
     // Swap buffers
     glfwSwapBuffers(vulkan->window());

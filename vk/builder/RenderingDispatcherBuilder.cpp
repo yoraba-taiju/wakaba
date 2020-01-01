@@ -42,6 +42,7 @@ RenderingDispatcher RenderingDispatcherBuilder::build() {
     }
   }
   dispatcher.swapchainFences_.resize(vulkan_->swapchainImages().size());
+  dispatcher.usedCommands_.resize(vulkan_->swapchainImages().size());
   return std::move(dispatcher);
 }
 

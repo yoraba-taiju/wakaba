@@ -104,6 +104,10 @@ public:
     return this->height_;
   }
 
+  [[ nodiscard ]] VkSwapchainKHR vkSwapchain() {
+    return this->vkSwapchain_;
+  }
+
   [[ nodiscard ]] std::vector<std::shared_ptr<SwapchainImage>>& swapchainImages() {
     return this->swapchainImages_;
   }
