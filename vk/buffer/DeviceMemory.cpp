@@ -10,8 +10,8 @@
 
 namespace vk{
 
-DeviceMemory::DeviceMemory(std::shared_ptr<Vulkan> const& vulkan, VkDeviceMemory vkDeviceMemory, VkDeviceSize size)
-:vulkan_(vulkan)
+DeviceMemory::DeviceMemory(std::shared_ptr<Device> device, VkDeviceMemory vkDeviceMemory, VkDeviceSize size)
+:device_(std::move(device))
 ,vkDeviceMemory_(vkDeviceMemory)
 ,size_(size)
 {
@@ -19,24 +19,17 @@ DeviceMemory::DeviceMemory(std::shared_ptr<Vulkan> const& vulkan, VkDeviceMemory
 }
 
 DeviceMemory::~DeviceMemory() noexcept {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(vulkan) {
-    vkFreeMemory(vulkan->vkDevice(), this->vkDeviceMemory_, nullptr);
-  }
+  device_->destroyDeviceMemory(*this);
 }
 
 void DeviceMemory::sendDirect(VkDeviceSize offset, void const *src, size_t size) {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(!vulkan) {
-    throw std::runtime_error("vulkan is already deleted.");
-  }
   void* dst;
-  VkResult result = vkMapMemory(vulkan->vkDevice(), this->vkDeviceMemory_, offset, size, 0 /* reserved */, &dst);
+  VkResult result = vkMapMemory(device_->vkDevice(), this->vkDeviceMemory_, offset, size, 0 /* reserved */, &dst);
   if(result != VK_SUCCESS) {
-    vulkan->log().fatal("Failed to map memory: {}", result);
+    throw std::runtime_error(fmt::format("Failed to map memory: {}", result));
   }
   memcpy(dst, src, size);
-  vkUnmapMemory(vulkan->vkDevice(), this->vkDeviceMemory_);
+  vkUnmapMemory(device_->vkDevice(), this->vkDeviceMemory_);
 }
 
 }

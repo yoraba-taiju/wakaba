@@ -11,14 +11,14 @@
 #include "../ShaderModule.hpp"
 
 namespace vk {
-class Vulkan;
+class Device;
 class ShaderModule;
 
 /* protected class */
 class Shader {
-  friend class Vulkan;
+  friend class Device;
 private:
-  std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   ShaderModule module_;
 protected:
   template <typename T>
@@ -33,8 +33,8 @@ public:
   [[ nodiscard ]] ShaderModule& module() { return this->module_; }
 
 protected:
-  explicit Shader(std::shared_ptr<Vulkan> const& vulkan, ShaderModule&& module)
-  :vulkan_(vulkan)
+  explicit Shader(std::shared_ptr<Device> device, ShaderModule&& module)
+  :device_(std::move(device))
   ,module_(std::move(module))
   {
   }

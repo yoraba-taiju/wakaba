@@ -10,11 +10,14 @@
 
 namespace vk {
 
+RenderPass::RenderPass(std::shared_ptr<Device> device, VkRenderPass renderPass)
+:device_(std::move(device))
+,vkRenderPass_(renderPass)
+{
+}
+
 RenderPass::~RenderPass() noexcept{
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(vulkan) {
-    vkDestroyRenderPass(vulkan->vkDevice(), vkRenderPass_, nullptr);
-  }
+  device_->destroyRenderPass(*this);
 }
 
 }

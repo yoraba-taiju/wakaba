@@ -16,11 +16,11 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 
 class DeviceMemory {
 private:
-  std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   VkDeviceMemory vkDeviceMemory_;
   VkDeviceSize size_;
 public:
@@ -30,12 +30,8 @@ public:
   DeviceMemory& operator=(DeviceMemory const&) = delete;
   DeviceMemory& operator=(DeviceMemory&&) = delete;
 
-  DeviceMemory(std::shared_ptr<Vulkan> const& vulkan, VkDeviceMemory vkDeviceMemory, VkDeviceSize size);
+  DeviceMemory(std::shared_ptr<Device> device, VkDeviceMemory vkDeviceMemory, VkDeviceSize size);
   ~DeviceMemory() noexcept;
-
-  [[ nodiscard ]] std::shared_ptr<Vulkan> vulkan() {
-    return this->vulkan_.lock();
-  }
 
   [[ nodiscard ]] VkDeviceMemory vkDeviceMemory() {
     return vkDeviceMemory_;

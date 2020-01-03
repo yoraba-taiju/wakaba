@@ -16,7 +16,7 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 class VulkanBuilder;
 class CommandPool;
 class Buffer;
@@ -25,7 +25,7 @@ class GraphicsPipeline;
 
 class CommandBuffer final {
 private:
-  std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   std::shared_ptr<CommandPool> commandPool_;
   VkCommandBuffer vkCommandBuffer_;
 public:
@@ -34,18 +34,18 @@ public:
   CommandBuffer(CommandBuffer&&) = default;
   CommandBuffer& operator=(CommandBuffer const&) = delete;
   CommandBuffer& operator=(CommandBuffer&&) = default;
-  explicit CommandBuffer(std::weak_ptr<Vulkan> vulkan, std::shared_ptr<CommandPool> commandPool, VkCommandBuffer vkCommandBuffer)
-  : vulkan_(std::move(vulkan))
-  , commandPool_(std::move(commandPool))
-  , vkCommandBuffer_(vkCommandBuffer)
+  explicit CommandBuffer(std::shared_ptr<Device> device, std::shared_ptr<CommandPool> commandPool, VkCommandBuffer vkCommandBuffer)
+  :device_(std::move(device))
+  ,commandPool_(std::move(commandPool))
+  ,vkCommandBuffer_(vkCommandBuffer)
   {
   }
   ~CommandBuffer() noexcept;
 
 public:
-  void recordOneshot(std::function<void(std::shared_ptr<Vulkan> const&, CommandBuffer&)>);
-  void recordRenderPass(Framebuffer& framebuffer, std::function<void(std::shared_ptr<Vulkan> const&, CommandBuffer&)>);
-  void record(std::function<void(std::shared_ptr<Vulkan> const&, CommandBuffer&)>);
+  void recordOneshot(std::function<void(std::shared_ptr<Device> const&)> const& f);
+  void recordRenderPass(Framebuffer& framebuffer, std::function<void(std::shared_ptr<Device> const&)> const& f);
+  void record(std::function<void(std::shared_ptr<Device> const&)> const& f);
 
 public:
   void bindPipeline(GraphicsPipeline& graphicsPipeilne);

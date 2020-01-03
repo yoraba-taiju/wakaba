@@ -5,16 +5,18 @@
  * Copyright 2019-, Kaede Fujisaki
  */
 
-#include "Vulkan.hpp"
+#include "Device.hpp"
 #include "PipelineLayout.hpp"
 
 namespace vk {
 
+PipelineLayout::PipelineLayout(std::shared_ptr<Device> device, VkPipelineLayout pipelineLayout)
+:device_(std::move(device))
+,vkPipelineLayout_(pipelineLayout) {
+}
+
 PipelineLayout::~PipelineLayout() noexcept {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(vulkan) {
-    vkDestroyPipelineLayout(vulkan->vkDevice(), vkPipelineLayout_, nullptr);
-  }
+  device_->destroyPipelineLayout(*this);
 }
 
 }

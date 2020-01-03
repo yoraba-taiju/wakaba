@@ -35,9 +35,7 @@ private:
   void createInstance();
   void createSurface();
   void createDebugReportCallback();
-  void createDeviceAndCommandPool();
-  void createSwapchain();
-  void createSwapchainImages();
+  void createPhysicalDevice();
 
 public:
   explicit VulkanBuilder(util::Logger &log, std::string appName, int width, int height);

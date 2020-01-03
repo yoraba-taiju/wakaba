@@ -12,12 +12,12 @@
 
 #include <utility>
 #include <memory>
-#include "CommandBuffer.hpp"
+#include "command/CommandBuffer.hpp"
 
 namespace vk {
 
 class Vulkan;
-class VulkanBuilder;
+class Device;
 class RenderPass;
 class CommandPool;
 class CommandBuffer;
@@ -25,7 +25,7 @@ class Image;
 
 class Framebuffer final {
 private:
-  std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   VkFramebuffer vkFramebuffer_;
   std::shared_ptr<RenderPass> renderPass_;
   std::vector<std::shared_ptr<Image>> images_;
@@ -41,8 +41,8 @@ public:
   ~Framebuffer() noexcept;
 
 public:
-  explicit Framebuffer(std::weak_ptr<Vulkan> vulkan, VkFramebuffer vkFramebuffer, std::shared_ptr<RenderPass> renderPass, std::vector<std::shared_ptr<Image>> images, std::vector<VkClearValue> clears, uint32_t width, uint32_t height)
-  :vulkan_(std::move(vulkan))
+  explicit Framebuffer(std::shared_ptr<Device> device, VkFramebuffer vkFramebuffer, std::shared_ptr<RenderPass> renderPass, std::vector<std::shared_ptr<Image>> images, std::vector<VkClearValue> clears, uint32_t width, uint32_t height)
+  :device_(std::move(device))
   ,vkFramebuffer_(vkFramebuffer)
   ,renderPass_(std::move(renderPass))
   ,images_(std::move(images))

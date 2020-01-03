@@ -10,10 +10,9 @@
 
 namespace vk {
 
-vk::Framebuffer::~Framebuffer() noexcept{
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(vulkan) {
-    vkDestroyFramebuffer(vulkan->vkDevice(), vkFramebuffer_, nullptr);
+vk::Framebuffer::~Framebuffer() noexcept {
+  if(device_) {
+    device_->destroyFramebuffer(*this);
   }
 }
 

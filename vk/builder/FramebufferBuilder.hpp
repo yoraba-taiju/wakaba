@@ -14,14 +14,14 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 class RenderPass;
 class Image;
 class Framebuffer;
 
 class FramebufferBuilder {
 private:
-  std::shared_ptr<Vulkan> const vulkan_;
+  std::shared_ptr<Device> const device_;
   std::shared_ptr<RenderPass> const renderPass_;
   uint32_t const width_;
   uint32_t const height_;
@@ -36,8 +36,7 @@ public:
   FramebufferBuilder& operator=(FramebufferBuilder const&) = delete;
 
 public:
-  explicit FramebufferBuilder(std::shared_ptr<Vulkan> const& vulkan, std::shared_ptr<RenderPass> renderPass);
-  explicit FramebufferBuilder(std::shared_ptr<Vulkan>  vulkan, uint32_t width, uint32_t height, std::shared_ptr<RenderPass> renderPass);
+  explicit FramebufferBuilder(std::shared_ptr<Device> device, uint32_t width, uint32_t height, std::shared_ptr<RenderPass> renderPass);
   FramebufferBuilder& addColor(std::shared_ptr<Image> image, std::array<float, 4> const& value);
   FramebufferBuilder& addDepth(std::shared_ptr<Image> image, float value);
   FramebufferBuilder& addStencil(std::shared_ptr<Image> image, uint32_t value);

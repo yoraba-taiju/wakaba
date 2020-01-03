@@ -17,8 +17,8 @@
 
 namespace vk {
 
-GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, std::shared_ptr<RenderPass> renderPass)
-:vulkan_(std::move(vulkan))
+GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Device> device, std::shared_ptr<RenderPass> renderPass)
+:device_(std::move(device))
 ,renderPass_(std::move(renderPass))
 {
   // https://vulkan-tutorial.com/en/Drawing_a_triangle/Graphics_pipeline_basics/Fixed_functions
@@ -41,10 +41,10 @@ GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan,
   viewport_ = {
       .x = 0.0f,
       .y = 0.0f,
-      .width = static_cast<float>(vulkan_->width()),
-      .height = static_cast<float>(vulkan_->height()),
+      .width = static_cast<float>(device_->vulkan()->width()),
+      .height = static_cast<float>(device_->vulkan()->height()),
       .minDepth = 0.0f,
-      .maxDepth = 0.0f,
+      .maxDepth = 1.0f,
   };
   scissor_ = {
       .offset = {
@@ -52,8 +52,8 @@ GraphicsPipelineBuilder::GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan,
           .y = 0,
       },
       .extent = {
-          .width = vulkan_->width(),
-          .height = vulkan_->height(),
+          .width = device_->vulkan()->width(),
+          .height = device_->vulkan()->height(),
       },
   };
   viewportInfo_ = {
@@ -208,11 +208,11 @@ GraphicsPipeline GraphicsPipelineBuilder::build() {
 
   // https://vulkan.lunarg.com/doc/view/1.0.33.0/linux/vkspec.chunked/ch09s02.html
   // 一個しか作らない。複数作ることもできる。
-  if(vkCreateGraphicsPipelines(vulkan_->vkDevice(), nullptr, 1, &pipelineCreateInfo, nullptr, &obj) != VK_SUCCESS) {
-    vulkan_->log().fatal("Failed to create graphics pipeline.");
+  if(vkCreateGraphicsPipelines(device_->vkDevice(), nullptr, 1, &pipelineCreateInfo, nullptr, &obj) != VK_SUCCESS) {
+    throw std::runtime_error("Failed to create graphics pipeline.");
   }
 
-  return GraphicsPipeline(vulkan_, obj);
+  return GraphicsPipeline(device_, obj);
 }
 
 GraphicsPipelineBuilder& GraphicsPipelineBuilder::enableAlphaBlending() {
@@ -255,11 +255,11 @@ PipelineLayout GraphicsPipelineBuilder::buildPipelineLayout() {
       .pPushConstantRanges = nullptr, // Optional
   };
 
-  if (vkCreatePipelineLayout(vulkan_->vkDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-    vulkan_->log().fatal("failed to create pipeline layout!");
+  if (vkCreatePipelineLayout(device_->vkDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+    throw std::runtime_error("failed to create pipeline layout!");
   }
 
-  return PipelineLayout(vulkan_, pipelineLayout);
+  return PipelineLayout(device_, pipelineLayout);
 }
 
 GraphicsPipelineBuilder& GraphicsPipelineBuilder::setRenderPass(std::shared_ptr<RenderPass> renderPass) {

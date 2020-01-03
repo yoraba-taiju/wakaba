@@ -16,12 +16,12 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 class DeviceMemory;
 
 class DeviceMemoryBuilder final {
 private:
-  std::shared_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   VkMemoryAllocateInfo vkMemoryAllocateInfo_{};
   VkMemoryRequirements requirements_{};
   VkMemoryPropertyFlags propertyFlags_{};
@@ -31,7 +31,7 @@ public:
   DeviceMemoryBuilder(DeviceMemoryBuilder const&) = delete;
   DeviceMemoryBuilder& operator=(DeviceMemoryBuilder&&) = delete;
   DeviceMemoryBuilder& operator=(DeviceMemoryBuilder const&) = delete;
-  explicit DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan, VkMemoryRequirements const& requirements, VkMemoryPropertyFlags propertyFlags);
+  explicit DeviceMemoryBuilder(std::shared_ptr<Device> device, VkMemoryRequirements const& requirements, VkMemoryPropertyFlags propertyFlags);
 
   std::shared_ptr<DeviceMemory> build();
 };

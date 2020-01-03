@@ -13,11 +13,11 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 
 class Pipeline {
 private:
-  std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   VkPipeline vkPipeline_;
 public:
   Pipeline() = delete;
@@ -28,10 +28,7 @@ protected:
   Pipeline(Pipeline&&) = default;
   Pipeline& operator=(Pipeline&&) = default;
 
-  explicit Pipeline(std::weak_ptr<Vulkan> vulkan, VkPipeline pipeline)
-  : vulkan_(std::move(vulkan))
-  , vkPipeline_(pipeline) {
-  }
+  explicit Pipeline(std::shared_ptr<Device> device, VkPipeline pipeline);
   ~Pipeline() noexcept;
 
 public:

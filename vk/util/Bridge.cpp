@@ -5,12 +5,8 @@
  * Copyright 2019-, Kaede Fujisaki
  */
 
-#include "Shader.hpp"
+#include "Bridge.hpp"
 
 namespace vk {
-
-Shader::~Shader() noexcept {
-
-}
 
 }

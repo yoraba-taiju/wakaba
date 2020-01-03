@@ -12,8 +12,8 @@
 
 namespace vk {
 
-BufferBuilder::BufferBuilder(std::shared_ptr<Vulkan> vulkan, VkDeviceSize const size)
-:vulkan_(std::move(vulkan))
+BufferBuilder::BufferBuilder(std::shared_ptr<Device> device, VkDeviceSize const size)
+:device_(std::move(device))
 ,size_(size)
 {
   this->vkBufferCreateInfo_ = {
@@ -32,11 +32,11 @@ Buffer BufferBuilder::build() {
   VkBuffer vkBuffer;
   this->vkBufferCreateInfo_.size = this->size_;
   this->vkBufferCreateInfo_.usage = this->usages_;
-  if (vkCreateBuffer(vulkan_->vkDevice(), &vkBufferCreateInfo_, nullptr, &vkBuffer) != VK_SUCCESS) {
+  if (vkCreateBuffer(device_->vkDevice(), &vkBufferCreateInfo_, nullptr, &vkBuffer) != VK_SUCCESS) {
     throw std::runtime_error("failed to create buffer!");
   }
 
-  return Buffer(vulkan_, vkBuffer, size_);
+  return Buffer(device_, vkBuffer, size_);
 }
 
 BufferBuilder& BufferBuilder::addUsages(VkBufferUsageFlags usage) {

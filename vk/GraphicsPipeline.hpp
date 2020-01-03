@@ -16,15 +16,14 @@
 
 namespace vk {
 
-class Vulkan;
 class GraphicsPipelineBuilder;
 
 class GraphicsPipeline final : public Pipeline {
   friend class GraphicsPipelineBuilder;
 
 public:
-  explicit GraphicsPipeline(std::weak_ptr<Vulkan> vulkan, VkPipeline pipeline)
-  : Pipeline(std::move(vulkan), pipeline)
+  explicit GraphicsPipeline(std::shared_ptr<Device> device, VkPipeline pipeline)
+  : Pipeline(std::move(device), pipeline)
   {
   }
 public:

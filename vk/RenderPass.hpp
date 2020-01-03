@@ -14,12 +14,11 @@
 
 namespace vk {
 
-class Vulkan;
-class VulkanBuilder;
+class Device;
 
 class RenderPass {
 private:
-  std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   VkRenderPass vkRenderPass_;
 public:
   RenderPass() = delete;
@@ -28,11 +27,7 @@ public:
   RenderPass& operator=(RenderPass const&) = delete;
   RenderPass& operator=(RenderPass&&) = default;
 
-  explicit RenderPass(std::weak_ptr<Vulkan> vulkan, VkRenderPass renderPass)
-  : vulkan_(std::move(vulkan))
-  , vkRenderPass_(renderPass)
-  {
-  }
+  explicit RenderPass(std::shared_ptr<Device> device, VkRenderPass renderPass);
   ~RenderPass() noexcept;
 
   [[ nodiscard ]] VkRenderPass vkRenderPass() {

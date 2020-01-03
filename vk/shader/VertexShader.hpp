@@ -16,7 +16,7 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 class ShaderModule;
 
 /* protected class */
@@ -27,8 +27,8 @@ public:
   VertexShader& operator=(VertexShader&&) = delete;
   VertexShader& operator=(VertexShader const&) = delete;
 protected:
-  explicit VertexShader(std::shared_ptr<Vulkan> const& vulkan, ShaderModule&& module)
-  :Shader(vulkan,std::move(module))
+  explicit VertexShader(std::shared_ptr<Device> device, ShaderModule&& module)
+  :Shader(std::move(device), std::move(module))
   {
   }
 

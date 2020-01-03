@@ -14,12 +14,15 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
+class Queue;
+
 class CommandBuffer;
 
 class CommandPool final : public std::enable_shared_from_this<CommandPool> {
 private:
-  std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
+  VkQueue queue_;
   VkCommandPool vkCommandPool_;
 public:
   CommandPool() = delete;
@@ -28,11 +31,11 @@ public:
   CommandPool& operator=(CommandPool const&) = delete;
   CommandPool& operator=(CommandPool&&) = delete;
 
-  explicit CommandPool(std::weak_ptr<Vulkan> vulkan, VkCommandPool vkCommandPool)
-  : vulkan_(std::move(vulkan))
-  , vkCommandPool_(vkCommandPool)
+  explicit CommandPool(std::shared_ptr<Device> device, VkQueue queue, VkCommandPool vkCommandPool)
+  :device_(std::move(device))
+  ,queue_(queue)
+  ,vkCommandPool_(vkCommandPool)
   {
-
   }
   ~CommandPool() noexcept;
 

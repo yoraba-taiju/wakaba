@@ -13,6 +13,7 @@
 
 #include "util/Logger.hpp"
 #include "vk/Vulkan.hpp"
+#include "vk/Device.hpp"
 #include "vk/builder/VulkanBuilder.hpp"
 #include "vk/builder/VertexBufferBuilder.hpp"
 #include "vk/builder/GraphicsPipelineBuilder.hpp"
@@ -22,12 +23,13 @@
 #include "taiju/shaders/vert/Triangle.hpp"
 #include "taiju/shaders/frag/Triangle.hpp"
 #include "vk/buffer/VertexBuffer.hpp"
-#include "vk/CommandPool.hpp"
-#include "vk/CommandBuffer.hpp"
+#include "vk/command/CommandPool.hpp"
+#include "vk/command/CommandBuffer.hpp"
 #include "vk/Framebuffer.hpp"
 #include "vk/image/SwapchainImage.hpp"
 #include "vk/builder/FramebufferBuilder.hpp"
 #include "vk/builder/RenderingDispatcherBuilder.hpp"
+#include "vk/Swapchain.hpp"
 
 static int _main(util::Logger& log);
 static int _mainLoop(util::Logger& log, const std::shared_ptr<vk::Vulkan>& vulkan);
@@ -71,7 +73,6 @@ static int _main(util::Logger& log) {
     } catch(...) {
       log.error("Got unknown error!");
     }
-    vulkan->destroy();
   }
 
   glfwTerminate();
@@ -82,18 +83,21 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(vulkan->window(), GLFW_STICKY_KEYS, GL_TRUE);
 
+  std::shared_ptr<vk::Device> device = vulkan->createDevice();
+
   // FIXME: コンパイルが通るのを調べるだけ。
-  auto cmdPool = vulkan->createCommandPool();
+  auto cmdPool = device->createCommandPool();
+  auto swapchain = device->createSwapchain();
   auto cmdBuffer = cmdPool->createBuffer();
 
-  auto renderPassBuilder = vk::RenderPassBuilder(vulkan);
+  auto renderPassBuilder = vk::RenderPassBuilder(device);
   renderPassBuilder.addSubPass().addColor(0);
-  renderPassBuilder.addAttachment(VK_FORMAT_B8G8R8A8_UNORM);
+  renderPassBuilder.addAttachment(VK_FORMAT_B8G8R8A8_UNORM).loadOpClear().storeOpStore();
 
-  auto vert = vulkan->createShader<taiju::shaders::vert::Triangle>();
-  auto frag = vulkan->createShader<taiju::shaders::frag::Triangle>();
+  auto vert = device->createShader<taiju::shaders::vert::Triangle>();
+  auto frag = device->createShader<taiju::shaders::frag::Triangle>();
   auto renderPass = renderPassBuilder.build();
-  auto gfxPipeline = vk::GraphicsPipelineBuilder(vulkan, renderPass)
+  auto gfxPipeline = vk::GraphicsPipelineBuilder(device, renderPass)
                        .addVertexStage(vert)
                        .addFragmentStage(frag).build();
 
@@ -112,20 +116,20 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
       },
   };
 
-  auto vertBuffer = vk::VertexBufferBuilder(vulkan, vertInputs.size() * sizeof(taiju::shaders::vert::Triangle::Input)).build();
+  auto vertBuffer = vk::VertexBufferBuilder(device, vertInputs.size() * sizeof(taiju::shaders::vert::Triangle::Input)).build();
   vertBuffer.update(cmdBuffer, vertInputs);
 
   std::vector<vk::Framebuffer> framebuffers;
-  for(std::shared_ptr<vk::SwapchainImage>& image : vulkan->swapchainImages()) {
-    framebuffers.emplace_back(vk::FramebufferBuilder(vulkan, renderPass).addColor(image, {0.0f, 0.0f, 0.0f, 1.0f}).build());
+  for(std::shared_ptr<vk::SwapchainImage>& image : swapchain->images()) {
+    framebuffers.emplace_back(vk::FramebufferBuilder(device, vulkan->width(), vulkan->height(), renderPass).addColor(image, {0.0f, 0.0f, 0.0f, 1.0f}).build());
   }
 
-  auto dispatcher = vk::RenderingDispatcherBuilder(vulkan).build();
+  auto dispatcher = vk::RenderingDispatcherBuilder(device, swapchain).build();
 
   do {
     //
     vk::CommandBuffer cmd = cmdPool->createBuffer();
-    cmd.recordRenderPass(framebuffers[dispatcher.currentImageIndex()],[&](std::shared_ptr<vk::Vulkan> const& vulkan, vk::CommandBuffer&)-> void{
+    cmd.recordRenderPass(framebuffers[dispatcher.currentImageIndex()],[&](std::shared_ptr<vk::Device> const& device)-> void{
       cmd.bindPipeline(gfxPipeline);
       cmd.bindVertexBuffer(0, vertBuffer.buffer());
       cmd.draw(3, 1);

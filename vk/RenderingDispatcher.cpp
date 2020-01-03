@@ -7,19 +7,21 @@
 
 #include "RenderingDispatcher.hpp"
 #include "Vulkan.hpp"
+#include "Swapchain.hpp"
 
 namespace vk {
 
-RenderingDispatcher::RenderingDispatcher(std::shared_ptr<Vulkan> vulkan)
-:vulkan_(std::move(vulkan))
+RenderingDispatcher::RenderingDispatcher(std::shared_ptr<Device> device, std::shared_ptr<Swapchain> swapchain)
+:device_(std::move(device))
+,swapchain_(std::move(swapchain))
 {
 
 }
 
 void RenderingDispatcher::draw() {
-  vkWaitForFences(vulkan_->vkDevice(), 1, &fences_[(currentFrame_ + NumFrames - 1) % NumFrames], VK_TRUE, UINT64_MAX);
+  vkWaitForFences(device_->vkDevice(), 1, &fences_[(currentFrame_ + NumFrames - 1) % NumFrames], VK_TRUE, UINT64_MAX);
 
-  VkResult result = vkAcquireNextImageKHR(vulkan_->vkDevice(), vulkan_->vkSwapchain(), UINT64_MAX, imageAvailableSemaphores_[currentFrame_], VK_NULL_HANDLE, &currentImageIndex_);
+  VkResult result = vkAcquireNextImageKHR(device_->vkDevice(), swapchain_->vkSwapchain(), UINT64_MAX, imageAvailableSemaphores_[currentFrame_], VK_NULL_HANDLE, &currentImageIndex_);
 
   // VK_SUBOPTIMAL_KHR A swapchain no longer matches the surface properties exactly,
   // but can still be used to present to the surface successfully.
@@ -29,7 +31,7 @@ void RenderingDispatcher::draw() {
   }
 
   if (swapchainFences_[currentImageIndex_] != VK_NULL_HANDLE) {
-    vkWaitForFences(vulkan_->vkDevice(), 1, &swapchainFences_[currentImageIndex_], VK_TRUE, UINT64_MAX);
+    vkWaitForFences(device_->vkDevice(), 1, &swapchainFences_[currentImageIndex_], VK_TRUE, UINT64_MAX);
   }
   swapchainFences_[currentImageIndex_] = fences_[currentFrame_];
 
@@ -55,13 +57,13 @@ void RenderingDispatcher::draw() {
       .pSignalSemaphores = signalSemaphores,
   };
 
-  vkResetFences(vulkan_->vkDevice(), 1, &swapchainFences_[currentImageIndex_]);
+  vkResetFences(device_->vkDevice(), 1, &swapchainFences_[currentImageIndex_]);
 
-  if (vkQueueSubmit(vulkan_->vkGraphicsQueue(), 1, &submitInfo, swapchainFences_[currentImageIndex_]) != VK_SUCCESS) {
+  if (vkQueueSubmit(device_->vkGraphicsQueue(), 1, &submitInfo, swapchainFences_[currentImageIndex_]) != VK_SUCCESS) {
     throw std::runtime_error("failed to submit draw command buffer!");
   }
 
-  VkSwapchainKHR swapChains[] = { vulkan_->vkSwapchain() };
+  VkSwapchainKHR swapChains[] = { swapchain_->vkSwapchain() };
   VkPresentInfoKHR presentInfo = {
       .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
       .pNext = nullptr,
@@ -74,7 +76,7 @@ void RenderingDispatcher::draw() {
   };
 
   // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkQueuePresentKHR.html
-  result = vkQueuePresentKHR(vulkan_->vkPresentQueue(), &presentInfo);
+  result = vkQueuePresentKHR(device_->vkPresentQueue(), &presentInfo);
   if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR){
     throw std::runtime_error("failed to present image!");
   }

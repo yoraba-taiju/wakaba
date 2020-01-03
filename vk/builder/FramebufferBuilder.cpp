@@ -15,16 +15,8 @@
 
 namespace vk {
 
-FramebufferBuilder::FramebufferBuilder(std::shared_ptr<Vulkan> const& vulkan, std::shared_ptr<RenderPass> renderPass)
-:vulkan_(vulkan)
-,renderPass_(std::move(renderPass))
-,width_(vulkan->width())
-,height_(vulkan->height())
-{
-}
-
-FramebufferBuilder::FramebufferBuilder(std::shared_ptr<Vulkan> vulkan, uint32_t width, uint32_t height, std::shared_ptr<RenderPass> renderPass)
-:vulkan_(std::move(vulkan))
+FramebufferBuilder::FramebufferBuilder(std::shared_ptr<Device> device, uint32_t width, uint32_t height, std::shared_ptr<RenderPass> renderPass)
+:device_(std::move(device))
 ,renderPass_(std::move(renderPass))
 ,width_(width)
 ,height_(height)
@@ -77,10 +69,10 @@ Framebuffer FramebufferBuilder::build() {
       .layers = 1,
   };
   VkFramebuffer vkFramebuffer;
-  if (vkCreateFramebuffer(vulkan_->vkDevice(), &vkFramebufferCreateInfo, nullptr, &vkFramebuffer) != VK_SUCCESS) {
-    vulkan_->log().fatal("[Vulkan] Failed to create a FrameBuffer.");
+  if (vkCreateFramebuffer(device_->vkDevice(), &vkFramebufferCreateInfo, nullptr, &vkFramebuffer) != VK_SUCCESS) {
+    throw std::runtime_error("[Vulkan] Failed to create a FrameBuffer.");
   }
-  return Framebuffer(vulkan_, vkFramebuffer, renderPass_, images_, clears_, width_, height_);
+  return Framebuffer(device_, vkFramebuffer, renderPass_, images_, clears_, width_, height_);
 }
 
 

@@ -13,19 +13,23 @@
 #include <memory>
 #include <array>
 #include <vector>
-#include "CommandBuffer.hpp"
+#include "command/CommandBuffer.hpp"
 
 namespace vk {
 
-class Vulkan;
+class Device;
 class RenderingDispatcherBuilder;
+class Swapchain;
+class Framebuffer;
 
 class RenderingDispatcher final {
 public:
   constexpr static size_t NumFrames = 2;
 private:
   friend class RenderingDispatcherBuilder;
-  std::shared_ptr<Vulkan> vulkan_{};
+  std::shared_ptr<Device> device_{};
+  std::shared_ptr<Swapchain> swapchain_{};
+private:
   std::array<VkFence, NumFrames> fences_{};
   std::array<VkSemaphore , NumFrames> renderFinishedSemaphores_{};
   std::array<VkSemaphore , NumFrames> imageAvailableSemaphores_{};
@@ -37,7 +41,7 @@ private:
   std::vector<std::vector<CommandBuffer>> usedCommands_{};
 
 private:
-  explicit RenderingDispatcher(std::shared_ptr<Vulkan> vulkan);
+  explicit RenderingDispatcher(std::shared_ptr<Device> device, std::shared_ptr<Swapchain> swapchain);
 
 public:
   RenderingDispatcher() = delete;

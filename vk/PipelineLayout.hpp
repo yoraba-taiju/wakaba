@@ -14,11 +14,11 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 
 class PipelineLayout final {
 private:
-  std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   VkPipelineLayout vkPipelineLayout_;
 public:
   PipelineLayout() = delete;
@@ -27,10 +27,7 @@ public:
   PipelineLayout& operator=(PipelineLayout const&) = delete;
   PipelineLayout& operator=(PipelineLayout&&) = default;
 
-  explicit PipelineLayout(std::weak_ptr<Vulkan> vulkan, VkPipelineLayout pipelineLayout)
-  :vulkan_(std::move(vulkan))
-  ,vkPipelineLayout_(pipelineLayout) {
-  }
+  explicit PipelineLayout(std::shared_ptr<Device> device, VkPipelineLayout pipelineLayout);
   ~PipelineLayout() noexcept;
 
   [[ nodiscard ]] VkPipelineLayout vkPipelineLayout() { return this->vkPipelineLayout_; }

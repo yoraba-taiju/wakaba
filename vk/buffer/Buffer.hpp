@@ -16,13 +16,13 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 class DeviceMemory;
 class CommandBuffer;
 
 class Buffer {
 private:
-  std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   VkBuffer vkBuffer_;
   std::shared_ptr<DeviceMemory> deviceMemory_{};
   VkDeviceSize offset_{};
@@ -35,13 +35,10 @@ public:
   Buffer& operator=(Buffer const&) = delete;
   Buffer& operator=(Buffer&&) = default;
 
-  Buffer(std::shared_ptr<Vulkan> const& vulkan, VkBuffer vkBuffer, VkDeviceSize size);
+  Buffer(std::shared_ptr<Device> device, VkBuffer vkBuffer, VkDeviceSize size);
   ~Buffer() noexcept;
 
 public:
-  [[ nodiscard ]] std::shared_ptr<Vulkan> vulkan() {
-    return this->vulkan_.lock();
-  }
 
   [[ nodiscard ]] VkBuffer vkBuffer() {
     return vkBuffer_;

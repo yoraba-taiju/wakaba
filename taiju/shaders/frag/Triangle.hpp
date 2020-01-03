@@ -12,7 +12,7 @@
 #include "../../../vk/shader/FragmentShader.hpp"
 
 namespace vk {
-class Vulkan;
+class Device;
 class ShaderModule;
 }
 
@@ -20,7 +20,7 @@ namespace taiju::shaders::frag {
 
 class Triangle final : public vk::FragmentShader {
 public:
-  explicit Triangle(std::shared_ptr<vk::Vulkan> const& vulkan, vk::ShaderModule&& module);
+  explicit Triangle(std::shared_ptr<vk::Device> const& device, vk::ShaderModule&& module);
   ~Triangle() noexcept override = default;
 };
 

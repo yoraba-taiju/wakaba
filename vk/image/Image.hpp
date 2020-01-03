@@ -14,18 +14,18 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 
 class Image {
 private:
-  std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   VkImage vkImage_;
   VkImageView vkImageView_;
   uint32_t const width_;
   uint32_t const height_;
 protected:
-  explicit Image(std::shared_ptr<Vulkan> const& vulkan, VkImage vkImage, VkImageView vkImageView, uint32_t width, uint32_t height)
-  :vulkan_(vulkan)
+  explicit Image(std::shared_ptr<Device> device, VkImage vkImage, VkImageView vkImageView, uint32_t width, uint32_t height)
+  :device_(std::move(device))
   ,vkImage_(vkImage)
   ,vkImageView_(vkImageView)
   ,width_(width)
@@ -41,9 +41,11 @@ public:
   Image& operator=(Image&&) = delete;
   virtual ~Image() noexcept = default;
 
+protected:
+
 public:
-  [[ nodiscard ]] std::shared_ptr<Vulkan> vulkan() {
-    return this->vulkan_.lock();
+  [[ nodiscard ]] std::shared_ptr<Device> device() {
+    return this->device_;
   }
   [[ nodiscard ]] VkImage vkImage() {
     return this->vkImage_;

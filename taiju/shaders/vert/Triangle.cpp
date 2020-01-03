@@ -13,8 +13,8 @@ using vk::VertexShader;
 
 namespace taiju::shaders::vert {
 
-Triangle::Triangle(std::shared_ptr<vk::Vulkan> const& vulkan, vk::ShaderModule&& module)
-:vk::VertexShader(vulkan, std::move(module))
+Triangle::Triangle(std::shared_ptr<vk::Device> const& device, vk::ShaderModule&& module)
+:vk::VertexShader(device, std::move(module))
 {
 }
 

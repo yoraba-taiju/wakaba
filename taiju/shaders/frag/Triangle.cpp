@@ -12,8 +12,8 @@ using vk::Shader;
 
 namespace taiju::shaders::frag {
 
-Triangle::Triangle(std::shared_ptr<vk::Vulkan> const& vulkan, vk::ShaderModule&& module)
-:vk::FragmentShader(vulkan, std::move(module))
+Triangle::Triangle(std::shared_ptr<vk::Device> const& device, vk::ShaderModule&& module)
+:vk::FragmentShader(device, std::move(module))
 {
 }
 

@@ -16,11 +16,11 @@ class VertexBuffer;
 
 class VertexBufferBuilder {
 private:
-  std::shared_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   VkDeviceSize size_;
 
 public:
-  explicit VertexBufferBuilder(std::shared_ptr<Vulkan> vulkan, VkDeviceSize size);
+  explicit VertexBufferBuilder(std::shared_ptr<Device> device, VkDeviceSize size);
 
   VertexBufferBuilder(VertexBufferBuilder&&) = delete;
   VertexBufferBuilder(VertexBufferBuilder const&) = delete;

@@ -16,13 +16,13 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 class Buffer;
 class DeviceMemory;
 
 class BufferBuilder {
 private:
-  std::shared_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
   VkBufferCreateInfo vkBufferCreateInfo_{};
 private:
   VkDeviceSize size_{};
@@ -34,7 +34,7 @@ public:
   BufferBuilder& operator=(BufferBuilder const&) = delete;
   BufferBuilder() = delete;
 
-  explicit BufferBuilder(std::shared_ptr<Vulkan> vulkan, VkDeviceSize size);
+  explicit BufferBuilder(std::shared_ptr<Device> device, VkDeviceSize size);
   BufferBuilder& addUsages(VkBufferUsageFlags usage);
   BufferBuilder& setUsages(VkBufferUsageFlags usages);
   BufferBuilder& clearUsages();

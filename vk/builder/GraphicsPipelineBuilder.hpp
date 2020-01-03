@@ -23,7 +23,7 @@ class FragmentShader;
 
 class GraphicsPipelineBuilder final {
 private:
-  std::shared_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
 private:
   std::shared_ptr<RenderPass> renderPass_;
 private:
@@ -52,7 +52,7 @@ public:
   GraphicsPipelineBuilder& disableAlphaBlending();
 
 public:
-  explicit GraphicsPipelineBuilder(std::shared_ptr<Vulkan> vulkan, std::shared_ptr<RenderPass> renderPass);
+  explicit GraphicsPipelineBuilder(std::shared_ptr<Device> device, std::shared_ptr<RenderPass> renderPass);
   GraphicsPipelineBuilder(GraphicsPipelineBuilder&&) = delete;
   GraphicsPipelineBuilder(GraphicsPipelineBuilder const&) = delete;
   GraphicsPipelineBuilder& operator=(GraphicsPipelineBuilder&&) = delete;

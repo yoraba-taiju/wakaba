@@ -7,16 +7,16 @@
 
 #include "Buffer.hpp"
 #include "DeviceMemory.hpp"
-#include "../Vulkan.hpp"
-#include "../CommandPool.hpp"
+#include "../Device.hpp"
+#include "../command/CommandPool.hpp"
 #include "../builder/DeviceMemoryBuilder.hpp"
 #include "../builder/BufferBuilder.hpp"
-#include "../CommandBuffer.hpp"
+#include "../command/CommandBuffer.hpp"
 
 namespace vk {
 
-Buffer::Buffer(std::shared_ptr<Vulkan> const& vulkan, VkBuffer vkBuffer, VkDeviceSize size)
-:vulkan_(vulkan)
+Buffer::Buffer(std::shared_ptr<Device> device, VkBuffer vkBuffer, VkDeviceSize size)
+:device_(std::move(device))
 ,vkBuffer_(vkBuffer)
 ,deviceMemory_()
 ,offset_()
@@ -26,9 +26,8 @@ Buffer::Buffer(std::shared_ptr<Vulkan> const& vulkan, VkBuffer vkBuffer, VkDevic
 }
 
 Buffer::~Buffer() noexcept {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(vulkan) {
-    vkDestroyBuffer(vulkan->vkDevice(), this->vkBuffer_, nullptr);
+  if(device_) {
+    device_->destroyBuffer(*this);
   }
 }
 
@@ -37,13 +36,8 @@ void Buffer::sendDirect(VkDeviceSize offset, void const *src, size_t size) {
 }
 
 void Buffer::sendIndirect(CommandBuffer& cmdBuffer, VkDeviceSize offset, void const *src, size_t size) {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(!vulkan) {
-    throw std::runtime_error("vulkan is already deleted.");
-  }
-
-  Buffer stagingBuffer = BufferBuilder(vulkan, size).setUsages(VK_BUFFER_USAGE_TRANSFER_SRC_BIT).build();
-  std::shared_ptr<DeviceMemory> stagingMemory = DeviceMemoryBuilder(vulkan, stagingBuffer.vkMemoryRequirements(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT).build();
+  Buffer stagingBuffer = BufferBuilder(device_, size).setUsages(VK_BUFFER_USAGE_TRANSFER_SRC_BIT).build();
+  std::shared_ptr<DeviceMemory> stagingMemory = DeviceMemoryBuilder(device_, stagingBuffer.vkMemoryRequirements(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT).build();
   stagingMemory->sendDirect(0, src, size);
   stagingBuffer.bindTo(stagingMemory, 0);
 
@@ -51,12 +45,8 @@ void Buffer::sendIndirect(CommandBuffer& cmdBuffer, VkDeviceSize offset, void co
 }
 
 VkMemoryRequirements Buffer::vkMemoryRequirements() {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(!vulkan) {
-    throw std::runtime_error("vulkan is already deleted.");
-  }
   VkMemoryRequirements requirements{};
-  vkGetBufferMemoryRequirements(vulkan->vkDevice(), this->vkBuffer(), &requirements);
+  vkGetBufferMemoryRequirements(device_->vkDevice(), this->vkBuffer(), &requirements);
   return requirements;
 }
 
@@ -64,11 +54,7 @@ void Buffer::bindTo(std::shared_ptr<DeviceMemory> devMem, VkDeviceSize const off
   if(this->deviceMemory_) {
     throw std::runtime_error("DeviceMemory is already bound to this buffer.");
   }
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(!vulkan) {
-    throw std::runtime_error("vulkan is already deleted.");
-  }
-  if (vkBindBufferMemory(vulkan->vkDevice(), this->vkBuffer_, devMem->vkDeviceMemory(), offset) != VK_SUCCESS) {
+  if (vkBindBufferMemory(device_->vkDevice(), this->vkBuffer_, devMem->vkDeviceMemory(), offset) != VK_SUCCESS) {
     throw std::runtime_error("failed to bind buffer to device memory!");
   }
   this->deviceMemory_ = std::move(devMem);

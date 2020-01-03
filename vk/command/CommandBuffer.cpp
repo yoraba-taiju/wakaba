@@ -7,23 +7,22 @@
 
 #include "CommandBuffer.hpp"
 #include "CommandPool.hpp"
-#include "Vulkan.hpp"
-#include "buffer/Buffer.hpp"
-#include "Framebuffer.hpp"
-#include "RenderPass.hpp"
-#include "GraphicsPipeline.hpp"
+#include "../Vulkan.hpp"
+#include "../buffer/Buffer.hpp"
+#include "../Framebuffer.hpp"
+#include "../RenderPass.hpp"
+#include "../GraphicsPipeline.hpp"
 
 namespace vk {
 
 CommandBuffer::~CommandBuffer() noexcept{
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(vulkan) {
-    vkFreeCommandBuffers(vulkan->vkDevice(), this->commandPool_->vkCommandPool(), 1, &this->vkCommandBuffer_);
+  if(device_) {
+    device_->destroyCommandBuffer(*this);
   }
 }
 
 void CommandBuffer::copyBufferSync(Buffer &dst, VkDeviceSize dstOffset, Buffer &src, VkDeviceSize srcOffset, VkDeviceSize size) {
-  this->recordOneshot([&](std::shared_ptr<Vulkan> const& vulkan, CommandBuffer&) -> void {
+  this->recordOneshot([&](std::shared_ptr<Device> const&) -> void {
     VkBufferCopy copyRegion = {
         .srcOffset = srcOffset,
         .dstOffset = dstOffset,
@@ -34,12 +33,7 @@ void CommandBuffer::copyBufferSync(Buffer &dst, VkDeviceSize dstOffset, Buffer &
   this->executeSync();
 }
 
-void CommandBuffer::recordOneshot(std::function<void(std::shared_ptr<Vulkan> const& vulkan, CommandBuffer &)> f) {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(!vulkan) {
-    throw std::runtime_error("vulkan is already deleted.");
-  }
-
+void CommandBuffer::recordOneshot(std::function<void(std::shared_ptr<Device> const&)> const& f) {
   VkCommandBufferBeginInfo beginInfo = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
       .pNext = nullptr,
@@ -51,7 +45,7 @@ void CommandBuffer::recordOneshot(std::function<void(std::shared_ptr<Vulkan> con
   }
 
   try {
-    f(vulkan, *this);
+    f(device_);
   } catch(...) {
     throw;
   }
@@ -61,8 +55,8 @@ void CommandBuffer::recordOneshot(std::function<void(std::shared_ptr<Vulkan> con
   }
 }
 
-void CommandBuffer::recordRenderPass(Framebuffer& framebuffer, std::function<void(std::shared_ptr<Vulkan> const& vulkan, CommandBuffer &)> f) {
-  this->record([&](std::shared_ptr<Vulkan> const& vulkan, CommandBuffer &) -> void {
+void CommandBuffer::recordRenderPass(Framebuffer& framebuffer, std::function<void(std::shared_ptr<Device> const&)> const& f) {
+  this->record([&](std::shared_ptr<Device> const&) -> void {
 
     VkRenderPassBeginInfo renderPassInfo = {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
@@ -79,7 +73,7 @@ void CommandBuffer::recordRenderPass(Framebuffer& framebuffer, std::function<voi
 
     vkCmdBeginRenderPass(vkCommandBuffer_, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     try {
-      f(vulkan, *this);
+      f(device_);
     } catch(...) {
       throw;
     }
@@ -102,16 +96,12 @@ void CommandBuffer::draw(uint32_t const vertices, uint32_t const instances) {
   vkCmdDraw(vkCommandBuffer_, vertices, 1, 0, 0);
 }
 
-void CommandBuffer::record(std::function<void(std::shared_ptr<Vulkan> const& vulkan, CommandBuffer &)> f) {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(!vulkan) {
-    throw std::runtime_error("vulkan is already deleted.");
-  }
+void CommandBuffer::record(std::function<void(std::shared_ptr<Device> const&)> const& f) {
 
   VkCommandBufferBeginInfo beginInfo = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
       .pNext = nullptr,
-      .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+      .flags = 0,
       .pInheritanceInfo = nullptr,
   };
   if(vkBeginCommandBuffer(this->vkCommandBuffer_, &beginInfo) != VK_SUCCESS) {
@@ -119,7 +109,7 @@ void CommandBuffer::record(std::function<void(std::shared_ptr<Vulkan> const& vul
   }
 
   try {
-    f(vulkan, *this);
+    f(device_);
   } catch(...) {
     throw;
   }
@@ -130,18 +120,13 @@ void CommandBuffer::record(std::function<void(std::shared_ptr<Vulkan> const& vul
 }
 
 void CommandBuffer::executeSync() {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(!vulkan) {
-    throw std::runtime_error("vulkan is already deleted.");
-  }
-
   VkSubmitInfo submitInfo = {
       .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
       .commandBufferCount = 1,
       .pCommandBuffers = &this->vkCommandBuffer_,
   };
-  vkQueueSubmit(vulkan->vkGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-  vkQueueWaitIdle(vulkan->vkGraphicsQueue());
+  vkQueueSubmit(device_->vkGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+  vkQueueWaitIdle(device_->vkGraphicsQueue());
 }
 
 

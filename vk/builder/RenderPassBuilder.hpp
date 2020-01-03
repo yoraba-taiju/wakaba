@@ -17,7 +17,7 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 class RenderPass;
 class SubPassBuilder;
 class AttachmentBuilder;
@@ -25,10 +25,10 @@ class SubPassDependencyBuilder;
 
 class RenderPassBuilder final {
 private:
-  std::shared_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
 
 public:
-  explicit RenderPassBuilder(std::shared_ptr<Vulkan> vulkan);
+  explicit RenderPassBuilder(std::shared_ptr<Device> device);
   RenderPassBuilder() = delete;
   RenderPassBuilder(RenderPassBuilder&&) = delete;
   RenderPassBuilder(RenderPassBuilder const&) = delete;
@@ -55,6 +55,13 @@ private:
 public:
   AttachmentBuilder() = delete;
   explicit AttachmentBuilder(VkFormat format);
+
+public:
+  AttachmentBuilder& loadOpLoad();
+  AttachmentBuilder& loadOpClear();
+  AttachmentBuilder& loadOpDontCare();
+  AttachmentBuilder& storeOpStore();
+  AttachmentBuilder& storeOpDontCare();
   VkAttachmentDescription build();
 };
 

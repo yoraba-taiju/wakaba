@@ -13,8 +13,8 @@
 
 namespace vk {
 
-DeviceMemoryBuilder::DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan, VkMemoryRequirements const& requirements, VkMemoryPropertyFlags propertyFlags)
-:vulkan_(std::move(vulkan))
+DeviceMemoryBuilder::DeviceMemoryBuilder(std::shared_ptr<Device> device, VkMemoryRequirements const& requirements, VkMemoryPropertyFlags propertyFlags)
+:device_(std::move(device))
 ,requirements_(requirements)
 ,propertyFlags_(propertyFlags)
 {
@@ -22,7 +22,7 @@ DeviceMemoryBuilder::DeviceMemoryBuilder(std::shared_ptr<Vulkan> vulkan, VkMemor
 }
 
 std::shared_ptr<DeviceMemory> DeviceMemoryBuilder::build() {
-  VkPhysicalDeviceMemoryProperties const& memProperties = vulkan_->vkPhysicalDeviceMemoryProperties();
+  VkPhysicalDeviceMemoryProperties const& memProperties = device_->vulkan()->vkPhysicalDeviceMemoryProperties();
 
   std::optional<uint32_t> memoryType;
   {
@@ -35,7 +35,7 @@ std::shared_ptr<DeviceMemory> DeviceMemoryBuilder::build() {
     }
   }
   if(!memoryType.has_value()) {
-    vulkan_->log().fatal("Failed to find suitable memory type: flags={:08x}", propertyFlags_);
+    throw std::runtime_error(fmt::format("Failed to find suitable memory type: flags={:08x}", propertyFlags_));
   }
   VkMemoryAllocateInfo allocInfo = {
       .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
@@ -44,10 +44,10 @@ std::shared_ptr<DeviceMemory> DeviceMemoryBuilder::build() {
       .memoryTypeIndex = memoryType.value(),
   };
   VkDeviceMemory vkDeviceMemory;
-  if (vkAllocateMemory(vulkan_->vkDevice(), &allocInfo, nullptr, &vkDeviceMemory) != VK_SUCCESS) {
+  if (vkAllocateMemory(device_->vkDevice(), &allocInfo, nullptr, &vkDeviceMemory) != VK_SUCCESS) {
     throw std::runtime_error("failed to allocate image memory!");
   }
-  return std::make_shared<DeviceMemory>(vulkan_, vkDeviceMemory, requirements_.size);
+  return std::make_shared<DeviceMemory>(device_, vkDeviceMemory, requirements_.size);
 }
 
 }

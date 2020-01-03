@@ -14,7 +14,7 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 class ShaderModule;
 
 class FragmentShader : public Shader {
@@ -25,8 +25,8 @@ public:
   FragmentShader& operator=(FragmentShader const&) = delete;
 
 protected:
-  explicit FragmentShader(std::shared_ptr<Vulkan> const& vulkan, ShaderModule&& module)
-  :Shader(vulkan,std::move(module))
+  explicit FragmentShader(std::shared_ptr<vk::Device> device, ShaderModule&& module)
+  :Shader(std::move(device), std::move(module))
   {
   }
 

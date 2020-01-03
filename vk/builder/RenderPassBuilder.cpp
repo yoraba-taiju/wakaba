@@ -6,13 +6,14 @@
  */
 
 #include "RenderPassBuilder.hpp"
-#include "../Vulkan.hpp"
 #include "../RenderPass.hpp"
+#include "../Device.hpp"
+#include "../Vulkan.hpp"
 
 namespace vk {
 
-RenderPassBuilder::RenderPassBuilder(std::shared_ptr<Vulkan> vulkan)
-:vulkan_(std::move(vulkan))
+RenderPassBuilder::RenderPassBuilder(std::shared_ptr<Device> device)
+:device_(std::move(device))
 {
   renderPassInfo_ = {
       .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
@@ -52,10 +53,10 @@ std::shared_ptr<RenderPass> RenderPassBuilder::build() {
     renderPassInfo.dependencyCount = dependencies.size();
     renderPassInfo.pDependencies = dependencies.data();
   }
-  if (vkCreateRenderPass(vulkan_->vkDevice(), &renderPassInfo, nullptr, &pass) != VK_SUCCESS) {
-    vulkan_->log().fatal("[Vulkan] Failed to create a RenderPass.");
+  if (vkCreateRenderPass(device_->vkDevice(), &renderPassInfo, nullptr, &pass) != VK_SUCCESS) {
+    throw std::runtime_error("[Vulkan] Failed to create a RenderPass.");
   }
-  return std::make_shared<RenderPass>(vulkan_, pass);
+  return std::make_shared<RenderPass>(device_, pass);
 }
 
 AttachmentBuilder& RenderPassBuilder::addAttachment(VkFormat format) {
@@ -72,11 +73,36 @@ AttachmentBuilder::AttachmentBuilder(VkFormat format) {
   vkAttachmentDescription_ = {
     .format = format,
     .samples = VK_SAMPLE_COUNT_1_BIT,
-    .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-    .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
-    .initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+    .loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+    .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+    .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
     .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
   };
+}
+
+AttachmentBuilder& AttachmentBuilder::loadOpLoad() {
+  this->vkAttachmentDescription_.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+  return *this;
+}
+
+AttachmentBuilder& AttachmentBuilder::loadOpClear() {
+  this->vkAttachmentDescription_.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+  return *this;
+}
+
+AttachmentBuilder& AttachmentBuilder::loadOpDontCare() {
+  this->vkAttachmentDescription_.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  return *this;
+}
+
+AttachmentBuilder& AttachmentBuilder::storeOpDontCare() {
+  this->vkAttachmentDescription_.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+  return *this;
+}
+
+AttachmentBuilder& AttachmentBuilder::storeOpStore() {
+  this->vkAttachmentDescription_.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+  return *this;
 }
 
 VkAttachmentDescription AttachmentBuilder::build() {
@@ -140,7 +166,6 @@ SubPassBuilder &SubPassBuilder::preserve(uint32_t const location) {
 
 SubPassDependencyBuilder::SubPassDependencyBuilder() {
   this->vkSubpassDependency_ = {
-
   };
 }
 

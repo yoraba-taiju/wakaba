@@ -13,15 +13,15 @@
 
 namespace vk {
 
-class Vulkan;
+class Device;
 class RenderingDispatcher;
 
 class RenderingDispatcherBuilder final {
 private:
-  std::shared_ptr<Vulkan> vulkan_;
-
+  std::shared_ptr<Device> device_;
+  std::shared_ptr<Swapchain> swapchain_;
 public:
-  explicit RenderingDispatcherBuilder(std::shared_ptr<Vulkan> vulkan);
+  explicit RenderingDispatcherBuilder(std::shared_ptr<Device> device, std::shared_ptr<Swapchain> swapchain);
   RenderingDispatcherBuilder(RenderingDispatcherBuilder&&) = delete;
   RenderingDispatcherBuilder(RenderingDispatcherBuilder const&) = delete;
   RenderingDispatcherBuilder& operator=(RenderingDispatcherBuilder&&) = delete;

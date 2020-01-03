@@ -88,10 +88,10 @@ add_executable(wakaba
     vk/RenderingDispatcher.hpp
 
     # vk commands
-    vk/CommandPool.cpp
-    vk/CommandPool.hpp
-    vk/CommandBuffer.cpp
-    vk/CommandBuffer.hpp
+    vk/command/CommandPool.cpp
+    vk/command/CommandPool.hpp
+    vk/command/CommandBuffer.cpp
+    vk/command/CommandBuffer.hpp
 
     # vk pipelines
     vk/PipelineLayout.cpp
@@ -163,7 +163,7 @@ add_executable(wakaba
     taiju/shaders/vert/Triangle.hpp
     taiju/shaders/frag/Triangle.cpp
     taiju/shaders/frag/Triangle.hpp
-)
+    vk/util/Bridge.cpp vk/util/Bridge.hpp vk/Device.cpp vk/Device.hpp vk/Swapchain.cpp vk/Swapchain.hpp)
 
 target_link_libraries(wakaba fmt::fmt)
 target_link_libraries(wakaba glm_static)

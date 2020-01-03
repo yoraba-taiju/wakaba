@@ -6,21 +6,18 @@
  */
 
 #include "SwapchainImage.hpp"
-#include "../Vulkan.hpp"
+#include "../Device.hpp"
 
 namespace vk {
-SwapchainImage::SwapchainImage(std::shared_ptr<Vulkan> const &vulkan, VkImage vkImage, VkImageView vkImageView, uint32_t width, uint32_t height)
-:Image(vulkan, vkImage, vkImageView, width, height)
+SwapchainImage::SwapchainImage(std::shared_ptr<Device> device, VkImage vkImage, VkImageView vkImageView, uint32_t width, uint32_t height)
+:Image(std::move(device), vkImage, vkImageView, width, height)
 {
 
 }
 
 SwapchainImage::~SwapchainImage() noexcept {
-  std::shared_ptr<Vulkan> vulkan = this->vulkan();
-  if(vulkan) {
-    vkDestroyImageView(vulkan->vkDevice(), vkImageView(), nullptr);
-    //vkDestroyImage(vulkan->vkDevice(), vkImage(), nullptr);
-  }
+  vkDestroyImageView(device()->vkDevice(), vkImageView(), nullptr);
+  //vkDestroyImage(device()->vkDevice(), vkImage(), nullptr);
 }
 
 }

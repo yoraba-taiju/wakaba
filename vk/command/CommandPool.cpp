@@ -6,24 +6,16 @@
  */
 
 #include "CommandPool.hpp"
-#include "Vulkan.hpp"
+#include "../Vulkan.hpp"
 #include "CommandBuffer.hpp"
 
 namespace vk {
 
 CommandPool::~CommandPool() noexcept {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(vulkan) {
-    vkDestroyCommandPool(vulkan->vkDevice(), vkCommandPool_, nullptr);
-  }
+  device_->destroyCommandPool(*this);
 }
 
 CommandBuffer CommandPool::createBuffer() {
-  std::shared_ptr<Vulkan> vulkan =  vulkan_.lock();
-  if(!vulkan) {
-    throw std::runtime_error("vulkan is already deleted.");
-  }
-
   VkCommandBuffer vkCommandBuffer;
   {
     VkCommandBufferAllocateInfo commandBufferAllocateInfo = {
@@ -34,11 +26,11 @@ CommandBuffer CommandPool::createBuffer() {
         .commandBufferCount = 1
     };
 
-    if (vkAllocateCommandBuffers(vulkan->vkDevice(), &commandBufferAllocateInfo, &vkCommandBuffer) != VK_SUCCESS) {
-      vulkan->log().fatal("[Vulkan] Failed to create a Command Buffer.");
+    if (vkAllocateCommandBuffers(device_->vkDevice(), &commandBufferAllocateInfo, &vkCommandBuffer) != VK_SUCCESS) {
+      throw std::runtime_error(fmt::format("Failed to create a Command Buffer."));
     }
   }
-  return CommandBuffer(vulkan_, shared_from_this(), vkCommandBuffer);
+  return CommandBuffer(device_, shared_from_this(), vkCommandBuffer);
 }
 
 }

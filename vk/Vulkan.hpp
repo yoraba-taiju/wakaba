@@ -15,7 +15,7 @@
 #include "../util/Logger.hpp"
 
 #include "ShaderModule.hpp"
-#include "shader/Shader.hpp"
+#include "Device.hpp"
 
 namespace vk {
 
@@ -46,17 +46,9 @@ private: /* Vulkan */
   uint32_t height_{};
   VkPhysicalDevice vkPhysicalDevice_{};
   VkPhysicalDeviceMemoryProperties vkPhysicalDeviceMemoryProperties_{};
-  // logical device
-  uint32_t graphicsQueueFamilyIndex_{};
-  uint32_t presentQueueFamilyIndex_{};
-  VkDevice vkDevice_{};
-  VkQueue vkGraphicsQueue_{};
-  VkQueue vkPresentQueue_{};
-  // swapchan
-  VkSwapchainKHR vkSwapchain_{};
-  VkSurfaceFormatKHR vkSwapchainFormat_{};
-  std::vector<std::shared_ptr<SwapchainImage>> swapchainImages_{};
-  std::vector<std::shared_ptr<Framebuffer>> frameBuffers_{};
+
+  uint32_t vkGraphicsQueueFamilyIndex_{};
+  uint32_t vkPresentQueueFamilyIndex_{};
 
 private:
   VkDebugReportCallbackEXT vkDebugReportCallback_{};
@@ -64,6 +56,7 @@ private:
 
 public:
   explicit Vulkan(util::Logger& log);
+  std::shared_ptr<Vulkan> create(util::Logger& log);
   Vulkan() = delete;
   Vulkan(Vulkan const&) = delete;
   Vulkan(Vulkan&&) = delete;
@@ -75,66 +68,31 @@ public:
   [[ nodiscard ]] GLFWwindow* window() {
     return this->window_;
   }
-
+  [[ nodiscard ]] VkPhysicalDevice vkPhysicalDevice() {
+    return this->vkPhysicalDevice_;
+  }
   [[ nodiscard ]] VkPhysicalDeviceMemoryProperties const& vkPhysicalDeviceMemoryProperties() const {
     return this->vkPhysicalDeviceMemoryProperties_;
   }
-
-  [[ nodiscard ]] VkInstance vkInstance() {
-    return this->vkInstance_;
+  [[ nodiscard ]] VkSurfaceKHR vkSurface() {
+    return this->vkSurface_;
   }
-
-  [[ nodiscard ]] VkDevice vkDevice() {
-    return this->vkDevice_;
-  }
-
   [[ nodiscard ]] util::Logger& log() {
     return this->log_;
   }
-
-  [[ nodiscard ]] std::shared_ptr<Vulkan> self() {
-    return this->shared_from_this();
-  }
-
   [[ nodiscard ]] uint32_t width() const {
     return this->width_;
   }
-
   [[ nodiscard ]] uint32_t height() const {
     return this->height_;
   }
-
-  [[ nodiscard ]] VkSwapchainKHR vkSwapchain() {
-    return this->vkSwapchain_;
+  [[ nodiscard ]] uint32_t vkGraphicsQueueFamilyIndex() const {
+    return this->vkGraphicsQueueFamilyIndex_;
   }
-
-  [[ nodiscard ]] std::vector<std::shared_ptr<SwapchainImage>>& swapchainImages() {
-    return this->swapchainImages_;
+  [[ nodiscard ]] uint32_t vkPresentQueueFamilyIndex() const {
+    return this->vkPresentQueueFamilyIndex_;
   }
-
-  [[ nodiscard ]] VkQueue vkGraphicsQueue() {
-    return this->vkGraphicsQueue_;
-  }
-
-  [[ nodiscard ]] VkQueue vkPresentQueue() {
-    return this->vkPresentQueue_;
-  }
-
-public:
-  void destroy();
-
-public:
-  std::shared_ptr<CommandPool> createCommandPool();
-
-  template<typename T, typename... Args>
-  std::shared_ptr<T> createShader(Args &&... args) {
-    static_assert(std::is_base_of<Shader, T>::value);
-    std::tuple<size_t, const uint32_t*> const binary = Shader::loadBianry<T>();
-    std::shared_ptr<Vulkan> vulkan = self();
-    ShaderModule module = ShaderModule::create(vulkan, std::get<1>(binary), std::get<0>(binary), typeid(T).name());
-    return std::make_shared<T>(vulkan, std::move(module), std::forward<Args>(args)...);
-  }
-
+  [[ nodiscard ]] std::shared_ptr<Device> createDevice();
 };
 
 }

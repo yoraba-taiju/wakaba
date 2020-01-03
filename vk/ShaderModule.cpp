@@ -6,21 +6,20 @@
  */
 
 #include <vector>
+#include <fmt/format.h>
+#include "Device.hpp"
 #include "ShaderModule.hpp"
-#include "Vulkan.hpp"
-#include "../util/File.hpp"
 
 namespace vk {
 
 ShaderModule::~ShaderModule() noexcept {
-  std::shared_ptr<Vulkan> vulkan = this->vulkan_.lock();
-  if(vulkan) {
-    vkDestroyShaderModule(vulkan->vkDevice(), vkShaderModule_, nullptr);
+  if(device_){
+    device_->destroyShaderModule(*this);
   }
 }
 
 ShaderModule ShaderModule::create(
-    std::shared_ptr<Vulkan> const &vulkan,
+    std::shared_ptr<Device> const& device,
     uint32_t const *code, size_t length,
     const char *className) noexcept(false) {
 
@@ -33,11 +32,11 @@ ShaderModule ShaderModule::create(
   };
 
   VkShaderModule mod{};
-  if (vkCreateShaderModule(vulkan->vkDevice(), &shaderInfo, nullptr, &mod) != VK_SUCCESS) {
-    vulkan->log().fatal("Failed to create shader module: {}", className);
+  if (vkCreateShaderModule(device->vkDevice(), &shaderInfo, nullptr, &mod) != VK_SUCCESS) {
+    throw std::runtime_error(fmt::format("Failed to create shader module: {}", className));
   }
 
-  return ShaderModule(vulkan, className, mod);
+  return ShaderModule(device, className, mod);
 }
 
 }
