@@ -17,7 +17,9 @@ RenderPass::RenderPass(std::shared_ptr<Device> device, VkRenderPass renderPass)
 }
 
 RenderPass::~RenderPass() noexcept{
-  device_->destroyRenderPass(*this);
+  if(device_) {
+    device_->destroyRenderPass(*this);
+  }
 }
 
 }

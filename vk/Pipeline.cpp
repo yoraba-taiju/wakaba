@@ -18,7 +18,9 @@ Pipeline::Pipeline(std::shared_ptr<Device> device, VkPipeline pipeline)
 }
 
 Pipeline::~Pipeline() noexcept {
-  device_->destroyPipeline(*this);
+  if(device_) {
+    device_->destroyPipeline(*this);
+  }
 }
 
 

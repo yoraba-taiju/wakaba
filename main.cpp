@@ -83,16 +83,16 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(vulkan->window(), GLFW_STICKY_KEYS, GL_TRUE);
 
-  std::shared_ptr<vk::Device> device = vulkan->createDevice();
+  auto device = vulkan->createDevice();
+  auto swapchain = device->createSwapchain();
 
   // FIXME: コンパイルが通るのを調べるだけ。
   auto cmdPool = device->createCommandPool();
-  auto swapchain = device->createSwapchain();
   auto cmdBuffer = cmdPool->createBuffer();
 
   auto renderPassBuilder = vk::RenderPassBuilder(device);
   renderPassBuilder.addSubPass().addColor(0);
-  renderPassBuilder.addAttachment(VK_FORMAT_B8G8R8A8_UNORM).loadOpClear().storeOpStore();
+  renderPassBuilder.addAttachment(swapchain->vkSwapchainFormat().format).loadOpClear().storeOpStore();
 
   auto vert = device->createShader<taiju::shaders::vert::Triangle>();
   auto frag = device->createShader<taiju::shaders::frag::Triangle>();
@@ -121,7 +121,10 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
 
   std::vector<vk::Framebuffer> framebuffers;
   for(std::shared_ptr<vk::SwapchainImage>& image : swapchain->images()) {
-    framebuffers.emplace_back(vk::FramebufferBuilder(device, vulkan->width(), vulkan->height(), renderPass).addColor(image, {0.0f, 0.0f, 0.0f, 1.0f}).build());
+    framebuffers.emplace_back(
+        vk::FramebufferBuilder(device, vulkan->width(), vulkan->height(), renderPass)
+          .addColor(image, {0.0f, 0.0f, 0.0f, 1.0f})
+          .build());
   }
 
   auto dispatcher = vk::RenderingDispatcherBuilder(device, swapchain).build();

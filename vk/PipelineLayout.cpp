@@ -16,7 +16,9 @@ PipelineLayout::PipelineLayout(std::shared_ptr<Device> device, VkPipelineLayout 
 }
 
 PipelineLayout::~PipelineLayout() noexcept {
-  device_->destroyPipelineLayout(*this);
+  if(device_) {
+    device_->destroyPipelineLayout(*this);
+  }
 }
 
 }

@@ -21,7 +21,9 @@ Swapchain::Swapchain(std::shared_ptr<Device> device, VkSwapchainKHR vkSwapchain,
 
 Swapchain::~Swapchain() noexcept {
   this->images_.clear();
-  device_->destroySwapchain(*this);
+  if(device_) {
+    device_->destroySwapchain(*this);
+  }
 }
 
 std::shared_ptr<Swapchain> Swapchain::create(std::shared_ptr<Device> device, VkSwapchainKHR vkSwapchain, VkSurfaceFormatKHR vkSwapchainFormat) {
