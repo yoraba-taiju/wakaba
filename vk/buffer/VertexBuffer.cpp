@@ -7,6 +7,7 @@
 
 #include "VertexBuffer.hpp"
 #include "../builder/BufferBuilder.hpp"
+#include "../util/Bridge.hpp"
 
 namespace vk {
 
@@ -15,8 +16,8 @@ VertexBuffer::VertexBuffer(Buffer&& buffer)
 
 }
 
-void VertexBuffer::update(PrimaryCommandBuffer &cmdBuffer, size_t offset, void const* data, size_t dataSize) {
-  buffer_.sendIndirect(cmdBuffer, offset, data, dataSize);
+void VertexBuffer::update(Bridge& bridge, size_t offset, void const* data, size_t dataSize) {
+  bridge.updateBuffer(buffer_, offset, data, dataSize);
 }
 
 }

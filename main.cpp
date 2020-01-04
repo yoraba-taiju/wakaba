@@ -31,7 +31,7 @@
 #include "vk/builder/FramebufferBuilder.hpp"
 #include "vk/builder/RenderingDispatcherBuilder.hpp"
 #include "vk/Swapchain.hpp"
-
+#include "vk/util/Bridge.hpp"
 static int _main(util::Logger& log);
 static int _mainLoop(util::Logger& log, const std::shared_ptr<vk::Vulkan>& vulkan);
 
@@ -86,6 +86,7 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
 
   auto device = vulkan->createDevice();
   auto swapchain = device->createSwapchain();
+  auto bridge = vk::Bridge(device);
 
   // FIXME: コンパイルが通るのを調べるだけ。
   auto cmdPool = device->createCommandPool();
@@ -118,7 +119,7 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   };
 
   auto vertBuffer = vk::VertexBufferBuilder(device, vertInputs.size() * sizeof(taiju::shaders::vert::Triangle::Input)).build();
-  vertBuffer.update(cmdBuffer, vertInputs);
+  vertBuffer.update(bridge, vertInputs);
 
   std::vector<vk::Framebuffer> framebuffers;
   for(std::shared_ptr<vk::SwapchainImage>& image : swapchain->images()) {

@@ -48,11 +48,10 @@ public:
     return size_;
   }
 
+  [[ nodiscard ]] std::shared_ptr<DeviceMemory> deviceMemory() const {
+    return deviceMemory_;
+  }
   void bindTo(std::shared_ptr<DeviceMemory> devMem, VkDeviceSize offset);
-
-  void sendDirect(VkDeviceSize offset, void const* src, size_t size);
-  void sendIndirect(PrimaryCommandBuffer& cmdBuffer, VkDeviceSize offset, void const* src, size_t size);
-
   VkMemoryRequirements vkMemoryRequirements();
 };
 

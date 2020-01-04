@@ -31,19 +31,6 @@ Buffer::~Buffer() noexcept {
   }
 }
 
-void Buffer::sendDirect(VkDeviceSize offset, void const *src, size_t size) {
-  this->deviceMemory_->sendDirect(offset + this->offset_, src, size);
-}
-
-void Buffer::sendIndirect(PrimaryCommandBuffer& cmdBuffer, VkDeviceSize offset, void const *src, size_t size) {
-  Buffer stagingBuffer = BufferBuilder(device_, size).setUsages(VK_BUFFER_USAGE_TRANSFER_SRC_BIT).build();
-  std::shared_ptr<DeviceMemory> stagingMemory = DeviceMemoryBuilder(device_, stagingBuffer.vkMemoryRequirements(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT).build();
-  stagingMemory->sendDirect(0, src, size);
-  stagingBuffer.bindTo(stagingMemory, 0);
-
-  cmdBuffer.copyBufferSync(*this, offset, stagingBuffer, 0, size);
-}
-
 VkMemoryRequirements Buffer::vkMemoryRequirements() {
   VkMemoryRequirements requirements{};
   vkGetBufferMemoryRequirements(device_->vkDevice(), this->vkBuffer(), &requirements);
