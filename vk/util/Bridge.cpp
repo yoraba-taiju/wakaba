@@ -19,6 +19,7 @@ namespace vk {
 Bridge::Bridge(std::shared_ptr<Device> device)
 :device_(std::move(device))
 ,commandPoolMutex_(std::make_unique<std::mutex>())
+,stagingBufferReleaser_(*this)
 ,stagingBufferMutex_(std::make_unique<std::mutex>())
 {
 
@@ -36,21 +37,25 @@ std::shared_ptr<CommandPool> Bridge::commandPool() {
   return std::move(pool);
 }
 
-Buffer& Bridge::stagingBuffer() {
+std::unique_ptr<Buffer, Bridge::StagingBufferReleaser> Bridge::stagingBuffer() {
   std::lock_guard<std::mutex> lock(*this->stagingBufferMutex_);
-  std::thread::id id = std::thread::id();
-  auto it = this->stagingBuffer_.find(id);
-  if(it != this->stagingBuffer_.end()) {
-    return *it->second;
+  if(!this->stagingBuffer_.empty()) {
+    std::unique_ptr<Buffer> buff = std::move(this->stagingBuffer_.back());
+    this->stagingBuffer_.pop_back();
+    return std::unique_ptr<Buffer, Bridge::StagingBufferReleaser>(buff.release(), this->stagingBufferReleaser_);
   }
 
   Buffer stagingBuffer = BufferBuilder(device_, StagingBufferSize).setUsages(VK_BUFFER_USAGE_TRANSFER_SRC_BIT).build();
   std::shared_ptr<DeviceMemory> stagingMemory = DeviceMemoryBuilder(device_, stagingBuffer.vkMemoryRequirements(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT).build();
   stagingBuffer.bindTo(stagingMemory, 0);
 
-  std::unique_ptr<Buffer> buffer = std::make_unique<Buffer>(std::move(stagingBuffer));
-  this->stagingBuffer_.emplace(id, std::move(buffer));
-  return *this->stagingBuffer_[id];
+  std::unique_ptr<Buffer> buff = std::make_unique<Buffer>(std::move(stagingBuffer));
+  return std::unique_ptr<Buffer, StagingBufferReleaser>(buff.release(), this->stagingBufferReleaser_);
+}
+
+void Bridge::StagingBufferReleaser::operator()(Buffer* buff) const {
+  std::lock_guard<std::mutex> lock(*this->bridge_.stagingBufferMutex_);
+  this->bridge_.stagingBuffer_.emplace_back(std::unique_ptr<Buffer>(buff));
 }
 
 void Bridge::updateBuffer(Buffer &buffer, VkDeviceSize offset, void const *src, size_t size) {
@@ -63,10 +68,11 @@ void Bridge::updateBuffer(Buffer &buffer, VkDeviceSize offset, void const *src, 
     pool->createPrimaryBuffer().copyBufferSync(buffer, offset, stagingBuffer, 0, size);
     return;
   }
-  Buffer& stagingBuffer = this->stagingBuffer();
-  stagingBuffer.deviceMemory()->sendDirect(0, src, size);
-  pool->createPrimaryBuffer().copyBufferSync(buffer, offset, stagingBuffer, 0, size);
+  std::unique_ptr<Buffer, Bridge::StagingBufferReleaser> stagingBuffer = this->stagingBuffer();
+  stagingBuffer->deviceMemory()->sendDirect(0, src, size);
+  pool->createPrimaryBuffer().copyBufferSync(buffer, offset, *stagingBuffer, 0, size);
 }
+
 
 
 }

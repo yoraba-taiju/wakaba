@@ -14,6 +14,7 @@
 #include <thread>
 #include <unordered_map>
 #include <mutex>
+#include <vector>
 
 #include "../buffer/Buffer.hpp"
 
@@ -24,16 +25,23 @@ class Buffer;
 
 class Bridge final {
 private:
+  struct StagingBufferReleaser
+  {
+    explicit StagingBufferReleaser(Bridge& bridge):bridge_(bridge){};
+    Bridge& bridge_;
+    void operator()( Buffer* ) const;
+  };
   static constexpr VkDeviceSize StagingBufferSize = 1024 * 1024 * 16; //16MB
 private:
   std::shared_ptr<Device> device_;
   std::unordered_map<std::thread::id, std::shared_ptr<CommandPool>> commandPools_{};
   std::unique_ptr<std::mutex> commandPoolMutex_{};
-  std::unordered_map<std::thread::id, std::unique_ptr<Buffer>> stagingBuffer_{};
+  std::vector<std::unique_ptr<Buffer>> stagingBuffer_{};
+  StagingBufferReleaser stagingBufferReleaser_;
   std::unique_ptr<std::mutex> stagingBufferMutex_{};
 private:
   std::shared_ptr<CommandPool> commandPool();
-  Buffer& stagingBuffer();
+  std::unique_ptr<Buffer, StagingBufferReleaser> stagingBuffer();
 public:
   Bridge() = delete;
   Bridge(Bridge const&) = delete;
