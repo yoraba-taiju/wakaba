@@ -10,6 +10,9 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <array>
+#include <memory>
+
 #include "../GraphicsPipeline.hpp"
 #include "../RenderPass.hpp"
 

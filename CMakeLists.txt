@@ -186,6 +186,6 @@ target_link_libraries(wakaba Vulkan::Vulkan)
 target_include_directories(wakaba PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(wakaba PRIVATE Vulkan::Vulkan)
 target_include_directories(wakaba PRIVATE glfw::glfw)
-target_include_directories(wakaba PRIVATE glm::glm)
+target_include_directories(wakaba PRIVATE external/glm)
 target_include_directories(wakaba PRIVATE fmt::fmt)
 

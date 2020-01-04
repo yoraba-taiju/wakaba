@@ -28,7 +28,7 @@ public:
     return buffer_;
   }
   [[ nodiscard ]] size_t size() {
-    return this->buffer().size();
+    return static_cast<size_t>(this->buffer().size());
   }
 
 public:

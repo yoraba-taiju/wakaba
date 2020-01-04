@@ -51,7 +51,6 @@ int main() {
 }
 
 static int _main(util::Logger& log) {
-  GLFWwindow *window;
   // Initialise GLFW
   if (!glfwInit()) {
     log.fatal("Failed to initialize GLFW");
