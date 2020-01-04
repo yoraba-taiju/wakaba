@@ -179,13 +179,9 @@ add_executable(wakaba
     taiju/shaders/frag/Triangle.hpp
     )
 
-target_link_libraries(wakaba fmt::fmt)
-target_link_libraries(wakaba glm_static)
-target_link_libraries(wakaba glfw)
-target_link_libraries(wakaba Vulkan::Vulkan)
+target_link_libraries(wakaba PRIVATE fmt::fmt)
+target_link_libraries(wakaba PRIVATE glm_static)
+target_link_libraries(wakaba PRIVATE glfw)
+target_link_libraries(wakaba PRIVATE Vulkan::Vulkan)
+# for pre-compiled shaders
 target_include_directories(wakaba PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(wakaba PRIVATE Vulkan::Vulkan)
-target_include_directories(wakaba PRIVATE glfw::glfw)
-target_include_directories(wakaba PRIVATE external/glm)
-target_include_directories(wakaba PRIVATE fmt::fmt)
-
