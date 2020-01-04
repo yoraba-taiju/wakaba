@@ -11,13 +11,19 @@
 #include <GLFW/glfw3.h>
 
 #include <memory>
+#include <thread>
+#include <unordered_map>
+#include <mutex>
 
 namespace vk{
-class Vulkan;
+class Device;
+class CommandPool;
 
 class Bridge {
 private:
-  std::weak_ptr<Vulkan> vulkan_;
+  std::shared_ptr<Device> device_;
+  std::unordered_map<std::thread::id, std::shared_ptr<CommandPool>> commandPools_;
+  std::mutex mutex_;
 public:
 
 };

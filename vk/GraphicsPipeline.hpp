@@ -26,9 +26,13 @@ public:
   : Pipeline(std::move(device), pipeline)
   {
   }
-public:
   ~GraphicsPipeline() noexcept = default;
-
+public:
+  GraphicsPipeline() = delete;
+  GraphicsPipeline(GraphicsPipeline const&) = delete;
+  GraphicsPipeline& operator=(GraphicsPipeline const&) = delete;
+  GraphicsPipeline(GraphicsPipeline&&) = default;
+  GraphicsPipeline& operator=(GraphicsPipeline&&) = default;
 };
 
 }

@@ -15,9 +15,8 @@
 namespace vk {
 
 class Device;
-class Queue;
-
-class CommandBuffer;
+class PrimaryCommandBuffer;
+class SecondaryCommandBuffer;
 
 class CommandPool final : public std::enable_shared_from_this<CommandPool> {
 private:
@@ -45,7 +44,8 @@ public:
   }
 
 public:
-  CommandBuffer createBuffer();
+  PrimaryCommandBuffer createPrimaryBuffer();
+  SecondaryCommandBuffer createSecondaryBuffer();
 };
 
 }

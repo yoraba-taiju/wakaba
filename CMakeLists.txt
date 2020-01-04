@@ -163,7 +163,7 @@ add_executable(wakaba
     taiju/shaders/vert/Triangle.hpp
     taiju/shaders/frag/Triangle.cpp
     taiju/shaders/frag/Triangle.hpp
-    vk/util/Bridge.cpp vk/util/Bridge.hpp vk/Device.cpp vk/Device.hpp vk/Swapchain.cpp vk/Swapchain.hpp)
+    vk/util/Bridge.cpp vk/util/Bridge.hpp vk/Device.cpp vk/Device.hpp vk/Swapchain.cpp vk/Swapchain.hpp vk/command/PrimaryCommandBuffer.cpp vk/command/PrimaryCommandBuffer.hpp vk/command/SecondaryCommandBuffer.cpp vk/command/SecondaryCommandBuffer.hpp)
 
 target_link_libraries(wakaba fmt::fmt)
 target_link_libraries(wakaba glm_static)

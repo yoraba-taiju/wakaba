@@ -15,7 +15,7 @@ VertexBuffer::VertexBuffer(Buffer&& buffer)
 
 }
 
-void VertexBuffer::update(CommandBuffer &cmdBuffer, size_t offset, void const* data, size_t dataSize) {
+void VertexBuffer::update(PrimaryCommandBuffer &cmdBuffer, size_t offset, void const* data, size_t dataSize) {
   buffer_.sendIndirect(cmdBuffer, offset, data, dataSize);
 }
 

@@ -13,7 +13,7 @@
 #include <memory>
 #include <array>
 #include <vector>
-#include "command/CommandBuffer.hpp"
+#include "command/PrimaryCommandBuffer.hpp"
 
 namespace vk {
 
@@ -37,8 +37,8 @@ private:
 private:
   uint32_t currentFrame_{};
   uint32_t currentImageIndex_{};
-  std::array<std::vector<CommandBuffer>, NumFrames> commands_{};
-  std::vector<std::vector<CommandBuffer>> usedCommands_{};
+  std::array<std::vector<PrimaryCommandBuffer>, NumFrames> commands_{};
+  std::vector<std::vector<PrimaryCommandBuffer>> usedCommands_{};
 
 private:
   explicit RenderingDispatcher(std::shared_ptr<Device> device, std::shared_ptr<Swapchain> swapchain);
@@ -51,17 +51,10 @@ public:
   RenderingDispatcher& operator=(RenderingDispatcher&&) = default;
 
 public:
-  RenderingDispatcher& push(CommandBuffer&& commandBuffer);
-
-  [[ nodiscard ]] uint32_t currentFrame() const {
-    return this->currentFrame_;
-  }
-  [[ nodiscard ]] uint32_t currentImageIndex() const {
-    return this->currentImageIndex_;
-  }
+  RenderingDispatcher& push(PrimaryCommandBuffer&& commandBuffer);
 
 public:
-  void draw();
+  void dispatch(std::function<void(RenderingDispatcher&, uint32_t)> const& f);
 };
 
 }

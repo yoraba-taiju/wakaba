@@ -25,6 +25,10 @@ private:
   std::vector<std::shared_ptr<SwapchainImage>> images_{};
 public:
   Swapchain() = delete;
+  Swapchain(Swapchain const&) = delete;
+  Swapchain(Swapchain&&) = default;
+  Swapchain& operator=(Swapchain const&) = delete;
+  Swapchain& operator=(Swapchain&&) = default;
   Swapchain(std::shared_ptr<Device> device, VkSwapchainKHR vkSwapchain, VkSurfaceFormatKHR vkSwapchainFormat, std::vector<std::shared_ptr<SwapchainImage>> images);
   ~Swapchain() noexcept;
   static std::shared_ptr<Swapchain> create(std::shared_ptr<Device> device, VkSwapchainKHR vkSwapchain, VkSurfaceFormatKHR vkSwapchainFormat);

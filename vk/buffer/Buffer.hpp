@@ -18,7 +18,7 @@ namespace vk {
 
 class Device;
 class DeviceMemory;
-class CommandBuffer;
+class PrimaryCommandBuffer;
 
 class Buffer {
 private:
@@ -51,7 +51,7 @@ public:
   void bindTo(std::shared_ptr<DeviceMemory> devMem, VkDeviceSize offset);
 
   void sendDirect(VkDeviceSize offset, void const* src, size_t size);
-  void sendIndirect(CommandBuffer& cmdBuffer, VkDeviceSize offset, void const* src, size_t size);
+  void sendIndirect(PrimaryCommandBuffer& cmdBuffer, VkDeviceSize offset, void const* src, size_t size);
 
   VkMemoryRequirements vkMemoryRequirements();
 };

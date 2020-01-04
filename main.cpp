@@ -24,7 +24,8 @@
 #include "taiju/shaders/frag/Triangle.hpp"
 #include "vk/buffer/VertexBuffer.hpp"
 #include "vk/command/CommandPool.hpp"
-#include "vk/command/CommandBuffer.hpp"
+#include "vk/command/PrimaryCommandBuffer.hpp"
+#include "vk/command/SecondaryCommandBuffer.hpp"
 #include "vk/Framebuffer.hpp"
 #include "vk/image/SwapchainImage.hpp"
 #include "vk/builder/FramebufferBuilder.hpp"
@@ -88,7 +89,7 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
 
   // FIXME: コンパイルが通るのを調べるだけ。
   auto cmdPool = device->createCommandPool();
-  auto cmdBuffer = cmdPool->createBuffer();
+  auto cmdBuffer = cmdPool->createPrimaryBuffer();
 
   auto renderPassBuilder = vk::RenderPassBuilder(device);
   renderPassBuilder.addSubPass().addColor(0);
@@ -130,15 +131,21 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   auto dispatcher = vk::RenderingDispatcherBuilder(device, swapchain).build();
 
   do {
-    //
-    vk::CommandBuffer cmd = cmdPool->createBuffer();
-    cmd.recordRenderPass(framebuffers[dispatcher.currentImageIndex()],[&](std::shared_ptr<vk::Device> const& device)-> void{
-      cmd.bindPipeline(gfxPipeline);
-      cmd.bindVertexBuffer(0, vertBuffer.buffer());
-      cmd.draw(3, 1);
+    auto subBuffer = cmdPool->createSecondaryBuffer();
+    vk::PrimaryCommandBuffer cmd = cmdPool->createPrimaryBuffer();
+    std::vector<vk::SecondaryCommandBuffer> subCmds;
+    subCmds.emplace_back(std::move(subBuffer));
+    dispatcher.dispatch([&](vk::RenderingDispatcher&, uint32_t frameIndex) -> void{
+      subCmds[0].record(framebuffers[frameIndex], [&]() -> void {
+        subCmds[0].bindPipeline(gfxPipeline);
+        subCmds[0].bindVertexBuffer(0, vertBuffer.buffer());
+        subCmds[0].draw(3, 1);
+      });
+
+      //
+      cmd.recordRenderPass(framebuffers[frameIndex], subCmds);
+      dispatcher.push(std::move(cmd));
     });
-    dispatcher.push(std::move(cmd));
-    dispatcher.draw();
 
     // Swap buffers
     glfwSwapBuffers(vulkan->window());

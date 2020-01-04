@@ -7,7 +7,8 @@
 
 #include "CommandPool.hpp"
 #include "../Vulkan.hpp"
-#include "CommandBuffer.hpp"
+#include "PrimaryCommandBuffer.hpp"
+#include "SecondaryCommandBuffer.hpp"
 
 namespace vk {
 
@@ -15,7 +16,7 @@ CommandPool::~CommandPool() noexcept {
   device_->destroyCommandPool(*this);
 }
 
-CommandBuffer CommandPool::createBuffer() {
+PrimaryCommandBuffer CommandPool::createPrimaryBuffer() {
   VkCommandBuffer vkCommandBuffer;
   {
     VkCommandBufferAllocateInfo commandBufferAllocateInfo = {
@@ -30,7 +31,24 @@ CommandBuffer CommandPool::createBuffer() {
       throw std::runtime_error(fmt::format("Failed to create a Command Buffer."));
     }
   }
-  return CommandBuffer(device_, shared_from_this(), vkCommandBuffer);
+  return PrimaryCommandBuffer(device_, shared_from_this(), vkCommandBuffer);
 }
 
+SecondaryCommandBuffer CommandPool::createSecondaryBuffer() {
+  VkCommandBuffer vkCommandBuffer;
+  {
+    VkCommandBufferAllocateInfo commandBufferAllocateInfo = {
+        .sType =  VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+        .pNext = nullptr,
+        .commandPool = vkCommandPool_,
+        .level = VK_COMMAND_BUFFER_LEVEL_SECONDARY,
+        .commandBufferCount = 1
+    };
+
+    if (vkAllocateCommandBuffers(device_->vkDevice(), &commandBufferAllocateInfo, &vkCommandBuffer) != VK_SUCCESS) {
+      throw std::runtime_error(fmt::format("Failed to create a Command Buffer."));
+    }
+  }
+  return SecondaryCommandBuffer(device_, shared_from_this(), vkCommandBuffer);
+}
 }

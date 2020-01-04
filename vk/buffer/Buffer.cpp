@@ -11,7 +11,7 @@
 #include "../command/CommandPool.hpp"
 #include "../builder/DeviceMemoryBuilder.hpp"
 #include "../builder/BufferBuilder.hpp"
-#include "../command/CommandBuffer.hpp"
+#include "../command/PrimaryCommandBuffer.hpp"
 
 namespace vk {
 
@@ -35,7 +35,7 @@ void Buffer::sendDirect(VkDeviceSize offset, void const *src, size_t size) {
   this->deviceMemory_->sendDirect(offset + this->offset_, src, size);
 }
 
-void Buffer::sendIndirect(CommandBuffer& cmdBuffer, VkDeviceSize offset, void const *src, size_t size) {
+void Buffer::sendIndirect(PrimaryCommandBuffer& cmdBuffer, VkDeviceSize offset, void const *src, size_t size) {
   Buffer stagingBuffer = BufferBuilder(device_, size).setUsages(VK_BUFFER_USAGE_TRANSFER_SRC_BIT).build();
   std::shared_ptr<DeviceMemory> stagingMemory = DeviceMemoryBuilder(device_, stagingBuffer.vkMemoryRequirements(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT).build();
   stagingMemory->sendDirect(0, src, size);
