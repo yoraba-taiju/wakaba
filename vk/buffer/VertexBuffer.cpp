@@ -7,7 +7,7 @@
 
 #include "VertexBuffer.hpp"
 #include "../builder/BufferBuilder.hpp"
-#include "../util/Bridge.hpp"
+#include "../helper/Bridge.hpp"
 
 namespace vk {
 

@@ -8,8 +8,7 @@
 #pragma once
 
 #include <memory>
-#include "../RenderingDispatcher.hpp"
-
+#include "../helper/RenderingDispatcher.hpp"
 
 namespace vk {
 

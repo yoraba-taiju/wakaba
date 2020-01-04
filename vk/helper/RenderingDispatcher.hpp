@@ -13,7 +13,7 @@
 #include <memory>
 #include <array>
 #include <vector>
-#include "command/PrimaryCommandBuffer.hpp"
+#include "../command/PrimaryCommandBuffer.hpp"
 
 namespace vk {
 

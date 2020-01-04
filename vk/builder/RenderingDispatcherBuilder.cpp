@@ -7,7 +7,7 @@
 
 #include "RenderingDispatcherBuilder.hpp"
 #include "../Vulkan.hpp"
-#include "../RenderingDispatcher.hpp"
+#include "../helper/RenderingDispatcher.hpp"
 #include "../Swapchain.hpp"
 
 namespace vk {

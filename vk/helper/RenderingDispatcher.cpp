@@ -6,8 +6,8 @@
  */
 
 #include "RenderingDispatcher.hpp"
-#include "Vulkan.hpp"
-#include "Swapchain.hpp"
+#include "../Vulkan.hpp"
+#include "../Swapchain.hpp"
 
 namespace vk {
 

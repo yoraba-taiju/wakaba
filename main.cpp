@@ -31,7 +31,7 @@
 #include "vk/builder/FramebufferBuilder.hpp"
 #include "vk/builder/RenderingDispatcherBuilder.hpp"
 #include "vk/Swapchain.hpp"
-#include "vk/util/Bridge.hpp"
+#include "vk/helper/Bridge.hpp"
 static int _main(util::Logger& log);
 static int _mainLoop(util::Logger& log, const std::shared_ptr<vk::Vulkan>& vulkan);
 

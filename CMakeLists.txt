@@ -65,7 +65,7 @@ add_executable(wakaba
     ${SHADER_HEADERS}
     main.cpp
 
-    # util
+    # helper
     util/Logger.cpp
     util/Logger.hpp
     util/File.hpp
@@ -76,22 +76,34 @@ add_executable(wakaba
     vk/Util.hpp
     vk/Vulkan.cpp
     vk/Vulkan.hpp
+    vk/Device.cpp
+    vk/Device.hpp
 
     #
+    vk/Swapchain.cpp
+    vk/Swapchain.hpp
+
     vk/RenderPass.cpp
     vk/RenderPass.hpp
 
     vk/Framebuffer.cpp
     vk/Framebuffer.hpp
 
-    vk/RenderingDispatcher.cpp
-    vk/RenderingDispatcher.hpp
+    # vk helpers
+    vk/helper/RenderingDispatcher.cpp
+    vk/helper/RenderingDispatcher.hpp
+    vk/helper/Bridge.cpp
+    vk/helper/Bridge.hpp
 
     # vk commands
     vk/command/CommandPool.cpp
     vk/command/CommandPool.hpp
     vk/command/CommandBuffer.cpp
     vk/command/CommandBuffer.hpp
+    vk/command/PrimaryCommandBuffer.cpp
+    vk/command/PrimaryCommandBuffer.hpp
+    vk/command/SecondaryCommandBuffer.cpp
+    vk/command/SecondaryCommandBuffer.hpp
 
     # vk pipelines
     vk/PipelineLayout.cpp
@@ -118,6 +130,7 @@ add_executable(wakaba
     vk/shader/VertexShader.hpp
     vk/shader/FragmentShader.cpp
     vk/shader/FragmentShader.hpp
+
     # vk buffers
     vk/buffer/Buffer.cpp
     vk/buffer/Buffer.hpp
@@ -152,6 +165,7 @@ add_executable(wakaba
     # donut
     donut/runtime/Value.hpp
     donut/runtime/Value.cpp
+
     # taiju
     taiju/Taiju.cpp
     taiju/Taiju.hpp
@@ -163,7 +177,7 @@ add_executable(wakaba
     taiju/shaders/vert/Triangle.hpp
     taiju/shaders/frag/Triangle.cpp
     taiju/shaders/frag/Triangle.hpp
-    vk/util/Bridge.cpp vk/util/Bridge.hpp vk/Device.cpp vk/Device.hpp vk/Swapchain.cpp vk/Swapchain.hpp vk/command/PrimaryCommandBuffer.cpp vk/command/PrimaryCommandBuffer.hpp vk/command/SecondaryCommandBuffer.cpp vk/command/SecondaryCommandBuffer.hpp)
+    )
 
 target_link_libraries(wakaba fmt::fmt)
 target_link_libraries(wakaba glm_static)
