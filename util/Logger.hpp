@@ -89,7 +89,7 @@ private:
 #if defined(__unix__)
     localtime_r(&t, &tm);
 #elif defined(WIN32)
-    localtime_s(&tm, &s);
+    localtime_s(&tm, &t);
 #else
     tm = *std::localtime(&t);
 #endif
