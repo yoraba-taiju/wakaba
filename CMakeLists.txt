@@ -58,8 +58,8 @@ function(compileShaders outVariable)
 endfunction()
 
 compileShaders(SHADER_HEADERS
-    taiju/shaders/vert/Triangle.vert
-    taiju/shaders/frag/Triangle.frag
+    taiju/shaders/Triangle.vert
+    taiju/shaders/Triangle.frag
     )
 
 add_executable(wakaba
@@ -174,11 +174,7 @@ add_executable(wakaba
     taiju/scene/Scene.hpp
     taiju/scenes/TriangleScene.cpp
     taiju/scenes/TriangleScene.hpp
-    taiju/shaders/vert/Triangle.cpp
-    taiju/shaders/vert/Triangle.hpp
-    taiju/shaders/frag/Triangle.cpp
-    taiju/shaders/frag/Triangle.hpp
-    )
+    taiju/shaders/Triangle.cpp taiju/shaders/Triangle.hpp)
 
 target_link_libraries(wakaba PRIVATE fmt::fmt)
 target_link_libraries(wakaba PRIVATE glm::glm_static)

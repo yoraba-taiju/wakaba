@@ -20,8 +20,7 @@
 #include "vk/builder/RenderPassBuilder.hpp"
 #include "vk/Util.hpp"
 #include "vk/RenderPass.hpp"
-#include "taiju/shaders/vert/Triangle.hpp"
-#include "taiju/shaders/frag/Triangle.hpp"
+#include "taiju/shaders/Triangle.hpp"
 #include "vk/buffer/VertexBuffer.hpp"
 #include "vk/command/CommandPool.hpp"
 #include "vk/command/PrimaryCommandBuffer.hpp"
@@ -95,14 +94,14 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   renderPassBuilder.addSubPass().addColor(0);
   renderPassBuilder.addAttachment(swapchain->vkSwapchainFormat().format).loadOpClear().storeOpStore();
 
-  auto vert = device->createShader<taiju::shaders::vert::Triangle>();
-  auto frag = device->createShader<taiju::shaders::frag::Triangle>();
+  auto vert = device->createShader<taiju::shaders::Triangle::Vert>();
+  auto frag = device->createShader<taiju::shaders::Triangle::Frag>();
   auto renderPass = renderPassBuilder.build();
   auto gfxPipeline = vk::GraphicsPipelineBuilder(device, renderPass)
                        .addVertexStage(vert)
                        .addFragmentStage(frag).build();
 
-  std::vector<taiju::shaders::vert::Triangle::Input> vertInputs = {
+  std::vector<taiju::shaders::Triangle::Vert::Input> vertInputs = {
       {
           .pos = {0.0f, -0.5f},
           .color = {1.0f, 0.0f, 0.0f},
@@ -117,7 +116,7 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
       },
   };
 
-  auto vertBuffer = vk::VertexBufferBuilder(device, vertInputs.size() * sizeof(taiju::shaders::vert::Triangle::Input)).build();
+  auto vertBuffer = vk::VertexBufferBuilder(device, vertInputs.size() * sizeof(taiju::shaders::Triangle::Vert::Input)).build();
   vertBuffer.update(bridge, vertInputs);
 
   std::vector<vk::Framebuffer> framebuffers;
