@@ -46,9 +46,11 @@ std::vector<uint8_t> readAllFromFile(std::string const &fileName) noexcept(false
     size_t const readed = fread(std::next(dat.data(), pos), 1, left, file);
 #endif
     if (readed < left && std::ferror(file) != 0) {
-      std::error_code err = std::make_error_code(static_cast<std::errc>(std::ferror(file)));
       fclose(file);
-      throw std::filesystem::filesystem_error("Error to read all contents from the file", fileName, err);
+      throw std::filesystem::filesystem_error(
+          "Error to read all contents from the file",
+          fileName,
+          std::make_error_code(static_cast<std::errc>(std::ferror(file))));
     }
     pos += readed;
   }
