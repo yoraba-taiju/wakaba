@@ -86,7 +86,13 @@ private:
     std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     std::time_t t = std::chrono::system_clock::to_time_t(now);
     std::tm tm{};
+#if defined(__unix__)
     localtime_r(&t, &tm);
+#elif defined(WIN32)
+    localtime_s(&tm, &s);
+#else
+    tm = *std::localtime(&t);
+#endif
     std::string time;
     time.resize(100);
     size_t const realSize = std::strftime(time.data(), time.size(), "%Y/%m/%d %H:%M:%S", &tm);
