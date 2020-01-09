@@ -85,11 +85,12 @@ private:
     std::string const msg = fmt::format(fmt, std::forward<Args>(args)...);
     std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     std::time_t t = std::chrono::system_clock::to_time_t(now);
-    std::tm tm;
-    localtime_s(&tm, &t);
-    std::stringstream ss;
-    ss << std::put_time(&tm, "%Y/%m/%d %H:%M:%S");
-    std::string const time = ss.str();
+    std::tm tm{};
+    localtime_r(&t, &tm);
+    std::string time;
+    time.resize(100);
+    size_t const realSize = std::strftime(time.data(), time.size(), "%Y/%m/%d %H:%M:%S", &tm);
+    time.resize(realSize);
     switch (level) {
       case Level::TRACE:
         fprintf(this->outputStandard_, "[%s TRACE] %s\n", time.c_str(), msg.c_str());
