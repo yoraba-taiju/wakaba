@@ -42,7 +42,7 @@ std::vector<uint8_t> readAllFromFile(std::string const &fileName) noexcept(false
     size_t const left = dat.size() - pos;
 #ifdef WIN32
     size_t const readed = fread_s(std::next(dat.data(), pos), dat.size() - pos, 1, left, file);
-#elif
+#else
     size_t const readed = fread(std::next(dat.data(), pos), 1, left, file);
 #endif
     if (readed < left && std::ferror(file) != 0) {
