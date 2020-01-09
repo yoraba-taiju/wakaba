@@ -23,7 +23,7 @@ std::vector<uint8_t> readAllFromFile(std::string const &fileName) noexcept(false
     throw std::filesystem::filesystem_error("File not found", fileName, err);
   }
   size_t const fileSize = static_cast<size_t>(std::filesystem::file_size(fileName));
-  FILE* file;
+  FILE* file = nullptr;
   errno_t  err = fopen_s(&file, fileName.c_str(), "rb");
   if (err) {
     std::error_code code = std::make_error_code(static_cast<std::errc>(err));
