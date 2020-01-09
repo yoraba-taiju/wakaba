@@ -202,13 +202,13 @@ GraphicsPipeline GraphicsPipelineBuilder::build() {
       .renderPass = renderPass_->vkRenderPass(),
       .subpass = 0,
       // unused fields
-      .basePipelineHandle = nullptr,
+      .basePipelineHandle = VK_NULL_HANDLE,
       .basePipelineIndex = -1,
   };
 
   // https://vulkan.lunarg.com/doc/view/1.0.33.0/linux/vkspec.chunked/ch09s02.html
   // 一個しか作らない。複数作ることもできる。
-  if(vkCreateGraphicsPipelines(device_->vkDevice(), nullptr, 1, &pipelineCreateInfo, nullptr, &obj) != VK_SUCCESS) {
+  if(vkCreateGraphicsPipelines(device_->vkDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &obj) != VK_SUCCESS) {
     throw std::runtime_error("Failed to create graphics pipeline.");
   }
 

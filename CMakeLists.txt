@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 project(wakaba)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if (UNIX)
   link_libraries(stdc++fs)
@@ -15,12 +15,13 @@ endif(WIN32)
 # Vulkan
 find_package(Vulkan REQUIRED)
 # GLFW
-set(GLFW_VULKAN_STATIC ON CACHE BOOL "" FORCE)
+set(GLFW_VULKAN_STATIC OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/glfw)
 # GLM
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(BUILD_STATIC_LIBS ON CACHE BOOL "" FORCE)
 set(GLM_TEST_ENABLE OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/glm)
 ###############################################################################
@@ -180,8 +181,9 @@ add_executable(wakaba
     )
 
 target_link_libraries(wakaba PRIVATE fmt::fmt)
-target_link_libraries(wakaba PRIVATE glm_static)
+target_link_libraries(wakaba PRIVATE glm::glm_static)
 target_link_libraries(wakaba PRIVATE glfw)
 target_link_libraries(wakaba PRIVATE Vulkan::Vulkan)
 # for pre-compiled shaders
 target_include_directories(wakaba PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(wakaba PRIVATE external/glm)

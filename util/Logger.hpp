@@ -10,7 +10,9 @@
 #include <cstdio>
 #include <ctime>
 #include <iomanip>
+#include <sstream>
 #include <fmt/format.h>
+#include <chrono>
 
 namespace util {
 
@@ -81,8 +83,10 @@ private:
       return;
     }
     std::string const msg = fmt::format(fmt, std::forward<Args>(args)...);
-    std::time_t t = std::time(nullptr);
-    std::tm tm = *std::localtime(&t);
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    std::tm tm;
+    localtime_s(&tm, &t);
     std::stringstream ss;
     ss << std::put_time(&tm, "%Y/%m/%d %H:%M:%S");
     std::string const time = ss.str();

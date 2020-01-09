@@ -5,6 +5,7 @@
  * Copyright 2019-, Kaede Fujisaki
  */
 
+#include <stdexcept>
 #include "Buffer.hpp"
 #include "DeviceMemory.hpp"
 #include "../Device.hpp"

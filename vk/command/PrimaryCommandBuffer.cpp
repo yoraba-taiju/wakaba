@@ -4,7 +4,7 @@
  *
  * Copyright 2019-, Kaede Fujisaki
  */
-
+#include <stdexcept>
 #include "PrimaryCommandBuffer.hpp"
 #include "SecondaryCommandBuffer.hpp"
 #include "../Framebuffer.hpp"
@@ -42,6 +42,7 @@ PrimaryCommandBuffer& PrimaryCommandBuffer::recordRenderPass(Framebuffer& frameb
     }
     vkCmdEndRenderPass(this->vkCommandBuffer());
   });
+  return *this;
 }
 
 PrimaryCommandBuffer& PrimaryCommandBuffer::recordRenderPass(Framebuffer& framebuffer, std::vector<SecondaryCommandBuffer>& cmds) {

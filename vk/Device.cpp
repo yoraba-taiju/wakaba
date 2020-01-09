@@ -96,7 +96,7 @@ std::shared_ptr<Swapchain> Device::createSwapchain() {
       .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
       .presentMode = presentModes[presentModeIdx.value()], //VK_PRESENT_MODE_FIFO_KHR
       .clipped = VK_TRUE,
-      .oldSwapchain = nullptr,
+      .oldSwapchain = VK_NULL_HANDLE,
   };
   std::vector<uint32_t> queueFamilyIndex;
   if (vulkan_->vkGraphicsQueueFamilyIndex() != vulkan_->vkPresentQueueFamilyIndex()) {

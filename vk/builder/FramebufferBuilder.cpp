@@ -6,6 +6,7 @@
  */
 
 #include <utility>
+#include <array>
 
 #include "FramebufferBuilder.hpp"
 #include "../Vulkan.hpp"
@@ -27,7 +28,7 @@ FramebufferBuilder::FramebufferBuilder(std::shared_ptr<Device> device, uint32_t 
 FramebufferBuilder& FramebufferBuilder::addColor(std::shared_ptr<Image> image, std::array<float, 4> const& value) {
   this->images_.emplace_back(std::move(image));
   this->clears_.emplace_back(VkClearValue{
-    .color = {value[0], value[1], value[2], value[3]},
+    .color = {value.at(0), value.at(1), value.at(2), value.at(3)},
   });
   return *this;
 }

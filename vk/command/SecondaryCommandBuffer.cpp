@@ -5,6 +5,7 @@
  * Copyright 2019-, Kaede Fujisaki
  */
 
+#include <stdexcept>
 #include "SecondaryCommandBuffer.hpp"
 #include "../Framebuffer.hpp"
 #include "../RenderPass.hpp"

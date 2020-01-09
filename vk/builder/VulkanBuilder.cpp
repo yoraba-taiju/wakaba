@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 #include <unordered_set>
+#include <optional>
+#include <cstdint>
 #include "../Util.hpp"
 #include "VulkanBuilder.hpp"
 #include "../Vulkan.hpp"
