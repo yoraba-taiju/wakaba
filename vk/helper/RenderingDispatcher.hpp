@@ -49,6 +49,7 @@ public:
   RenderingDispatcher(RenderingDispatcher&&) = default;
   RenderingDispatcher& operator=(RenderingDispatcher const&) = delete;
   RenderingDispatcher& operator=(RenderingDispatcher&&) = default;
+  ~RenderingDispatcher() noexcept;
 
 public:
   RenderingDispatcher& push(PrimaryCommandBuffer&& commandBuffer);

@@ -174,7 +174,8 @@ add_executable(wakaba
     taiju/scene/Scene.hpp
     taiju/scenes/TriangleScene.cpp
     taiju/scenes/TriangleScene.hpp
-    taiju/shaders/Triangle.cpp taiju/shaders/Triangle.hpp)
+    taiju/shaders/Triangle.cpp taiju/shaders/Triangle.hpp
+)
 
 target_link_libraries(wakaba PRIVATE fmt::fmt)
 target_link_libraries(wakaba PRIVATE glm::glm_static)

@@ -18,6 +18,20 @@ RenderingDispatcher::RenderingDispatcher(std::shared_ptr<Device> device, std::sh
 
 }
 
+RenderingDispatcher::~RenderingDispatcher() noexcept {
+  if (device_) {
+    for (auto& fence : this->fences_) {
+      vkDestroyFence(device_->vkDevice(), fence, nullptr);
+    }
+    for (auto& sem : this->imageAvailableSemaphores_) {
+      vkDestroySemaphore(device_->vkDevice(), sem, nullptr);
+    }
+    for (auto& sem : this->renderFinishedSemaphores_) {
+      vkDestroySemaphore(device_->vkDevice(), sem, nullptr);
+    }
+  }
+}
+
 void RenderingDispatcher::dispatch(std::function<void(RenderingDispatcher&, uint32_t)> const& f) {
   vkWaitForFences(device_->vkDevice(), 1, &fences_[(currentFrame_ + NumFrames - 1) % NumFrames], VK_TRUE, UINT64_MAX);
 
