@@ -32,19 +32,19 @@ RenderingDispatcher RenderingDispatcherBuilder::build() {
       .flags = VK_FENCE_CREATE_SIGNALED_BIT
   };
 
-  for (size_t i = 0; i < RenderingDispatcher::NumFrames; i++) {
-    if (vkCreateSemaphore(device_->vkDevice(), &semaphoreInfo, nullptr, &dispatcher.imageAvailableSemaphores_[i]) != VK_SUCCESS){
-      throw std::runtime_error(fmt::format("failed to create imageAvailableSemaphores_[{}] for a frame!", i));
+  size_t frameIdx = 0;
+  for (auto& sync : dispatcher.syncInfo_) {
+    if (vkCreateSemaphore(device_->vkDevice(), &semaphoreInfo, nullptr, &sync.imageAvailableSemaphore_) != VK_SUCCESS){
+      throw std::runtime_error(fmt::format("failed to create imageAvailableSemaphores[{}] for a frame!", frameIdx));
     }
-    if (vkCreateSemaphore(device_->vkDevice(), &semaphoreInfo, nullptr, &dispatcher.renderFinishedSemaphores_[i]) != VK_SUCCESS){
-      throw std::runtime_error(fmt::format("failed to create renderFinishedSemaphores_[{}] for a frame!", i));
+    if (vkCreateSemaphore(device_->vkDevice(), &semaphoreInfo, nullptr, &sync.renderFinishedSemaphore_) != VK_SUCCESS){
+      throw std::runtime_error(fmt::format("failed to create renderFinishedSemaphores_[{}] for a frame!", frameIdx));
     }
-    if (vkCreateFence(device_->vkDevice(), &fenceInfo, nullptr, &dispatcher.fences_[i]) != VK_SUCCESS) {
-      throw std::runtime_error(fmt::format("failed to create fences_[{}] for a frame!", i));
+    if (vkCreateFence(device_->vkDevice(), &fenceInfo, nullptr, &sync.fence_) != VK_SUCCESS) {
+      throw std::runtime_error(fmt::format("failed to create fences_[{}] for a frame!", frameIdx));
     }
+    frameIdx++;
   }
-  dispatcher.swapchainFences_.resize(swapchain_->images().size());
-  dispatcher.usedCommands_.resize(swapchain_->images().size());
   return std::move(dispatcher);
 }
 

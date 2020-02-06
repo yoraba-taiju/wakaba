@@ -20,22 +20,17 @@ RenderingDispatcher::RenderingDispatcher(std::shared_ptr<Device> device, std::sh
 
 RenderingDispatcher::~RenderingDispatcher() noexcept {
   if (device_) {
-    for (auto& fence : this->fences_) {
-      vkDestroyFence(device_->vkDevice(), fence, nullptr);
-    }
-    for (auto& sem : this->imageAvailableSemaphores_) {
-      vkDestroySemaphore(device_->vkDevice(), sem, nullptr);
-    }
-    for (auto& sem : this->renderFinishedSemaphores_) {
-      vkDestroySemaphore(device_->vkDevice(), sem, nullptr);
+    for (auto& sync : this->syncInfo_) {
+      vkDestroyFence(device_->vkDevice(), sync.fence_, nullptr);
+      vkDestroySemaphore(device_->vkDevice(), sync.imageAvailableSemaphore_, nullptr);
+      vkDestroySemaphore(device_->vkDevice(), sync.renderFinishedSemaphore_, nullptr);
     }
   }
 }
 
 void RenderingDispatcher::dispatch(std::function<void(RenderingDispatcher&, uint32_t)> const& f) {
-  vkWaitForFences(device_->vkDevice(), 1, &fences_[(currentFrame_ + NumFrames - 1) % NumFrames], VK_TRUE, UINT64_MAX);
-
-  VkResult result = vkAcquireNextImageKHR(device_->vkDevice(), swapchain_->vkSwapchain(), UINT64_MAX, imageAvailableSemaphores_[currentFrame_], VK_NULL_HANDLE, &currentImageIndex_);
+  FrameSyncInfo& sync = this->syncInfo_[currentFrame_];
+  VkResult result = vkAcquireNextImageKHR(device_->vkDevice(), swapchain_->vkSwapchain(), UINT64_MAX, sync.imageAvailableSemaphore_, VK_NULL_HANDLE, &sync.imageIndex_);
 
   // VK_SUBOPTIMAL_KHR A swapchain no longer matches the surface properties exactly,
   // but can still be used to present to the surface successfully.
@@ -44,20 +39,14 @@ void RenderingDispatcher::dispatch(std::function<void(RenderingDispatcher&, uint
     throw std::runtime_error("failed to acquire swap chain image!");
   }
 
-  if (swapchainFences_[currentImageIndex_] != VK_NULL_HANDLE) {
-    vkWaitForFences(device_->vkDevice(), 1, &swapchainFences_[currentImageIndex_], VK_TRUE, UINT64_MAX);
-  }
-  swapchainFences_[currentImageIndex_] = fences_[currentFrame_];
-
-  VkSemaphore waitSemaphores[] = {imageAvailableSemaphores_[currentFrame_]};
+  VkSemaphore waitSemaphores[] = {sync.imageAvailableSemaphore_};
   VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-  VkSemaphore signalSemaphores[] = {renderFinishedSemaphores_[currentFrame_]};
+  VkSemaphore signalSemaphores[] = {sync.renderFinishedSemaphore_};
 
-  f(*this, currentImageIndex_);
+  f(*this, sync.imageIndex_);
 
-  this->usedCommands_[currentImageIndex_] = std::move(this->commands_[currentFrame_]);
   std::vector<VkCommandBuffer> cmds;
-  for(CommandBuffer& cmd : this->usedCommands_[currentImageIndex_]) {
+  for(CommandBuffer& cmd : sync.commands_) {
     cmds.emplace_back(cmd.vkCommandBuffer());
   }
 
@@ -73,9 +62,9 @@ void RenderingDispatcher::dispatch(std::function<void(RenderingDispatcher&, uint
       .pSignalSemaphores = signalSemaphores,
   };
 
-  vkResetFences(device_->vkDevice(), 1, &swapchainFences_[currentImageIndex_]);
+  vkResetFences(device_->vkDevice(), 1, &sync.fence_);
 
-  if (vkQueueSubmit(device_->vkGraphicsQueue(), 1, &submitInfo, swapchainFences_[currentImageIndex_]) != VK_SUCCESS) {
+  if (vkQueueSubmit(device_->vkGraphicsQueue(), 1, &submitInfo, sync.fence_) != VK_SUCCESS) {
     throw std::runtime_error("failed to submit draw command buffer!");
   }
 
@@ -87,22 +76,24 @@ void RenderingDispatcher::dispatch(std::function<void(RenderingDispatcher&, uint
       .pWaitSemaphores = signalSemaphores,
       .swapchainCount = 1,
       .pSwapchains = swapChains,
-      .pImageIndices = &currentImageIndex_,
+      .pImageIndices = &sync.imageIndex_,
       .pResults = nullptr,
   };
 
   // https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/vkQueuePresentKHR.html
   result = vkQueuePresentKHR(device_->vkPresentQueue(), &presentInfo);
-  if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR){
+  if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
     throw std::runtime_error("failed to present image!");
   }
-  vkWaitForFences(device_->vkDevice(), 1, &fences_[currentFrame_], VK_TRUE, UINT64_MAX);
+
+  vkWaitForFences(device_->vkDevice(), 1, &sync.fence_, VK_TRUE, UINT64_MAX);
+  sync.commands_.clear();
 
   currentFrame_ = (currentFrame_ + 1) % NumFrames;
 }
 
 RenderingDispatcher &RenderingDispatcher::push(PrimaryCommandBuffer&& commandBuffer) {
-  this->commands_[currentFrame_].emplace_back(std::move(commandBuffer));
+  this->syncInfo_[currentFrame_].commands_.emplace_back(std::move(commandBuffer));
   return *this;
 }
 

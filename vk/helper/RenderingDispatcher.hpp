@@ -30,16 +30,16 @@ private:
   std::shared_ptr<Device> device_{};
   std::shared_ptr<Swapchain> swapchain_{};
 private:
-  std::array<VkFence, NumFrames> fences_{};
-  std::array<VkSemaphore , NumFrames> renderFinishedSemaphores_{};
-  std::array<VkSemaphore , NumFrames> imageAvailableSemaphores_{};
-  std::vector<VkFence> swapchainFences_{};
+  struct FrameSyncInfo final {
+    uint32_t imageIndex_{};
+    VkSemaphore renderFinishedSemaphore_{};
+    VkSemaphore imageAvailableSemaphore_{};
+    VkFence fence_{};
+    std::vector<PrimaryCommandBuffer> commands_{};
+  };
+  std::array<FrameSyncInfo, NumFrames> syncInfo_{};
 private:
   uint32_t currentFrame_{};
-  uint32_t currentImageIndex_{};
-  std::array<std::vector<PrimaryCommandBuffer>, NumFrames> commands_{};
-  std::vector<std::vector<PrimaryCommandBuffer>> usedCommands_{};
-
 private:
   explicit RenderingDispatcher(std::shared_ptr<Device> device, std::shared_ptr<Swapchain> swapchain);
 
