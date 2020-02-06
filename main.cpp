@@ -86,10 +86,6 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   auto swapchain = device->createSwapchain();
   auto bridge = vk::Bridge(device);
 
-  // FIXME: コンパイルが通るのを調べるだけ。
-  auto cmdPool = device->createCommandPool();
-  auto cmdBuffer = cmdPool->createPrimaryBuffer();
-
   auto renderPassBuilder = vk::RenderPassBuilder(device);
   renderPassBuilder.addSubPass().addColor(0);
   renderPassBuilder.addAttachment(swapchain->vkSwapchainFormat().format).loadOpClear().storeOpStore();
@@ -130,11 +126,10 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   auto dispatcher = vk::RenderingDispatcherBuilder(device, swapchain).build();
 
   do {
-    auto subBuffer = cmdPool->createSecondaryBuffer();
-    vk::PrimaryCommandBuffer cmd = cmdPool->createPrimaryBuffer();
-    std::vector<vk::SecondaryCommandBuffer> subCmds;
-    subCmds.emplace_back(std::move(subBuffer));
-    dispatcher.dispatch([&](vk::RenderingDispatcher&, uint32_t frameIndex) -> void{
+    dispatcher.dispatch([&](std::shared_ptr<vk::CommandPool> const& cmdPool, uint32_t frameIndex) -> void{
+      vk::PrimaryCommandBuffer cmd = cmdPool->createPrimaryBuffer();
+      std::vector<vk::SecondaryCommandBuffer> subCmds;
+      subCmds.emplace_back(cmdPool->createSecondaryBuffer());
       subCmds[0].record(framebuffers[frameIndex], [&]() -> void {
         subCmds[0].bindPipeline(gfxPipeline);
         subCmds[0].bindVertexBuffer(0, vertBuffer.buffer());
@@ -143,7 +138,10 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
 
       //
       cmd.recordRenderPass(framebuffers[frameIndex], subCmds);
-      dispatcher.push(std::move(cmd));
+      cmd.recordRenderPass(framebuffers[frameIndex], subCmds);
+      cmd.recordRenderPass(framebuffers[frameIndex], subCmds);
+      dispatcher.submit(std::move(subCmds[0]));
+      dispatcher.submit(std::move(cmd));
     });
 
     // Swap buffers

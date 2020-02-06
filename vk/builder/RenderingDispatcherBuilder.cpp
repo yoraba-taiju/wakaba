@@ -43,6 +43,7 @@ RenderingDispatcher RenderingDispatcherBuilder::build() {
     if (vkCreateFence(device_->vkDevice(), &fenceInfo, nullptr, &sync.fence_) != VK_SUCCESS) {
       throw std::runtime_error(fmt::format("failed to create fences_[{}] for a frame!", frameIdx));
     }
+    sync.commandPool_ = device_->createCommandPool();
     frameIdx++;
   }
   return std::move(dispatcher);

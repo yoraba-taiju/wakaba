@@ -14,6 +14,7 @@
 #include <array>
 #include <vector>
 #include "../command/PrimaryCommandBuffer.hpp"
+#include "../command/SecondaryCommandBuffer.hpp"
 
 namespace vk {
 
@@ -35,7 +36,13 @@ private:
     VkSemaphore renderFinishedSemaphore_{};
     VkSemaphore imageAvailableSemaphore_{};
     VkFence fence_{};
-    std::vector<PrimaryCommandBuffer> commands_{};
+    std::shared_ptr<CommandPool> commandPool_{};
+    std::vector<PrimaryCommandBuffer> primaryBuffers_{};
+    std::vector<SecondaryCommandBuffer> secondaryBuffers_{};
+    void clear() noexcept {
+      primaryBuffers_.clear();
+      secondaryBuffers_.clear();
+    }
   };
   std::array<FrameSyncInfo, NumFrames> syncInfo_{};
 private:
@@ -52,10 +59,11 @@ public:
   ~RenderingDispatcher() noexcept;
 
 public:
-  RenderingDispatcher& push(PrimaryCommandBuffer&& commandBuffer);
+  RenderingDispatcher& submit(PrimaryCommandBuffer&& commandBuffer);
+  RenderingDispatcher& submit(SecondaryCommandBuffer&& commandBuffer);
 
 public:
-  void dispatch(std::function<void(RenderingDispatcher&, uint32_t)> const& f);
+  void dispatch(std::function<void(std::shared_ptr<CommandPool> const&, uint32_t)> const& f);
 };
 
 }

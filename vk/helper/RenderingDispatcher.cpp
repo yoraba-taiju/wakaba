@@ -8,6 +8,7 @@
 #include "RenderingDispatcher.hpp"
 #include "../Vulkan.hpp"
 #include "../Swapchain.hpp"
+#include "../command/CommandPool.hpp"
 
 namespace vk {
 
@@ -21,6 +22,10 @@ RenderingDispatcher::RenderingDispatcher(std::shared_ptr<Device> device, std::sh
 RenderingDispatcher::~RenderingDispatcher() noexcept {
   if (device_) {
     for (auto& sync : this->syncInfo_) {
+      // wait for sync.
+      vkWaitForFences(device_->vkDevice(), 1, &sync.fence_, VK_TRUE, UINT64_MAX);
+      sync.clear();
+      //
       vkDestroyFence(device_->vkDevice(), sync.fence_, nullptr);
       vkDestroySemaphore(device_->vkDevice(), sync.imageAvailableSemaphore_, nullptr);
       vkDestroySemaphore(device_->vkDevice(), sync.renderFinishedSemaphore_, nullptr);
@@ -28,7 +33,7 @@ RenderingDispatcher::~RenderingDispatcher() noexcept {
   }
 }
 
-void RenderingDispatcher::dispatch(std::function<void(RenderingDispatcher&, uint32_t)> const& f) {
+void RenderingDispatcher::dispatch(std::function<void(std::shared_ptr<CommandPool> const&, uint32_t)> const& f) {
   FrameSyncInfo& sync = this->syncInfo_[currentFrame_];
   VkResult result = vkAcquireNextImageKHR(device_->vkDevice(), swapchain_->vkSwapchain(), UINT64_MAX, sync.imageAvailableSemaphore_, VK_NULL_HANDLE, &sync.imageIndex_);
 
@@ -39,14 +44,18 @@ void RenderingDispatcher::dispatch(std::function<void(RenderingDispatcher&, uint
     throw std::runtime_error("failed to acquire swap chain image!");
   }
 
+  // Wait for finishing rendering.
+  vkWaitForFences(device_->vkDevice(), 1, &sync.fence_, VK_TRUE, UINT64_MAX);
+  sync.clear();
+
   VkSemaphore waitSemaphores[] = {sync.imageAvailableSemaphore_};
   VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
   VkSemaphore signalSemaphores[] = {sync.renderFinishedSemaphore_};
 
-  f(*this, sync.imageIndex_);
+  f(sync.commandPool_, sync.imageIndex_);
 
   std::vector<VkCommandBuffer> cmds;
-  for(CommandBuffer& cmd : sync.commands_) {
+  for(CommandBuffer& cmd : sync.primaryBuffers_) {
     cmds.emplace_back(cmd.vkCommandBuffer());
   }
 
@@ -86,14 +95,16 @@ void RenderingDispatcher::dispatch(std::function<void(RenderingDispatcher&, uint
     throw std::runtime_error("failed to present image!");
   }
 
-  vkWaitForFences(device_->vkDevice(), 1, &sync.fence_, VK_TRUE, UINT64_MAX);
-  sync.commands_.clear();
-
   currentFrame_ = (currentFrame_ + 1) % NumFrames;
 }
 
-RenderingDispatcher &RenderingDispatcher::push(PrimaryCommandBuffer&& commandBuffer) {
-  this->syncInfo_[currentFrame_].commands_.emplace_back(std::move(commandBuffer));
+RenderingDispatcher& RenderingDispatcher::submit(PrimaryCommandBuffer&& commandBuffer) {
+  this->syncInfo_[currentFrame_].primaryBuffers_.emplace_back(std::move(commandBuffer));
+  return *this;
+}
+
+RenderingDispatcher& RenderingDispatcher::submit(SecondaryCommandBuffer&& commandBuffer) {
+  this->syncInfo_[currentFrame_].secondaryBuffers_.emplace_back(std::move(commandBuffer));
   return *this;
 }
 
