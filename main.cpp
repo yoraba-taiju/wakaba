@@ -126,7 +126,7 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
   auto dispatcher = vk::RenderingDispatcherBuilder(device, swapchain).build();
 
   do {
-    dispatcher.dispatch([&](std::shared_ptr<vk::CommandPool> const& cmdPool, uint32_t frameIndex) -> void{
+    dispatcher.dispatch([&](std::shared_ptr<vk::CommandPool> const& cmdPool, uint32_t frameIndex) -> void {
       vk::PrimaryCommandBuffer cmd = cmdPool->createPrimaryBuffer();
       std::vector<vk::SecondaryCommandBuffer> subCmds;
       subCmds.emplace_back(cmdPool->createSecondaryBuffer());
@@ -137,8 +137,6 @@ static int _mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulka
       });
 
       //
-      cmd.recordRenderPass(framebuffers[frameIndex], subCmds);
-      cmd.recordRenderPass(framebuffers[frameIndex], subCmds);
       cmd.recordRenderPass(framebuffers[frameIndex], subCmds);
       dispatcher.submit(std::move(subCmds[0]));
       dispatcher.submit(std::move(cmd));
