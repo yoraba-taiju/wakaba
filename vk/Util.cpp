@@ -17,7 +17,7 @@ std::vector<std::string> enumerateRequiredInstanceExtensions() {
   for (uint32_t i = 0; i < numExtensions; ++i) {
     res.emplace_back(extensions[i]);
   }
-  return std::move(res);
+  return res;
 }
 
 std::vector<VkLayerProperties> enumerateInstanceLayerProperties() {
@@ -34,7 +34,7 @@ std::vector<VkLayerProperties> enumerateInstanceLayerProperties() {
   if (result != VK_SUCCESS) {
     return std::vector<VkLayerProperties>();
   }
-  return std::move(props);
+  return props;
 }
 
 std::vector<VkPhysicalDevice> enumeratePhysicalDevices(VkInstance instance) {
@@ -49,7 +49,7 @@ std::vector<VkPhysicalDevice> enumeratePhysicalDevices(VkInstance instance) {
   if (result != VK_SUCCESS) {
     return std::vector<VkPhysicalDevice>();
   }
-  return std::move(devices);
+  return devices;
 }
 
 std::vector<VkQueueFamilyProperties> getPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice) {
@@ -58,7 +58,7 @@ std::vector<VkQueueFamilyProperties> getPhysicalDeviceQueueFamilyProperties(VkPh
   std::vector<VkQueueFamilyProperties> props;
   props.resize(numProps);
   vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &numProps, props.data());
-  return std::move(props);
+  return props;
 }
 
 std::vector<VkSurfaceFormatKHR> getPhysicalDeviceSurfaceFormats(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) {
@@ -67,7 +67,7 @@ std::vector<VkSurfaceFormatKHR> getPhysicalDeviceSurfaceFormats(VkPhysicalDevice
   vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &numSurfaceFormats, nullptr);
   surfaceFormats.resize(numSurfaceFormats);
   vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &numSurfaceFormats, surfaceFormats.data());
-  return std::move(surfaceFormats);
+  return surfaceFormats;
 }
 
 std::vector<VkPresentModeKHR>
@@ -77,7 +77,7 @@ getPhysicalDeviceSurfacePresentModes(VkPhysicalDevice physicalDevice, VkSurfaceK
   vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &numPresentModes, nullptr);
   presentModes.resize(numPresentModes);
   vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &numPresentModes, presentModes.data());
-  return std::move(presentModes);
+  return presentModes;
 }
 
 std::vector<VkImage> getSwapchainImages(VkDevice device, VkSwapchainKHR swapchain) {
@@ -86,7 +86,7 @@ std::vector<VkImage> getSwapchainImages(VkDevice device, VkSwapchainKHR swapchai
   vkGetSwapchainImagesKHR(device, swapchain, &numImages, nullptr);
   images.resize(numImages);
   vkGetSwapchainImagesKHR(device, swapchain, &numImages, images.data());
-  return std::move(images);
+  return images;
 }
 
 std::string physicalDeviceTypeToString(VkPhysicalDeviceType const type) {

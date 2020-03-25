@@ -46,7 +46,7 @@ RenderingDispatcher RenderingDispatcherBuilder::build() {
     sync.commandPool_ = device_->createCommandPool();
     frameIdx++;
   }
-  return std::move(dispatcher);
+  return dispatcher;
 }
 
 }

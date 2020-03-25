@@ -34,7 +34,7 @@ std::shared_ptr<CommandPool> Bridge::commandPool() {
   }
   std::shared_ptr<CommandPool> pool = device_->createCommandPool();
   this->commandPools_.emplace(id, pool);
-  return std::move(pool);
+  return pool;
 }
 
 std::unique_ptr<Buffer, Bridge::StagingBufferReleaser> Bridge::stagingBuffer() {

@@ -55,7 +55,7 @@ std::vector<uint8_t> readAllFromFile(std::string const &fileName) noexcept(false
     pos += readed;
   }
   fclose(file);
-  return std::move(dat);
+  return dat;
 }
 
 }
