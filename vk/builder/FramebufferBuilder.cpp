@@ -25,19 +25,19 @@ FramebufferBuilder::FramebufferBuilder(std::shared_ptr<Device> device, uint32_t 
 
 }
 
-FramebufferBuilder& FramebufferBuilder::addColor(std::shared_ptr<Image> image, std::array<float, 4> const& value) {
+FramebufferBuilder& FramebufferBuilder::addColor(std::shared_ptr<Image> image, std::array<float, 4> const& clearValue) {
   this->images_.emplace_back(std::move(image));
   this->clears_.emplace_back(VkClearValue{
-    .color = {value.at(0), value.at(1), value.at(2), value.at(3)},
+    .color = {clearValue.at(0), clearValue.at(1), clearValue.at(2), clearValue.at(3)},
   });
   return *this;
 }
 
-FramebufferBuilder &FramebufferBuilder::addDepth(std::shared_ptr<Image> image, float const value) {
+FramebufferBuilder &FramebufferBuilder::addDepth(std::shared_ptr<Image> image, float const clearValue) {
   this->images_.emplace_back(std::move(image));
   this->clears_.emplace_back(VkClearValue{
       .depthStencil = {
-          .depth = value,
+          .depth = clearValue,
       },
   });
   return *this;

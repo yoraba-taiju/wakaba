@@ -37,8 +37,8 @@ public:
 
 public:
   explicit FramebufferBuilder(std::shared_ptr<Device> device, uint32_t width, uint32_t height, std::shared_ptr<RenderPass> renderPass);
-  FramebufferBuilder& addColor(std::shared_ptr<Image> image, std::array<float, 4> const& value);
-  FramebufferBuilder& addDepth(std::shared_ptr<Image> image, float value);
+  FramebufferBuilder& addColor(std::shared_ptr<Image> image, std::array<float, 4> const& clearValue);
+  FramebufferBuilder& addDepth(std::shared_ptr<Image> image, float clearValue);
   FramebufferBuilder& addStencil(std::shared_ptr<Image> image, uint32_t value);
 
   Framebuffer build();
