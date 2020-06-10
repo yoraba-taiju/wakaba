@@ -175,7 +175,7 @@ add_executable(wakaba
     taiju/scenes/TriangleScene.cpp
     taiju/scenes/TriangleScene.hpp
     taiju/shaders/Triangle.cpp taiju/shaders/Triangle.hpp
-)
+    donut/parser/Parser.cpp donut/parser/Parser.hpp donut/ast/Node.cpp donut/ast/Node.hpp donut/ast/Position.cpp donut/ast/Position.hpp)
 
 target_link_libraries(wakaba PRIVATE fmt::fmt)
 target_link_libraries(wakaba PRIVATE glm::glm_static)

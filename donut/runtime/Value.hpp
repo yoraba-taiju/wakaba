@@ -89,14 +89,14 @@ private:
 class ShiftedClock final : Clock {
 public:
   explicit ShiftedClock(std::shared_ptr<Clock> parent, SubjectiveTime const delta)
-      : parent_(std::move(parent)), SubjectiveTime(delta) {
+      : parent_(std::move(parent)), delta_(delta) {
   }
 
   ~ShiftedClock() override = default;
 
 public:
-  [[nodiscard]] SubjectiveTime now() const override {
-    return this->parent_->now() + this->delta_;
+  [[nodiscard]] SubjectiveTime now() const {
+    return this->parent_->current();// FIXME + this->delta_;
   }
 
 private:
@@ -135,8 +135,8 @@ private:
     return v;
   }
 
-  std::optional<Type const &> const &get() const {
-    return this->peek(this->clock_.now());
+  std::optional<Type const &> const& get() const {
+    return this->peek(this->clock_.current());
   }
 
   std::optional<Type const &> peek(SubjectiveTime const t) const {
