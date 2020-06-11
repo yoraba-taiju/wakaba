@@ -6,20 +6,20 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
         fetch-depth: '0'
-    - name: Download vulkan SDK
+    - name: Install Vulkan SDK
       run: |
-        cd ../
-        wget https://vulkan.lunarg.com/sdk/home#sdk/downloadConfirm/latest/linux/vulkan-sdk.tar.gz
-        tar xvf vulkan-sdk.tar.gz
+        wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+        sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.141-bionic.list http://packages.lunarg.com/vulkan/1.2.141/lunarg-vulkan-1.2.141-bionic.list
+        sudo apt update
+        sudo apt install vulkan-sdk
     - name: Build
       run: |
-        source ../vulkan-sdk/setup-env.sh
         mkdir build
         cmake -G 'Ninja' -S . -B build
         ninja
