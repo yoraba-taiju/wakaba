@@ -14,12 +14,17 @@ jobs:
         fetch-depth: '0'
     - name: Install Vulkan SDK
       run: |
+        # 
         wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
         sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.141-bionic.list http://packages.lunarg.com/vulkan/1.2.141/lunarg-vulkan-1.2.141-bionic.list
         sudo apt update
         sudo apt install vulkan-sdk
-    - name: Build
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+    - name: Configure
       run: |
         mkdir build
         cmake -G 'Ninja' -S . -B build
+    - name: Build
+      run: |
         ninja
