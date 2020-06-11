@@ -21,6 +21,9 @@ jobs:
         sudo apt install vulkan-sdk
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
+    - name: Install other dependencies
+      run: |
+        apt install libxinerama-dev
     - name: Configure
       run: |
         mkdir build
