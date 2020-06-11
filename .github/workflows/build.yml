@@ -1,0 +1,25 @@
+name: Build
+
+on:
+  push:
+    branches: '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+        fetch-depth: '0'
+    - name: Download vulkan SDK
+      run: |
+        cd ../
+        wget https://vulkan.lunarg.com/sdk/home#sdk/downloadConfirm/latest/linux/vulkan-sdk.tar.gz
+        tar xvf vulkan-sdk.tar.gz
+    - name: Build
+      run: |
+        source ../vulkan-sdk/setup-env.sh
+        mkdir build
+        cmake -G 'Ninja' -S . -B build
+        ninja
