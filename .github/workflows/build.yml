@@ -34,4 +34,4 @@ jobs:
         cmake -G 'Ninja' -S . -B build
     - name: Build
       run: |
-        ninja
+        ninja -C build
