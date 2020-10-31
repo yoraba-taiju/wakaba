@@ -69,8 +69,6 @@ compileShaders(SHADER_HEADERS
 
 add_library(wakaba STATIC
     ${SHADER_HEADERS}
-    taiju/main.cpp
-    taiju/main.hpp
 
     # helper
     util/Logger.cpp
@@ -205,10 +203,11 @@ target_link_libraries(wakaba PUBLIC Vulkan::Vulkan)
 target_include_directories(wakaba PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(wakaba PUBLIC external/glm)
 
+# entry point
 add_executable(wakaba_main main.cpp)
 target_link_libraries(wakaba_main PRIVATE wakaba)
 
-# test
+# unit tests
 add_executable(test_main
     donut/parser/StreamTest.cpp
 )
