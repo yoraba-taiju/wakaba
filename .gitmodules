@@ -12,4 +12,4 @@
 	url = git@github.com:fmtlib/fmt.git
 [submodule "external/gtest"]
 	path = external/gtest
-	url = https://github.com/google/googletest.git
+	url = git@github.com:google/googletest.git

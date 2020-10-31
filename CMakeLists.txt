@@ -67,9 +67,10 @@ compileShaders(SHADER_HEADERS
     taiju/shaders/Triangle.frag
     )
 
-add_executable(wakaba
+add_library(wakaba STATIC
     ${SHADER_HEADERS}
-    main.cpp
+    taiju/main.cpp
+    taiju/main.hpp
 
     # helper
     util/Logger.cpp
@@ -192,28 +193,23 @@ add_executable(wakaba
     donut/ast/Node.hpp
     donut/ast/Position.cpp
     donut/ast/Position.hpp
-    donut/parser/StreamTest.cpp)
+)
 
-target_link_libraries(wakaba PRIVATE fmt::fmt)
-target_link_libraries(wakaba PRIVATE glm::glm_static)
-target_link_libraries(wakaba PRIVATE glfw)
-target_link_libraries(wakaba PRIVATE Vulkan::Vulkan)
+target_link_libraries(wakaba PUBLIC fmt::fmt)
+target_link_libraries(wakaba PUBLIC glm::glm_static)
+target_link_libraries(wakaba PUBLIC glfw)
+target_link_libraries(wakaba PUBLIC Vulkan::Vulkan)
 # for pre-compiled shaders
-target_include_directories(wakaba PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(wakaba PRIVATE external/glm)
+target_include_directories(wakaba PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(wakaba PUBLIC external/glm)
+
+add_executable(wakaba_main main.cpp)
+target_link_libraries(wakaba_main PRIVATE wakaba)
 
 # test
-add_executable(test
-    donut/parser/Stream.cpp
-    donut/parser/Stream.hpp
+add_executable(test_main
     donut/parser/StreamTest.cpp
-    )
-target_link_libraries(test PRIVATE gtest)
-target_link_libraries(test PRIVATE gtest_main)
-target_link_libraries(test PRIVATE fmt::fmt)
-target_link_libraries(test PRIVATE glm::glm_static)
-target_link_libraries(test PRIVATE glfw)
-target_link_libraries(test PRIVATE Vulkan::Vulkan)
-# for pre-compiled shaders
-target_include_directories(test PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(test PRIVATE external/glm)
+)
+target_link_libraries(test_main PRIVATE wakaba)
+target_link_libraries(test_main PRIVATE gtest)
+target_link_libraries(test_main PRIVATE gtest_main)
