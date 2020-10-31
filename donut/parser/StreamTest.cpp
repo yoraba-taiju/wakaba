@@ -11,7 +11,8 @@
 namespace donut {
 
 TEST(DonutStreamTest, StreamTest) {
-  auto stream = Stream::open("main.cpp");
+  auto stream = Stream::open("resources/test/simple.txt");
+  EXPECT_EQ(stream.content(), "OK");
 }
 
 }

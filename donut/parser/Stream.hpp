@@ -27,6 +27,10 @@ private:
   std::string filename_;
   std::string buff_;
   std::size_t pos_;
+public:
+  [[nodiscard]] std::string const& content() const {
+    return this->buff_;
+  }
 };
 
 }
