@@ -2,7 +2,8 @@ name: Build
 
 on:
   push:
-    branches: '**'
+    branches:
+      - 'magistra'
 
 jobs:
   build:
@@ -34,4 +35,6 @@ jobs:
         cmake -G 'Ninja' -S . -B build
     - name: Build
       run: |
-        ninja -C build
+        ninja -C build test_main wakaba_main
+    - name: Run unit tests
+      run: build/test_main
