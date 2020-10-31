@@ -195,6 +195,8 @@ add_library(wakaba STATIC
     donut/ast/Position.hpp
 )
 
+# Mario Badr | Creating a Header-Only Library with CMake
+# http://mariobadr.com/creating-a-header-only-library-with-cmake.html
 target_link_libraries(wakaba PUBLIC fmt::fmt)
 target_link_libraries(wakaba PUBLIC glm::glm_static)
 target_link_libraries(wakaba PUBLIC glfw)
