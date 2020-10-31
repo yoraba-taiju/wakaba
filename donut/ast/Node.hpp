@@ -8,7 +8,7 @@
 #pragma once
 #include "./Position.hpp"
 
-namespace donut::ast {
+namespace donut {
 
 class Node {
 protected:

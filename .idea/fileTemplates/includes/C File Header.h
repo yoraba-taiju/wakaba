@@ -3,6 +3,6 @@
 /**
  * YorabaTaiju/Wakaba
  *
- * Copyright 2019-, Kaede Fujisaki
+ * Copyright ${YEAR}-, Kaede Fujisaki
  */
 #end

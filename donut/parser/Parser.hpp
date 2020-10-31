@@ -7,7 +7,7 @@
 
 #pragma once
 
-namespace donut::parser {
+namespace donut {
 
 class Parser final {
 public:

@@ -8,7 +8,7 @@
 
 #include <string>
 
-namespace donut::ast {
+namespace donut {
 
 class Position final {
 public:

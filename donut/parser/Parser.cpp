@@ -6,10 +6,14 @@
  */
 
 #include "Parser.hpp"
-namespace donut::parser {
+namespace donut {
 
 Parser::Parser()
 {
+}
+
+void Parser::parseFile() {
+
 }
 
 }

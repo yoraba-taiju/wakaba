@@ -30,6 +30,11 @@ set(FMT_TEST OFF CACHE BOOL "" FORCE)
 set(FMT_FUZZ OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/fmt)
 ###############################################################################
+# fmt
+set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+add_subdirectory(external/gtest)
+###############################################################################
 
 # [CMake] Build rule for specific file extension
 # https://cmake.org/pipermail/cmake/2010-June/037733.html
@@ -175,7 +180,19 @@ add_executable(wakaba
     taiju/scenes/TriangleScene.cpp
     taiju/scenes/TriangleScene.hpp
     taiju/shaders/Triangle.cpp taiju/shaders/Triangle.hpp
-    donut/parser/Parser.cpp donut/parser/Parser.hpp donut/ast/Node.cpp donut/ast/Node.hpp donut/ast/Position.cpp donut/ast/Position.hpp)
+
+    # donut - parser
+    donut/parser/Parser.cpp
+    donut/parser/Parser.hpp
+    donut/parser/Stream.cpp
+    donut/parser/Stream.hpp
+
+    # donut - ast
+    donut/ast/Node.cpp
+    donut/ast/Node.hpp
+    donut/ast/Position.cpp
+    donut/ast/Position.hpp
+    donut/parser/StreamTest.cpp)
 
 target_link_libraries(wakaba PRIVATE fmt::fmt)
 target_link_libraries(wakaba PRIVATE glm::glm_static)
@@ -184,3 +201,19 @@ target_link_libraries(wakaba PRIVATE Vulkan::Vulkan)
 # for pre-compiled shaders
 target_include_directories(wakaba PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(wakaba PRIVATE external/glm)
+
+# test
+add_executable(test
+    donut/parser/Stream.cpp
+    donut/parser/Stream.hpp
+    donut/parser/StreamTest.cpp
+    )
+target_link_libraries(test PRIVATE gtest)
+target_link_libraries(test PRIVATE gtest_main)
+target_link_libraries(test PRIVATE fmt::fmt)
+target_link_libraries(test PRIVATE glm::glm_static)
+target_link_libraries(test PRIVATE glfw)
+target_link_libraries(test PRIVATE Vulkan::Vulkan)
+# for pre-compiled shaders
+target_include_directories(test PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(test PRIVATE external/glm)
