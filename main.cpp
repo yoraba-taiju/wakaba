@@ -30,15 +30,15 @@
 #include "vk/Swapchain.hpp"
 #include "vk/helper/Bridge.hpp"
 
-static int __main(util::Logger& log);
-static int __mainLoop(util::Logger& log, const std::shared_ptr<vk::Vulkan>& vulkan);
+static int main_impl(util::Logger& log);
+static int mainLoop(util::Logger& log, const std::shared_ptr<vk::Vulkan>& vulkan);
 
 int main() {
   util::Logger log;
 
   log.setLevel(util::Logger::DEBUG);
   try {
-    return __main(log);
+    return main_impl(log);
   } catch (std::exception &e) {
     fprintf(stderr, "Unhandled exception: \"%s\"\n", e.what());
     return -255;
@@ -48,7 +48,7 @@ int main() {
   }
 }
 
-static int __main(util::Logger& log) {
+static int main_impl(util::Logger& log) {
   // Initialise GLFW
   if (!glfwInit()) {
     log.fatal("Failed to initialize GLFW");
@@ -65,7 +65,7 @@ static int __main(util::Logger& log) {
   {
     std::shared_ptr<vk::Vulkan> vulkan = vk::VulkanBuilder(log, "YorabaTaiju", 1920, 1080).build();
     try {
-      __mainLoop(log, vulkan);
+      mainLoop(log, vulkan);
     } catch (std::exception& e) {
       log.error(e.what());
     } catch(...) {
@@ -77,7 +77,7 @@ static int __main(util::Logger& log) {
   return 0;
 }
 
-static int __mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulkan) {
+static int mainLoop(util::Logger& log, std::shared_ptr<vk::Vulkan> const& vulkan) {
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(vulkan->window(), GLFW_STICKY_KEYS, GL_TRUE);
 
