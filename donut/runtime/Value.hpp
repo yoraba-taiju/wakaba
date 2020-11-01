@@ -13,9 +13,11 @@
 #include <utility>
 #include <algorithm>
 
-namespace donut::runtime {
+namespace donut {
 
 class Clock;
+
+template <typename Type, size_t length> class Value;
 
 class SubjectiveTime final {
   friend class Clock;
@@ -82,6 +84,11 @@ public:
     return this->subjectiveTime_;
   }
 
+  template<typename T, size_t length>
+  [[nodiscard]] Value<T, length> newValue() {
+    return Value<T, length>(*this);
+  }
+
 private:
   SubjectiveTime subjectiveTime_{};
 };
@@ -107,36 +114,35 @@ private:
 template<typename Type, std::size_t length>
 class Value final {
 public:
-  Value() = default;
-
+  Value() = delete;
   Value(Value const&) = delete;
   Value& operator=(Value const&) = delete;
+  explicit Value(Clock& clock)
+  :clock_(clock)
+  {
+  }
 
-  explicit Value(Clock* clock) : clock_(clock) {
-
+public:
+  Value<Type, length>& operator=(Type&& v) {
+    this->set(std::forward<Type>(v));
+    return *this;
+  }
+  std::optional<Type const &> const& get() const {
+    return this->peek(this->clock_.current());
   }
 
 private:
-  Value& operator=(Type const &v) {
-    return this->set(v);
-  }
-
-  Type& set(Type const &v) {
+  Value<Type, length>& set(Type&& v) {
     SubjectiveTime const t = clock_.current();
     std::tuple<SubjectiveTime, Type> &last = values_.back();
     if (std::get<0>(last) == t) {
-      std::get<1>(last) = v;
+      std::get<1>(last) = std::forward<Type>(v);
     } else {
-      typename std::array<std::tuple<SubjectiveTime, Type>, length>::const_iterator it = this->findReadEntry();
+      typename std::array<std::tuple<SubjectiveTime, Type>, length>::const_iterator it = this->findReadEntry(std::get<0>(last));
       if (it == this->values_.cend()) {
       }
-      return std::get<1>(*it);
     }
-    return v;
-  }
-
-  std::optional<Type const &> const& get() const {
-    return this->peek(this->clock_.current());
+    return *this;
   }
 
   std::optional<Type const &> peek(SubjectiveTime const t) const {
@@ -156,18 +162,24 @@ private:
     bool operator()(std::tuple<SubjectiveTime, Type> const &a, std::tuple<SubjectiveTime, Type> const &b) {
       return std::get<0>(a) < std::get<0>(b);
     }
+    bool operator()(SubjectiveTime const &a, std::tuple<SubjectiveTime, Type> const &b) {
+      return a < std::get<0>(b);
+    }
+    bool operator()(std::tuple<SubjectiveTime, Type> const &a, SubjectiveTime const &b) {
+      return std::get<0>(a) < b;
+    }
   };
 
   typename std::array<std::tuple<SubjectiveTime, Type>, length>::const_iterator findReadEntry(SubjectiveTime const &t) const {
-    std::upper_bound(values_.cbegin(), values_.cend(), ValueEntryLessComparator());
+    return std::upper_bound(values_.cbegin(), values_.cend(), t, ValueEntryLessComparator());
   }
 
   typename std::array<std::tuple<SubjectiveTime, Type>, length>::iterator findWriteEntry(SubjectiveTime const &t) {
-    return std::lower_bound(values_.begin(), values_.end(), ValueEntryLessComparator());
+    return std::lower_bound(values_.begin(), values_.end(), t, ValueEntryLessComparator());
   }
 
 private:
-  Clock clock_;
+  Clock& clock_;
   std::array<std::tuple<SubjectiveTime, Type>, length> values_;
 };
 

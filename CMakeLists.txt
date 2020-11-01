@@ -210,6 +210,7 @@ target_link_libraries(wakaba_main PRIVATE wakaba)
 # unit tests
 add_executable(test_main
     donut/parser/StreamTest.cpp
+    donut/runtime/ValueTest.cpp
 )
 target_link_libraries(test_main PRIVATE wakaba)
 target_link_libraries(test_main PRIVATE gtest)

@@ -6,7 +6,7 @@
  */
 
 #include "Value.hpp"
-namespace donut::runtime {
+namespace donut {
 
 Clock::~Clock() = default;
 
