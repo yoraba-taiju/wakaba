@@ -168,6 +168,7 @@ add_library(wakaba STATIC
     vk/builder/RenderingDispatcherBuilder.hpp
 
     # donut
+    donut/runtime/Optional.hpp
     donut/runtime/Value.hpp
     donut/runtime/Value.cpp
 
@@ -211,6 +212,7 @@ target_link_libraries(wakaba_main PRIVATE wakaba)
 add_executable(test_main
     donut/parser/StreamTest.cpp
     donut/runtime/ValueTest.cpp
+    #
 )
 target_link_libraries(test_main PRIVATE wakaba)
 target_link_libraries(test_main PRIVATE gtest)

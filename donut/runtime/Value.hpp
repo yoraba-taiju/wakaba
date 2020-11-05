@@ -8,10 +8,11 @@
 #pragma once
 
 #include <array>
-#include <optional>
 #include <memory>
 #include <utility>
 #include <algorithm>
+
+#include "Optional.hpp"
 
 namespace donut {
 
@@ -127,7 +128,8 @@ public:
     this->set(std::forward<Type>(v));
     return *this;
   }
-  std::optional<Type const &> const& get() const {
+
+  Optional<Type const> get() const {
     return this->peek(this->clock_.current());
   }
 
@@ -145,16 +147,16 @@ private:
     return *this;
   }
 
-  std::optional<Type const &> peek(SubjectiveTime const t) const {
-    std::tuple<SubjectiveTime, Type> &last = values_.back();
+  Optional<Type const> peek(SubjectiveTime const t) const {
+    std::tuple<SubjectiveTime, Type> const& last = values_.back();
     if (std::get<0>(last) == t) {
-      return std::get<1>(last);
+      return Optional<Type const>(std::get<1>(last));
     } else {
-      typename std::array<std::tuple<SubjectiveTime, Type>, length>::const_iterator it = this->findReadEntry();
+      auto it = this->findReadEntry(t);
       if (it == this->values_.cend()) {
-        return std::nullopt;
+        return Optional<Type const>();
       }
-      return std::get<1>(*it);
+      return Optional<Type const>(std::get<1>(*it));
     }
   }
 

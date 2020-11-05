@@ -14,7 +14,7 @@ TEST(DonutValueTest, SimpleTest) {
   Clock clock;
   auto value = clock.newValue<int, 3600>();
   value = 1;
-  EXPECT_EQ(1, value.get());
+  EXPECT_EQ(1, value.get().value());
 }
 
 }
