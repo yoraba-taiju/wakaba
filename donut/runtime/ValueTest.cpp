@@ -17,10 +17,15 @@ TEST(DonutValueTest, SimpleTest) {
   value = 1;
   EXPECT_EQ(1, value.get().value());
   clock.tick();
+  EXPECT_EQ(1, value.get().value());
   value = 2;
   EXPECT_EQ(2, value.get().value());
   clock.leap(one);
   EXPECT_EQ(1, value.get().value());
+  clock.tick();
+  EXPECT_EQ(1, value.get().value());
+  value = 3;
+  EXPECT_EQ(3, value.get().value());
 }
 
 }

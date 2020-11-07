@@ -94,8 +94,8 @@ public:
     return this->subjectiveTime_;
   }
 
-  [[nodiscard]] uint32_t branchTimeOf(uint32_t const leap) const {
-    return leap < this->branchHorizon_ ? UINT32_MAX : this->branches_[leap - this->branchHorizon_];
+  [[nodiscard]] uint32_t timeToWatch(SubjectiveTime const& t) const {
+    return t.leap() < this->branchHorizon_ ? t.at() : std::min(this->branches_[t.leap() - this->branchHorizon_], t.at());
   }
 
   template<typename T>
@@ -106,7 +106,7 @@ public:
 private:
   SubjectiveTime subjectiveTime_{};
 private:
-  std::deque<uint32_t> branches_ = {};
+  std::deque<uint32_t> branches_ = {0};
   std::size_t branchHorizon_ = 0;
 };
 
@@ -154,26 +154,26 @@ private:
   Value<Type, length>& set(Type&& v) {
     SubjectiveTime const t = clock_.current();
     auto& last = values_[end_-1];
-    if (beg_ != end_ && std::get<0>(last) == t.at() && lastModifiedLeap_ <= t.leap()) {
+    if (beg_ != end_ && std::get<0>(last) == t.at() && lastModifiedLeap_ == t.leap()) {
       std::get<1>(last) = std::forward<Type>(v);
     } else {
-      size_t idx = this->findEntry(t);
+      auto const idx = std::get<1>(this->findEntry(t));
+      end_ = idx + 1;
       values_[idx] = std::make_tuple(t.at(), std::forward<Type>(v));
       if((end_+1)%length == beg_) {
         beg_++;
       }
-      end_ = idx + 1;
     }
     this->lastModifiedLeap_ = t.leap();
     return *this;
   }
 
-  Optional<Type const> peek(SubjectiveTime const t) const {
+  Optional<Type const> peek(SubjectiveTime const& t) const {
     auto const& last = values_[end_-1];
-    if (beg_ != end_ && std::get<0>(last) == t.at() && lastModifiedLeap_ <= t.leap()) {
+    if (beg_ != end_ && std::get<0>(last) == t.at() && lastModifiedLeap_ == t.leap()) {
       return Optional<Type const>(std::get<1>(last));
     } else {
-      auto const idx = this->findEntry(t);
+      auto const idx = std::get<0>(this->findEntry(t));
       if (idx == end_) {
         return Optional<Type const>();
       }
@@ -181,25 +181,23 @@ private:
     }
   }
 
-  [[nodiscard]] size_t findEntry(SubjectiveTime const& subjectiveTime) const {
+  [[nodiscard]] std::tuple<size_t, size_t> findEntry(SubjectiveTime const& subjectiveTime) const {
     size_t beg = beg_;
     size_t end = end_;
     if(beg > end) {
       end = end + length;
     }
-    uint32_t const t = std::min(clock_.branchTimeOf(subjectiveTime.leap()), subjectiveTime.at());
-    while(beg < end) {
+    uint32_t const t = clock_.timeToWatch(subjectiveTime);
+    while((end-beg) > 1) {
       size_t mid = beg + (end-beg)/2;
       uint32_t const midTime = std::get<0>(values_[mid % length]);
-      if (midTime > t) {
-        end = mid - 1;
-      } else if  (midTime < t) {
-        beg = mid + 1;
+      if (t <= midTime) {
+        end = mid;
       } else {
-        return mid % length;
+        beg = mid;
       }
     }
-    return beg % length;
+    return std::make_tuple(beg, end);
   }
 
 private:

@@ -170,7 +170,6 @@ add_library(wakaba STATIC
     # donut
     donut/runtime/Optional.hpp
     donut/runtime/Value.hpp
-    donut/runtime/Value.cpp
 
     # taiju
     taiju/Taiju.cpp
