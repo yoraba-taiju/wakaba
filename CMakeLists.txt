@@ -179,9 +179,30 @@ add_library(wakaba STATIC
     taiju/scene/Scene.hpp
     taiju/scenes/TriangleScene.cpp
     taiju/scenes/TriangleScene.hpp
-    taiju/shaders/Triangle.cpp taiju/shaders/Triangle.hpp
+    taiju/scenes/StageScene.cpp
+    taiju/scenes/StageScene.hpp
+    taiju/shaders/Triangle.cpp
+    taiju/shaders/Triangle.hpp
 
-    # donut - parser
+    ## Taiju
+    taiju/stage/Actor.cpp
+    taiju/stage/Actor.hpp
+    taiju/stage/Stage.cpp
+    taiju/stage/Stage.hpp
+
+    taiju/stage/witches/Witch.cpp
+    taiju/stage/witches/Witch.hpp
+    taiju/stage/witches/Sora.cpp
+    taiju/stage/witches/Sora.hpp
+    taiju/stage/witches/Chitose.cpp
+    taiju/stage/witches/Chitose.hpp
+    taiju/stage/witches/Momiji.cpp
+    taiju/stage/witches/Momiji.hpp
+    taiju/stage/witches/Kaede.cpp
+    taiju/stage/witches/Kaede.hpp
+
+
+# donut - parser
     donut/parser/Parser.cpp
     donut/parser/Parser.hpp
     donut/parser/Stream.cpp

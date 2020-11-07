@@ -1,28 +1,25 @@
 /* coding: utf-8 */
 /**
- * YorabaTaiju/Wakaba
+ * wakaba
  *
- * Copyright 2019-, Kaede Fujisaki
+ * Copyright 2020-, Kaede Fujisaki
  */
-
 #pragma once
 
 #include "../scene/Scene.hpp"
 
 namespace taiju {
 
-class TriangleScene final : public Scene {
-public:
-  explicit TriangleScene();
-
-  ~TriangleScene() override = default;
-
+class StageScene final : public Scene {
 public:
   bool init() override;
 
   bool update() override;
 
   void draw() override;
+
+protected:
+  ~StageScene() override = default;
 };
 
 }
