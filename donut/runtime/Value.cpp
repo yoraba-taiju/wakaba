@@ -8,6 +8,4 @@
 #include "Value.hpp"
 namespace donut {
 
-Clock::~Clock() = default;
-
 }
