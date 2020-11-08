@@ -4,7 +4,7 @@
  *
  * Copyright 2020-, Kaede Fujisaki
  */
-#include "Actor.hpp"
+#pragma once
 
 namespace taiju {
 

@@ -17,7 +17,9 @@ namespace taiju {
 
 class Stage {
 private:
-  //std::vector<std::shared_ptr<Actor>> witches_;
+
+private:
+  std::vector<std::shared_ptr<Actor>> actors_;
 private:
   std::shared_ptr<Sora> sora_;
   std::shared_ptr<Chitose> chitose_;

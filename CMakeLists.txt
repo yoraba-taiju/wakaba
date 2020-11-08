@@ -189,9 +189,14 @@ add_library(wakaba STATIC
     taiju/stage/Actor.hpp
     taiju/stage/Stage.cpp
     taiju/stage/Stage.hpp
+    taiju/stage/Conductor.cpp
+    taiju/stage/Conductor.hpp
+    taiju/stage/Interact.cpp
+    taiju/stage/Interact.hpp
 
     taiju/stage/witches/Witch.cpp
     taiju/stage/witches/Witch.hpp
+
     taiju/stage/witches/Sora.cpp
     taiju/stage/witches/Sora.hpp
     taiju/stage/witches/Chitose.cpp
@@ -201,8 +206,7 @@ add_library(wakaba STATIC
     taiju/stage/witches/Kaede.cpp
     taiju/stage/witches/Kaede.hpp
 
-
-# donut - parser
+    # donut - parser
     donut/parser/Parser.cpp
     donut/parser/Parser.hpp
     donut/parser/Stream.cpp
@@ -213,7 +217,8 @@ add_library(wakaba STATIC
     donut/ast/Node.hpp
     donut/ast/Position.cpp
     donut/ast/Position.hpp
-)
+    #
+    )
 
 # Mario Badr | Creating a Header-Only Library with CMake
 # http://mariobadr.com/creating-a-header-only-library-with-cmake.html
