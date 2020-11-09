@@ -189,6 +189,9 @@ add_library(wakaba STATIC
     taiju/stage/Actor.hpp
     taiju/stage/Stage.cpp
     taiju/stage/Stage.hpp
+
+    taiju/stage/Scenario.cpp
+    taiju/stage/Scenario.hpp
     taiju/stage/Conductor.cpp
     taiju/stage/Conductor.hpp
     taiju/stage/Interact.cpp
@@ -218,7 +221,7 @@ add_library(wakaba STATIC
     donut/ast/Position.cpp
     donut/ast/Position.hpp
     #
-    )
+    taiju/stage/Value.hpp util/Prop.hpp)
 
 # Mario Badr | Creating a Header-Only Library with CMake
 # http://mariobadr.com/creating-a-header-only-library-with-cmake.html
@@ -239,7 +242,7 @@ add_executable(test_main
     donut/parser/StreamTest.cpp
     donut/runtime/ValueTest.cpp
     #
-)
+    taiju/stage/bullets/Bullet.cpp taiju/stage/bullets/Bullet.hpp)
 target_link_libraries(test_main PRIVATE wakaba)
 target_link_libraries(test_main PRIVATE gtest)
 target_link_libraries(test_main PRIVATE gtest_main)

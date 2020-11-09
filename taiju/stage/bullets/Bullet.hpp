@@ -7,13 +7,14 @@
 #pragma once
 
 #include <cstdint>
+#include <glm/glm.hpp>
 #include "../Value.hpp"
-#include "Witch.hpp"
 
 namespace taiju {
 
-class Chitose final : Witch {
-VDEF(int32_t, hp);
+class Bullet {
+VDEF(glm::fvec2, pos);
+VDEF(float, radius);
 };
 
 }

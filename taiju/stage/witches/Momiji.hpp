@@ -6,7 +6,14 @@
  */
 #pragma once
 
-class Momiji {
+#include <cstdint>
+#include "Witch.hpp"
+#include "../Value.hpp"
 
+namespace taiju {
+
+class Momiji final : public Witch {
+VDEF(int32_t, hp);
 };
 
+}

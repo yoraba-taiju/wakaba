@@ -4,13 +4,8 @@
  *
  * Copyright 2020-, Kaede Fujisaki
  */
-#pragma once
-
-#include "Witch.hpp"
+#include "Scenario.hpp"
 
 namespace taiju {
-
-class Sora final : Witch {
-};
 
 }
