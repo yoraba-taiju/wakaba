@@ -71,6 +71,7 @@ add_library(wakaba STATIC
     ${SHADER_HEADERS}
 
     # helper
+    util/Prop.hpp
     util/Logger.cpp
     util/Logger.hpp
     util/File.hpp
@@ -185,6 +186,8 @@ add_library(wakaba STATIC
     taiju/shaders/Triangle.hpp
 
     ## Taiju
+    taiju/stage/Value.hpp
+
     taiju/stage/Actor.cpp
     taiju/stage/Actor.hpp
     taiju/stage/Stage.cpp
@@ -209,6 +212,10 @@ add_library(wakaba STATIC
     taiju/stage/witches/Kaede.cpp
     taiju/stage/witches/Kaede.hpp
 
+    ##
+    taiju/stage/bullets/Bullet.cpp
+    taiju/stage/bullets/Bullet.hpp
+
     # donut - parser
     donut/parser/Parser.cpp
     donut/parser/Parser.hpp
@@ -221,7 +228,7 @@ add_library(wakaba STATIC
     donut/ast/Position.cpp
     donut/ast/Position.hpp
     #
-    taiju/stage/Value.hpp util/Prop.hpp)
+    )
 
 # Mario Badr | Creating a Header-Only Library with CMake
 # http://mariobadr.com/creating-a-header-only-library-with-cmake.html
@@ -241,8 +248,7 @@ target_link_libraries(wakaba_main PRIVATE wakaba)
 add_executable(test_main
     donut/parser/StreamTest.cpp
     donut/runtime/ValueTest.cpp
-    #
-    taiju/stage/bullets/Bullet.cpp taiju/stage/bullets/Bullet.hpp)
+)
 target_link_libraries(test_main PRIVATE wakaba)
 target_link_libraries(test_main PRIVATE gtest)
 target_link_libraries(test_main PRIVATE gtest_main)
