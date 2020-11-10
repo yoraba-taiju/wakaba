@@ -9,7 +9,7 @@
 
 namespace taiju {
 
-void FriendWitch::hit(const std::shared_ptr<Bullet>& bullet) {
+void FriendWitch::hit(std::shared_ptr<Bullet> const& bullet) {
   this->hp() -= bullet->damage();
 }
 
