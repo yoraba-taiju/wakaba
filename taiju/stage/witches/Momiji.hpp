@@ -13,8 +13,7 @@
 namespace taiju {
 
 class Stage;
-class Momiji final : public Witch {
-VDEF(int32_t, hp);
+class Momiji final : public FriendWitch {
 public:
   void move(std::shared_ptr<Stage>);
 };

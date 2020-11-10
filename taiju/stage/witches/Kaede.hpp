@@ -12,8 +12,7 @@
 
 namespace taiju {
 
-class Kaede final : Witch {
-VDEF(int32_t, hp);
+class Kaede final : public FriendWitch {
 };
 
 }

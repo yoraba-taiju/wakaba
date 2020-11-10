@@ -12,8 +12,7 @@
 
 namespace taiju {
 
-class Chitose final : Witch {
-VDEF(int32_t, hp);
+class Chitose final : public Witch {
 };
 
 }

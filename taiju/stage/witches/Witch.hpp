@@ -21,4 +21,11 @@ public:
   }
 };
 
+class Bullet;
+class FriendWitch : public Witch {
+VDEF_RW(float, hp, public, protected);
+public:
+  void hit(std::shared_ptr<Bullet> const& bullet);
+};
+
 }

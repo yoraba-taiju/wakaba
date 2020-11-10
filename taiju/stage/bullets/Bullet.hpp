@@ -15,6 +15,7 @@ namespace taiju {
 class Bullet {
 VDEF(glm::fvec2, pos);
 VDEF(float, radius);
+VDEF(float, damage);
 };
 
 }
