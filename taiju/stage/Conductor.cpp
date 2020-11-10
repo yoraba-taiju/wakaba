@@ -18,7 +18,6 @@ void Conductor::init() {
 }
 
 void Conductor::move() {
-  stage_
 }
 
 }

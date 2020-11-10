@@ -15,5 +15,5 @@
     [[nodiscard]] typ& name() { return this->name##_; };
 #define DEF(typ, name) DEF_RW(typ, name, public, private)
 
-#define VDEF_RW(typ, name, read, write) DEF_RW(::taiju::<typ>, name, read, write)
+#define VDEF_RW(typ, name, read, write) DEF_RW(typename ::taiju::Value<typ>, name, read, write)
 #define VDEF(typ, name) VDEF_RW(typ, name, public, private)
