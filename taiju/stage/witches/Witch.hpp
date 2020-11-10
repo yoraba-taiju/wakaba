@@ -6,14 +6,14 @@
  */
 #pragma once
 
-#include <glm/glm.hpp>
+#include "../Geom.hpp"
 #include "../Actor.hpp"
 #include "../Value.hpp"
 
 namespace taiju {
 
 class Witch : public Actor {
-VDEF(glm::fvec2, pos);
+VDEF_RW(Pos, pos, public, protected);
 public:
   static constexpr float kRadius = 1;
   [[nodiscard]] float radius() const {

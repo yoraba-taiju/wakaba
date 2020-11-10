@@ -13,7 +13,7 @@ namespace donut {
 TEST(DonutValueTest, SimpleTest) {
   Clock<3600> clock;
   auto value = clock.newValue<int>();
-  auto one = clock.current().at();
+  auto one = clock.subjectiveTime().at();
   value = 1;
   EXPECT_EQ(1, value.get().value());
   clock.tick();

@@ -6,12 +6,9 @@
  */
 #pragma once
 
-#include "Geom.hpp"
+#define GLM_FORCE_SWIZZLE
+#include <glm/glm.hpp>
 
 namespace taiju {
-
-class Actor {
-
-};
-
+using Pos = glm::fvec2;
 }

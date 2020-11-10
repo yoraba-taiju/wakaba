@@ -5,3 +5,7 @@
  * Copyright 2020-, Kaede Fujisaki
  */
 #include "Kaede.hpp"
+
+namespace taiju {
+
+}

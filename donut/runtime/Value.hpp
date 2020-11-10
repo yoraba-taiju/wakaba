@@ -52,12 +52,16 @@ public:
     return subjectiveTime_;
   }
 
-  [[nodiscard]] SubjectiveTime const& current() const {
+  [[nodiscard]] SubjectiveTime const& subjectiveTime() const {
     return this->subjectiveTime_;
   }
 
-  [[nodiscard]] uint32_t timeToWatch(SubjectiveTime const& t) const {
-    return t.leap() < this->branchHorizon_ ? t.at() : std::min(this->branches_[t.leap() - this->branchHorizon_], t.at());
+  [[nodiscard]] uint32_t leap() const {
+    return this->subjectiveTime_.leap();
+  }
+
+  [[nodiscard]] uint32_t current() const {
+    return this->subjectiveTime_.at();
   }
 
   template<typename T>
@@ -65,6 +69,13 @@ public:
     return Value<T, length>(*this);
   }
 
+private:
+  template <typename, size_t>
+  friend class Value;
+
+  [[nodiscard]] uint32_t timeToWatch(SubjectiveTime const& t) const {
+    return t.leap() < this->branchHorizon_ ? t.at() : std::min(this->branches_[t.leap() - this->branchHorizon_], t.at());
+  }
 private:
   SubjectiveTime subjectiveTime_{};
 private:
@@ -80,7 +91,7 @@ public:
   ~ShiftedClock() = default;
 public:
   [[nodiscard]] SubjectiveTime now() const {
-    return this->parent_->current();// FIXME + this->delta_;
+    return this->parent_->subjectiveTime();// FIXME + this->delta_;
   }
 
 private:
@@ -98,7 +109,7 @@ public:
   :clock_(clock)
   ,beg_(0)
   ,end_(0)
-  ,lastModifiedLeap_(clock.current().leap())
+  ,lastModifiedLeap_(clock.subjectiveTime().leap())
   {
   }
 
@@ -109,12 +120,16 @@ public:
   }
 
   Optional<Type const> get() const {
-    return this->peek(this->clock_.current());
+    return this->peek(this->clock_.subjectiveTime());
+  }
+
+  Optional<Type> get() {
+    return this->peek(this->clock_.subjectiveTime());
   }
 
 private:
   Value<Type, length>& set(Type&& v) {
-    SubjectiveTime const t = clock_.current();
+    SubjectiveTime const t = clock_.subjectiveTime();
     auto& last = values_[end_-1];
     if (beg_ != end_ && std::get<0>(last) == t.at() && lastModifiedLeap_ == t.leap()) {
       std::get<1>(last) = std::forward<Type>(v);
@@ -128,6 +143,19 @@ private:
     }
     this->lastModifiedLeap_ = t.leap();
     return *this;
+  }
+
+  Optional<Type> peek(SubjectiveTime const& t) {
+    auto& last = values_[end_-1];
+    if (beg_ != end_ && std::get<0>(last) == t.at() && lastModifiedLeap_ == t.leap()) {
+      return Optional<Type>(std::get<1>(last));
+    } else {
+      auto const idx = std::get<0>(this->findEntry(t));
+      if (idx == end_) {
+        return Optional<Type>();
+      }
+      return Optional<Type>(std::get<1>(values_[idx]));
+    }
   }
 
   Optional<Type const> peek(SubjectiveTime const& t) const {

@@ -8,4 +8,8 @@
 
 namespace taiju {
 
+void Sora::hit(std::shared_ptr<Bullet> bullet) {
+
+}
+
 }

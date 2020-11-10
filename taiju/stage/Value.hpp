@@ -10,5 +10,6 @@
 #include "../../donut/runtime/Value.hpp"
 
 namespace taiju {
+using Clock = donut::Clock<3600>;
 template <typename T> using Value = donut::Value<T, 3600>;
 }

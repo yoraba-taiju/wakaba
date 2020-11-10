@@ -8,4 +8,7 @@
 
 namespace taiju {
 
+void Stage::init() {
+}
+
 }

@@ -186,6 +186,7 @@ add_library(wakaba STATIC
     taiju/shaders/Triangle.hpp
 
     ## Taiju
+    taiju/stage/Geom.hpp
     taiju/stage/Value.hpp
 
     taiju/stage/Actor.cpp
@@ -228,7 +229,7 @@ add_library(wakaba STATIC
     donut/ast/Position.cpp
     donut/ast/Position.hpp
     #
-    )
+)
 
 # Mario Badr | Creating a Header-Only Library with CMake
 # http://mariobadr.com/creating-a-header-only-library-with-cmake.html

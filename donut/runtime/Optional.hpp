@@ -22,11 +22,23 @@ public:
   [[nodiscard]] bool has_value() const {
     return this->value_ != nullptr;
   }
-  T& value() {
+  [[nodiscard]] T const& value() const {
     if(this->value_ == nullptr) {
       throw std::bad_optional_access();
     }
     return *this->value_;
+  }
+  [[nodiscard]] T& value() {
+    if(this->value_ == nullptr) {
+      throw std::bad_optional_access();
+    }
+    return *this->value_;
+  }
+  [[nodiscard]] operator Optional<T const>() {
+    if(this->value_ == nullptr) {
+      throw Optional<T const>();
+    }
+    return Optional<T const>(*this->value_);
   }
 private:
   T* value_;
