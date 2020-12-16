@@ -6,6 +6,7 @@
  */
 #pragma once
 
+#include <optional>
 #include <algorithm>
 
 template<typename T> class Optional final {
