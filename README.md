@@ -5,3 +5,7 @@
 ```bash
 
 ```
+
+# Resources
+
+ - [Vulkan Guide](https://vkguide.dev/)
